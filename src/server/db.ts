@@ -6,7 +6,6 @@ import { env } from '~/env';
 
 const pool = new Pool({ connectionString: env.DATABASE_URL });
 
-console.log(pool);
 const createPrismaClient = () =>
   new PrismaClient({
     log:

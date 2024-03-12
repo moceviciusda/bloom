@@ -9,17 +9,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url  	    = env("DATABASE_URL")
-  // uncomment next line if you use Prisma <5.10
-  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
-
-// datasource db {
-//     provider = "mysql"
-//     url      = env("DATABASE_URL")
-
-//     // Do not use foreign keys (PlanetScale does not support them)
-//     relationMode = "prisma"
-// }
 
 model Post {
     id        Int      @id @default(autoincrement())
