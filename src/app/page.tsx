@@ -1,13 +1,13 @@
-import { unstable_noStore as noStore } from "next/cache";
-import Link from "next/link";
+import { unstable_noStore as noStore } from 'next/cache';
+import Link from 'next/link';
 
-import { CreatePost } from "~/app/_components/create-post";
-import { api } from "~/trpc/server";
-import styles from "./index.module.css";
+import { CreatePost } from '~/app/_components/create-post';
+import { api } from '~/trpc/server';
+import styles from './index.module.css';
 
 export default async function Home() {
   noStore();
-  const hello = await api.post.hello.query({ text: "from tRPC" });
+  const hello = await api.post.hello.query({ text: 'from tRPC' });
 
   return (
     <main className={styles.main}>
@@ -18,8 +18,8 @@ export default async function Home() {
         <div className={styles.cardRow}>
           <Link
             className={styles.card}
-            href="https://create.t3.gg/en/usage/first-steps"
-            target="_blank"
+            href='https://create.t3.gg/en/usage/first-steps'
+            target='_blank'
           >
             <h3 className={styles.cardTitle}>First Steps →</h3>
             <div className={styles.cardText}>
@@ -29,8 +29,8 @@ export default async function Home() {
           </Link>
           <Link
             className={styles.card}
-            href="https://create.t3.gg/en/introduction"
-            target="_blank"
+            href='https://create.t3.gg/en/introduction'
+            target='_blank'
           >
             <h3 className={styles.cardTitle}>Documentation →</h3>
             <div className={styles.cardText}>
@@ -41,7 +41,7 @@ export default async function Home() {
         </div>
         <div className={styles.showcaseContainer}>
           <p className={styles.showcaseText}>
-            {hello ? hello.greeting : "Loading tRPC query..."}
+            {hello ? hello.greeting : 'Loading tRPC query...'}
           </p>
         </div>
 
