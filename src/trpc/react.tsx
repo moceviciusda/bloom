@@ -48,12 +48,12 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <api.Provider client={trpcClient} queryClient={queryClient}>
-        {/* <CacheProvider> */}
-        <ChakraProvider theme={theme}>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-          {props.children}
-        </ChakraProvider>
-        {/* </CacheProvider> */}
+        <CacheProvider>
+          <ChakraProvider theme={theme}>
+            <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+            {props.children}
+          </ChakraProvider>
+        </CacheProvider>
       </api.Provider>
     </QueryClientProvider>
   );

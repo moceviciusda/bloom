@@ -1,22 +1,29 @@
-import { unstable_noStore as noStore } from 'next/cache';
+// import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 
 import { CreatePost } from '~/app/_components/create-post';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 import styles from './index.module.css';
-import { Button } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
+import Login from './_components/login-form';
 
 export default async function Home() {
-  noStore();
-  const hello = await api.post.hello.query({ text: 'from tRPC' });
+  // noStore();
   const session = await getServerAuthSession();
 
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
+    <Flex align='stretch' justify='center' minH='100vh'>
+      <Flex
+        flex={1.5}
+        direction='column'
+        align='center'
+        justify='center'
+        gap='3rem'
+        p='4rem 1rem'
+      >
         <h1 className={styles.title}>
-          Create <span className={styles.pinkSpan}>T3</span> App
+          Create <span className={styles.pinkSpan}>Bloom</span> App
         </h1>
         <div className={styles.cardRow}>
           <Link
@@ -42,10 +49,17 @@ export default async function Home() {
             </div>
           </Link>
         </div>
+      </Flex>
+      <Flex
+        flex={1}
+        direction='column'
+        align='center'
+        justify='center'
+        gap='3rem'
+        bg='grey'
+      >
         <div className={styles.showcaseContainer}>
-          <p className={styles.showcaseText}>
-            {hello ? hello.greeting : 'Loading tRPC query...'}
-          </p>
+          <Login />
 
           <div className={styles.authContainer}>
             <p className={styles.showcaseText}>
@@ -61,8 +75,8 @@ export default async function Home() {
         </div>
 
         <CrudShowcase />
-      </div>
-    </main>
+      </Flex>
+    </Flex>
   );
 }
 
