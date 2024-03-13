@@ -1,6 +1,4 @@
-import React from 'react';
 import {
-  Box,
   Heading,
   VStack,
   FormControl,
@@ -12,11 +10,7 @@ import {
   Link,
 } from '@chakra-ui/react';
 
-interface LoginProps {
-  // Add any props you need here, like onSubmit handler
-}
-
-const Login: React.FC<LoginProps> = ({}) => {
+const Login: React.FC = ({}) => {
   return (
     <VStack
       spacing={4}

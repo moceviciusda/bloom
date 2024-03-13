@@ -50,6 +50,7 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
       <api.Provider client={trpcClient} queryClient={queryClient}>
         <CacheProvider>
           <ChakraProvider theme={theme}>
+            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */}
             <ColorModeScript initialColorMode={theme.config.initialColorMode} />
             {props.children}
           </ChakraProvider>
