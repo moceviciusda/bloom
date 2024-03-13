@@ -4,16 +4,17 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Checkbox,
   Button,
   Text,
   Link,
 } from '@chakra-ui/react';
+import { authOptions } from '~/server/auth';
+import OauthButton from './oauth-button';
 
 const Login: React.FC = ({}) => {
   return (
     <VStack
-      spacing={4}
+      gap={2}
       align='flex-start'
       fontSize='sm'
       fontWeight='semibold'
@@ -39,38 +40,22 @@ const Login: React.FC = ({}) => {
           <Link href='#'>Forgot Password?</Link>
         </Text>
       </FormControl>
-      <FormControl display='flex' alignItems='center'>
-        <Checkbox id='remember-me' defaultChecked>
-          Remember me
-        </Checkbox>
-      </FormControl>
 
       <Button as='a' href='/api/auth/signin' colorScheme='purple' w='100%'>
         Sign in
       </Button>
 
       <Text alignSelf='center'>- OR -</Text>
-
-      <Button
-        as='a'
-        href='#'
-        variant='outline'
-        size='md'
-        colorScheme='purple'
-        w='100%'
-      >
-        Continue with Google
-      </Button>
-      <Button
-        as='a'
-        href='#'
-        variant='outline'
-        size='md'
-        colorScheme='purple'
-        w='100%'
-      >
-        Continue with GitHub
-      </Button>
+      {authOptions.providers.map((provider) => (
+        <OauthButton
+          key={provider.id}
+          provider={provider.id}
+          variant='outline'
+          size='md'
+          colorScheme='purple'
+          w='100%'
+        />
+      ))}
     </VStack>
   );
 };

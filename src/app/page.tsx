@@ -5,7 +5,7 @@ import { CreatePost } from '~/app/_components/create-post';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 import styles from './index.module.css';
-import { Flex } from '@chakra-ui/react';
+import { Flex, Text } from '@chakra-ui/react';
 import Login from './_components/login-form';
 
 export default async function Home() {
@@ -21,6 +21,7 @@ export default async function Home() {
         justify='center'
         gap='3rem'
         p='4rem 1rem'
+        bg='purple.900'
       >
         <h1 className={styles.title}>
           Create <span className={styles.pinkSpan}>Bloom</span> App
@@ -56,23 +57,16 @@ export default async function Home() {
         align='center'
         justify='center'
         gap='3rem'
-        bg='grey'
+        // bg='grey'
       >
-        <div className={styles.showcaseContainer}>
-          <Login />
+        <Login />
 
-          <div className={styles.authContainer}>
-            <p className={styles.showcaseText}>
-              {session && <span>Logged in as {session.user?.name}</span>}
-            </p>
-            <Link
-              href={session ? '/api/auth/signout' : '/api/auth/signin'}
-              className={styles.loginButton}
-            >
-              {session ? 'Sign out' : 'Sign in'}
-            </Link>
-          </div>
-        </div>
+        {session && (
+          <>
+            <Text>Logged in as {session.user?.name}</Text>
+            <Link href='/api/auth/signout'>Sign out</Link>
+          </>
+        )}
 
         <CrudShowcase />
       </Flex>
@@ -87,13 +81,11 @@ async function CrudShowcase() {
   const latestPost = await api.post.getLatest.query();
 
   return (
-    <div className={styles.showcaseContainer}>
+    <div>
       {latestPost ? (
-        <p className={styles.showcaseText}>
-          Your most recent post: {latestPost.name}
-        </p>
+        <p>Your most recent post: {latestPost.name}</p>
       ) : (
-        <p className={styles.showcaseText}>You have no posts yet.</p>
+        <p>You have no posts yet.</p>
       )}
 
       <CreatePost />
