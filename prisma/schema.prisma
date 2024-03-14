@@ -64,7 +64,9 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
-}
+    organizations Organization[] @relation(name: "OrganizationMembers")
+    ownedOrganizations Organization[] @relation(name: "OrganizationOwner")
+    }
 
 model VerificationToken {
     identifier String
@@ -72,4 +74,15 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Organization {
+    id        String   @id @default(cuid())
+    name      String
+
+    ownerId   String
+    owner     User     @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
+    members   User[]   @relation(name: "OrganizationMembers")
+
+    @@index([name])
 }
