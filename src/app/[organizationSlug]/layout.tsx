@@ -13,7 +13,7 @@ const OrganizationRootLayout = async ({
 }) => {
   const session = await getServerAuthSession();
 
-  if (!session) return redirect('/');
+  if (!session) return redirect(`/?next=/${params.organizationSlug}`);
 
   const organizations = await api.organization.getAll.query();
 

@@ -7,6 +7,7 @@ import {
   type TextProps,
 } from '@chakra-ui/react';
 import { signIn } from 'next-auth/react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { FaDiscord, FaGithub, FaGoogle } from 'react-icons/fa';
 
@@ -24,9 +25,11 @@ const OauthButton: React.FC<OauthButtonProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
+  const callbackUrl = useSearchParams().get('next') ?? '/';
+
   const handleClick = async () => {
     setLoading(true);
-    await signIn(providerId);
+    await signIn(providerId, { callbackUrl });
     setLoading(false);
   };
 
