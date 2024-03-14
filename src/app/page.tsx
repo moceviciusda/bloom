@@ -7,6 +7,14 @@ import { api } from '~/trpc/server';
 import styles from './index.module.css';
 import { Flex, Text } from '@chakra-ui/react';
 import Login from './_components/login-form';
+import SignOutButton from './_components/sign-out-button';
+// import { signOut } from 'next-auth/react';
+
+// const SignOut = () => {
+//   'use client';
+
+//   return <Button onClick={() => signOut()}>Sign out</Button>;
+// };
 
 export default async function Home() {
   // noStore();
@@ -64,7 +72,7 @@ export default async function Home() {
         {session && (
           <>
             <Text>Logged in as {session.user?.name}</Text>
-            <Link href='/api/auth/signout'>Sign out</Link>
+            <SignOutButton colorScheme='red' />
           </>
         )}
 
