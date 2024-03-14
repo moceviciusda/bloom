@@ -1,16 +1,43 @@
 'use client';
 
-import { Button, type ButtonProps } from '@chakra-ui/react';
+import {
+  Button,
+  Text,
+  type ButtonProps,
+  type TextProps,
+} from '@chakra-ui/react';
 import { signIn } from 'next-auth/react';
+import { FaDiscord, FaGithub, FaGoogle } from 'react-icons/fa';
 
 interface OauthButtonProps extends ButtonProps {
-  provider: string;
+  providerId: string;
+  providerName: string;
+  textProps?: TextProps;
 }
 
-const OauthButton: React.FC<OauthButtonProps> = ({ provider, ...rest }) => {
+const OauthButton: React.FC<OauthButtonProps> = ({
+  providerId,
+  providerName,
+  textProps = null,
+  ...rest
+}) => {
   return (
-    <Button {...rest} onClick={() => signIn(provider)}>
-      {`Continue with ${provider}`}
+    <Button
+      leftIcon={
+        providerId === 'github' ? (
+          <FaGithub />
+        ) : providerId === 'google' ? (
+          <FaGoogle />
+        ) : providerId === 'discord' ? (
+          <FaDiscord />
+        ) : undefined
+      }
+      {...rest}
+      onClick={() => signIn(providerId)}
+    >
+      <Text fontSize={14} {...textProps}>
+        {providerName}
+      </Text>
     </Button>
   );
 };

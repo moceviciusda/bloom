@@ -7,6 +7,8 @@ import {
   Button,
   Text,
   Link,
+  HStack,
+  Divider,
 } from '@chakra-ui/react';
 import { authOptions } from '~/server/auth';
 import OauthButton from './oauth-button';
@@ -14,8 +16,8 @@ import OauthButton from './oauth-button';
 const Login: React.FC = ({}) => {
   return (
     <VStack
-      gap={2}
-      align='flex-start'
+      gap={3}
+      align='stretch'
       fontSize='sm'
       fontWeight='semibold'
       minW='24rem'
@@ -41,21 +43,32 @@ const Login: React.FC = ({}) => {
         </Text>
       </FormControl>
 
-      <Button as='a' href='/api/auth/signin' colorScheme='purple' w='100%'>
+      <Button as='a' href='/api/auth/signin' colorScheme='purple'>
         Sign in
       </Button>
 
-      <Text alignSelf='center'>- OR -</Text>
-      {authOptions.providers.map((provider) => (
-        <OauthButton
-          key={provider.id}
-          provider={provider.id}
-          variant='outline'
-          size='md'
-          colorScheme='purple'
-          w='100%'
-        />
-      ))}
+      <HStack>
+        <Divider />
+        <Text as='span' fontSize='xs' whiteSpace='nowrap' fontWeight='thin'>
+          or continue with
+        </Text>
+        <Divider />
+      </HStack>
+
+      <HStack gap={2}>
+        {authOptions.providers.map((provider) => (
+          <OauthButton
+            key={provider.id}
+            providerId={provider.id}
+            providerName={provider.name}
+            // variant='outline'
+            size='lg'
+            colorScheme='purple'
+            flex={1}
+            paddingX={4}
+          />
+        ))}
+      </HStack>
     </VStack>
   );
 };
