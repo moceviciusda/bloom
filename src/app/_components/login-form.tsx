@@ -49,7 +49,7 @@ const Login: React.FC = ({}) => {
 
       <HStack>
         <Divider />
-        <Text as='span' fontSize='xs' whiteSpace='nowrap' fontWeight='thin'>
+        <Text as='span' fontSize='sm' whiteSpace='nowrap' fontWeight='300'>
           or continue with
         </Text>
         <Divider />

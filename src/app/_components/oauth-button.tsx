@@ -7,6 +7,7 @@ import {
   type TextProps,
 } from '@chakra-ui/react';
 import { signIn } from 'next-auth/react';
+import { useState } from 'react';
 import { FaDiscord, FaGithub, FaGoogle } from 'react-icons/fa';
 
 interface OauthButtonProps extends ButtonProps {
@@ -21,6 +22,14 @@ const OauthButton: React.FC<OauthButtonProps> = ({
   textProps = null,
   ...rest
 }) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = async () => {
+    setLoading(true);
+    await signIn(providerId);
+    setLoading(false);
+  };
+
   return (
     <Button
       leftIcon={
@@ -32,8 +41,10 @@ const OauthButton: React.FC<OauthButtonProps> = ({
           <FaDiscord />
         ) : undefined
       }
+      minW='108px'
       {...rest}
-      onClick={() => signIn(providerId)}
+      isLoading={loading}
+      onClick={() => handleClick()}
     >
       <Text fontSize={14} {...textProps}>
         {providerName}

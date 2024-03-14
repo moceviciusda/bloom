@@ -79,6 +79,7 @@ model VerificationToken {
 model Organization {
     id        String   @id @default(cuid())
     name      String
+    slug      String   @unique
 
     ownerId   String
     owner     User     @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])

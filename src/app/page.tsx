@@ -5,9 +5,10 @@ import { CreatePost } from '~/app/_components/create-post';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 import styles from './index.module.css';
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, Text, VStack } from '@chakra-ui/react';
 import Login from './_components/login-form';
 import SignOutButton from './_components/sign-out-button';
+import OrganizationCard from './_components/organization-card';
 // import { signOut } from 'next-auth/react';
 
 // const SignOut = () => {
@@ -61,23 +62,8 @@ export default async function Home() {
           </Link>
         </div>
       </Flex>
-      <Flex
-        flex={1}
-        direction='column'
-        align='center'
-        justify='center'
-        // gap='3rem'
-      >
-        <Login />
-
-        {session && (
-          <>
-            <Text>Logged in as {session.user?.name}</Text>
-            <SignOutButton colorScheme='red' />
-          </>
-        )}
-
-        <CrudShowcase />
+      <Flex flex={1} direction='column' align='center' justify='center'>
+        {!session ? <Login /> : <CrudShowcase />}
       </Flex>
     </Flex>
   );
@@ -87,17 +73,24 @@ async function CrudShowcase() {
   const session = await getServerAuthSession();
   if (!session?.user) return null;
 
-  const latestOrg = await api.organization.getLatest.query();
+  const userOrgs = await api.organization.getAll.query();
 
   return (
-    <div>
-      {latestOrg ? (
-        <p>Organization: {latestOrg.name}</p>
-      ) : (
-        <p>You have no posts yet.</p>
-      )}
+    <VStack
+      gap={3}
+      align='stretch'
+      fontSize='sm'
+      fontWeight='semibold'
+      minW='24rem'
+      p={8}
+    >
+      <Text>Logged in as {session.user?.name}</Text>
+      <SignOutButton colorScheme='purple' />
 
+      {userOrgs.map((org) => (
+        <OrganizationCard key={org.id} organization={org} />
+      ))}
       <CreatePost />
-    </div>
+    </VStack>
   );
 }
