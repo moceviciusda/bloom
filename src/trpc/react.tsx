@@ -3,7 +3,10 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { loggerLink, unstable_httpBatchStreamLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
-import { ChakraProvider, ColorModeScript } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  //  ColorModeScript
+} from '@chakra-ui/react';
 import { CacheProvider } from '@chakra-ui/next-js';
 
 import theme from '~/theme/theme';
@@ -11,6 +14,7 @@ import { useState } from 'react';
 
 import { type AppRouter } from '~/server/api/root';
 import { getUrl, transformer } from './shared';
+import { SessionProvider } from 'next-auth/react';
 
 const createQueryClient = () => new QueryClient();
 
@@ -48,13 +52,15 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <api.Provider client={trpcClient} queryClient={queryClient}>
-        <CacheProvider>
-          <ChakraProvider theme={theme}>
-            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */}
-            <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-            {props.children}
-          </ChakraProvider>
-        </CacheProvider>
+        <SessionProvider>
+          <CacheProvider>
+            <ChakraProvider theme={theme}>
+              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */}
+              {/* <ColorModeScript initialColorMode={theme.config.initialColorMode} /> */}
+              {props.children}
+            </ChakraProvider>
+          </CacheProvider>
+        </SessionProvider>
       </api.Provider>
     </QueryClientProvider>
   );

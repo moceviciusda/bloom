@@ -8,7 +8,9 @@ const styles = {
   },
 };
 
-const config = { initialColorMode: 'light' };
+const config = {
+  initialColorMode: 'light',
+};
 
 const theme = extendTheme({ config, styles });
 

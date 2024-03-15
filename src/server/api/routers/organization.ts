@@ -51,4 +51,15 @@ export const organizationRouter = createTRPCRouter({
         where: { slug: input.slug },
       });
     }),
+
+  removeUser: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.organization.update({
+        where: { id: input.id },
+        data: {
+          members: { disconnect: { id: ctx.session.user.id } },
+        },
+      });
+    }),
 });
