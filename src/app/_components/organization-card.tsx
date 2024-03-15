@@ -9,12 +9,14 @@ import {
   Heading,
   Text,
 } from '@chakra-ui/react';
-import { type Organization } from '@prisma/client';
+import { type Prisma } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { api } from '~/trpc/react';
 
 interface Props {
-  organization: Organization;
+  organization: Prisma.OrganizationGetPayload<{
+    include: { owner: true; members: true };
+  }>;
 }
 
 const OrganizationCard: React.FC<Props> = ({ organization }) => {

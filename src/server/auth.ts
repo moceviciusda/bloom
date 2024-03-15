@@ -1,5 +1,5 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import { type Organization } from '@prisma/client';
+import { type Prisma } from '@prisma/client';
 import {
   getServerSession,
   type DefaultSession,
@@ -23,7 +23,9 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      organizations: Organization[];
+      organizations: Prisma.OrganizationGetPayload<{
+        include: { members: true; owner: true };
+      }>[];
       // ...other properties
       // role: UserRole;
     } & DefaultSession['user'];
@@ -31,7 +33,9 @@ declare module 'next-auth' {
 
   interface User {
     id: string;
-    organizations: Organization[];
+    organizations: Prisma.OrganizationGetPayload<{
+      include: { members: true; owner: true };
+    }>[];
     // ...other properties
     // role: UserRole;
   }
