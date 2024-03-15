@@ -1,11 +1,10 @@
 'use client';
 
+import { Link } from '@chakra-ui/next-js';
 import {
   Button,
-  ButtonGroup,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Heading,
   Text,
@@ -27,27 +26,42 @@ const OrganizationCard: React.FC<Props> = ({ organization }) => {
     },
   });
 
-  const handleClick = () => deleteOrganization.mutate({ id: organization.id });
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    deleteOrganization.mutate({ id: organization.id });
+  };
+
+  console.log(organization);
 
   return (
-    <Card size='sm'>
-      <CardHeader>
+    <Card
+      as={Link}
+      href={`/${organization.slug}`}
+      size='sm'
+      _hover={{
+        boxShadow: '0 0 0 2px #805ad5',
+        // borderColor: '#805ad5',
+        transform: 'translateY(-4px)',
+        textDecor: 'none',
+      }}
+    >
+      <CardHeader
+        display='flex'
+        dir='row'
+        alignItems='center'
+        justifyContent='space-between'
+      >
         <Heading size='md'>{organization.name}</Heading>
+        <Button onClick={handleClick}>X</Button>
       </CardHeader>
       <CardBody>
+        <Text fontSize='sm'>Owned by: {organization.owner.name}</Text>
+        <Text fontSize='sm'>Members: {organization.members.length || 0}</Text>
         <Text fontSize='sm'>{organization.id}</Text>
       </CardBody>
-      <CardFooter as={ButtonGroup}>
-        <Button
-          onClick={() => {
-            router.push(`/${organization.slug}`);
-          }}
-          flex={1}
-        >
-          Continue
-        </Button>
+      {/* <CardFooter as={ButtonGroup}>
         <Button onClick={handleClick}>Delete</Button>
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 };

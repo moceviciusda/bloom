@@ -47,6 +47,7 @@ export const authOptions: NextAuthOptions = {
     session: async ({ session, user }) => {
       const organizations = await db.organization.findMany({
         where: { members: { some: { id: user.id } } },
+        include: { members: true, owner: true },
       });
       return {
         ...session,

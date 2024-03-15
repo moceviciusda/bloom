@@ -1,21 +1,13 @@
 // import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
-
-import { CreatePost } from '~/app/_components/create-post';
+import { CreateOrganization } from '~/app/_components/create-organization';
 import { getServerAuthSession } from '~/server/auth';
-import { api } from '~/trpc/server';
 import styles from './index.module.css';
 import { Flex, Text, VStack } from '@chakra-ui/react';
 import Login from './_components/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard from './_components/organization-card';
 // import { signOut } from 'next-auth/react';
-
-// const SignOut = () => {
-//   'use client';
-
-//   return <Button onClick={() => signOut()}>Sign out</Button>;
-// };
 
 export default async function Home() {
   // noStore();
@@ -73,20 +65,21 @@ async function CrudShowcase() {
 
   return (
     <VStack
-      gap={3}
-      align='stretch'
+      flex={1}
       fontSize='sm'
       fontWeight='semibold'
       minW='24rem'
-      p={8}
+      paddingX={8}
     >
-      <Text>Logged in as {session.user?.name}</Text>
+      <Text justifySelf='flex-start'>Logged in as {session.user?.name}</Text>
       <SignOutButton colorScheme='purple' />
 
-      {session.user.organizations.map((org) => (
-        <OrganizationCard key={org.id} organization={org} />
-      ))}
-      <CreatePost />
+      <VStack flex={1} gap={3} justify='center' align='stretch' fontSize='sm'>
+        {session.user.organizations.map((org) => (
+          <OrganizationCard key={org.id} organization={org} />
+        ))}
+        <CreateOrganization />
+      </VStack>
     </VStack>
   );
 }

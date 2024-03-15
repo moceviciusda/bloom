@@ -2,7 +2,6 @@ import {
   Heading,
   VStack,
   FormControl,
-  FormLabel,
   Input,
   Button,
   Text,
@@ -19,34 +18,20 @@ const Login: React.FC = ({}) => {
       gap={3}
       align='stretch'
       fontSize='sm'
-      fontWeight='semibold'
-      minW='24rem'
+      // fontWeight='semibold'
+      w='24rem'
       p={8}
     >
-      <Heading>Log In</Heading>
-      <Text>
+      <Heading>Sign In</Heading>
+      <Text fontSize='smaller'>
         New to Bloom? <Link href='#'>Sign up for an account</Link>
       </Text>
       <FormControl isRequired>
-        <FormLabel htmlFor='email'>Email</FormLabel>
         <Input id='email' type='email' placeholder='Enter your email' />
       </FormControl>
-      <FormControl isRequired>
-        <FormLabel htmlFor='password'>Password</FormLabel>
-        <Input
-          id='password'
-          type='password'
-          placeholder='Enter your password'
-        />
-        <Text align='end'>
-          <Link href='#'>Forgot Password?</Link>
-        </Text>
-      </FormControl>
-
       <Button as='a' href='/api/auth/signin' colorScheme='purple'>
-        Sign in
+        Sign in with Email
       </Button>
-
       <HStack>
         <Divider />
         <Text as='span' fontSize='sm' whiteSpace='nowrap' fontWeight='300'>
@@ -54,21 +39,26 @@ const Login: React.FC = ({}) => {
         </Text>
         <Divider />
       </HStack>
-
       <HStack gap={2}>
-        {authOptions.providers.map((provider) => (
-          <OauthButton
-            key={provider.id}
-            providerId={provider.id}
-            providerName={provider.name}
-            // variant='outline'
-            size='lg'
-            colorScheme='purple'
-            flex={1}
-            paddingX={4}
-          />
-        ))}
+        {authOptions.providers.map((provider) => {
+          return (
+            <OauthButton
+              key={provider.id}
+              providerId={provider.id}
+              providerName={provider.name}
+              // variant='outline'
+              size='lg'
+              colorScheme='purple'
+              flex={1}
+              paddingX={4}
+            />
+          );
+        })}
       </HStack>
+      <Text fontSize='smaller' textAlign='center'>
+        By signing in, you agree to our <Link href='#'>Terms of Service</Link>{' '}
+        and <Link href='#'>Privacy Policy</Link>.
+      </Text>
     </VStack>
   );
 };

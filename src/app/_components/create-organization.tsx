@@ -5,11 +5,11 @@ import { useState } from 'react';
 
 import { api } from '~/trpc/react';
 
-export function CreatePost() {
+export function CreateOrganization() {
   const router = useRouter();
   const [name, setName] = useState('');
 
-  const createPost = api.organization.create.useMutation({
+  const createOrganization = api.organization.create.useMutation({
     onSuccess: () => {
       router.refresh();
       setName('');
@@ -20,7 +20,7 @@ export function CreatePost() {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        createPost.mutate({ name });
+        createOrganization.mutate({ name });
       }}
     >
       <input
@@ -29,8 +29,8 @@ export function CreatePost() {
         value={name}
         onChange={(e) => setName(e.target.value)}
       />
-      <button type='submit' disabled={createPost.isLoading}>
-        {createPost.isLoading ? 'Submitting...' : 'Submit'}
+      <button type='submit' disabled={createOrganization.isLoading}>
+        {createOrganization.isLoading ? 'Submitting...' : 'Submit'}
       </button>
     </form>
   );
