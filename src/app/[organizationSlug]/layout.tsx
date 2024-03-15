@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react';
 import NavBar from './_components/nav-bar';
-import { api } from '~/trpc/server';
+// import { api } from '~/trpc/server';
 import { getServerAuthSession } from '~/server/auth';
 import { redirect } from 'next/navigation';
 
@@ -12,12 +12,9 @@ const OrganizationRootLayout = async ({
   params: { organizationSlug: string };
 }) => {
   const session = await getServerAuthSession();
-
   if (!session) return redirect(`/?next=/${params.organizationSlug}`);
 
-  const organizations = await api.organization.getAll.query();
-
-  const currentOrg = organizations.find(
+  const currentOrg = session.user.organizations.find(
     (org) => org.slug === params.organizationSlug
   );
 
@@ -26,7 +23,10 @@ const OrganizationRootLayout = async ({
 
   return (
     <Box minH='100vh'>
-      <NavBar currentOrg={currentOrg} organizations={organizations} />
+      <NavBar
+        currentOrg={currentOrg}
+        organizations={session.user.organizations}
+      />
       {children}
     </Box>
   );

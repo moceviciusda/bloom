@@ -21,8 +21,6 @@ export default async function Home() {
   // noStore();
   const session = await getServerAuthSession();
 
-  console.log('session', session);
-
   return (
     <Flex align='stretch' justify='center' minH='100vh'>
       <Flex
@@ -73,8 +71,6 @@ async function CrudShowcase() {
   const session = await getServerAuthSession();
   if (!session?.user) return null;
 
-  const userOrgs = await api.organization.getAll.query();
-
   return (
     <VStack
       gap={3}
@@ -87,7 +83,7 @@ async function CrudShowcase() {
       <Text>Logged in as {session.user?.name}</Text>
       <SignOutButton colorScheme='purple' />
 
-      {userOrgs.map((org) => (
+      {session.user.organizations.map((org) => (
         <OrganizationCard key={org.id} organization={org} />
       ))}
       <CreatePost />
