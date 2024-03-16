@@ -18,7 +18,7 @@ const Login: React.FC = ({}) => {
       gap={3}
       align='stretch'
       fontSize='sm'
-      // fontWeight='semibold'
+      justify='center'
       w='24rem'
       p={8}
     >

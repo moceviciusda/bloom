@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { CreateOrganization } from '~/app/_components/organization-card/create-organization';
 import { getServerAuthSession } from '~/server/auth';
 import styles from './index.module.css';
-import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, HStack, VStack } from '@chakra-ui/react';
 import Login from './_components/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
@@ -13,21 +13,21 @@ import USerPlate from './_components/user-plate';
 import { Suspense } from 'react';
 // import { signOut } from 'next-auth/react';
 
-export default async function Home() {
+const Home = async () => {
   // noStore();
 
   const session = await getServerAuthSession();
 
   return (
-    <Flex align='stretch' justify='center' minH='100vh'>
-      <Box bg='purple.900' flex={1.5}>
+    <Flex align='stretch' minH='100vh' flexDir={{ base: 'column', lg: 'row' }}>
+      <Box bg='purple.900' flex={2}>
         <Flex
           direction='column'
           align='center'
           justify='center'
           gap='3rem'
-          p='4rem 1rem'
-          h='100vh'
+          p={16}
+          h={{ base: 'auto', lg: '100vh' }}
           position='sticky'
           top={0}
         >
@@ -60,32 +60,54 @@ export default async function Home() {
           </div>
         </Flex>
       </Box>
-      <Flex flex={1} direction='column' align='center' justify='center'>
-        {!session ? <Login /> : <CrudShowcase />}
+      <Flex flex={1} justify='center'>
+        {!session ? <Login /> : <OrgSelection />}
       </Flex>
     </Flex>
   );
-}
+};
 
-async function CrudShowcase() {
+const OrgSelection = async () => {
   const session = await getServerAuthSession();
   if (!session) return null;
 
   return (
     <VStack
       flex={1}
+      align='stretch'
       fontSize='sm'
       fontWeight='semibold'
       minW='24rem'
-      paddingX={8}
     >
-      <HStack justifySelf={'flex-start'}>
-        <USerPlate user={session.user} />
-      </HStack>
-      <Text justifySelf='flex-start'>Logged in as {session.user.name}</Text>
-      <SignOutButton colorScheme='purple' />
+      <HStack
+        justify='space-between'
+        align='flex-start'
+        paddingX={{ base: 16, lg: 4, xl: 8 }}
+        paddingTop={{ base: 4, lg: 4, xl: 8 }}
+        paddingBottom={4}
+        position='sticky'
+        top={0}
+        zIndex={1}
+        bg='white'
+      >
+        <USerPlate
+          avatarProps={{ size: 'md' }}
+          userNameProps={{ fontSize: 'xl' }}
+          userEmailProps={{ lineHeight: undefined }}
+          user={session.user}
+        />
 
-      <VStack flex={1} justify='center' align='stretch' gap={3}>
+        <SignOutButton colorScheme='purple' />
+      </HStack>
+
+      <VStack
+        flex={1}
+        // alignSelf='center'
+        justify='center'
+        align='stretch'
+        gap={3}
+        paddingX={{ base: 16, lg: 4, xl: 16 }}
+      >
         {session.user.organizations
           // sort organizations to show the user's owned orgs first
           .sort((a, b) => {
@@ -106,4 +128,6 @@ async function CrudShowcase() {
       </VStack>
     </VStack>
   );
-}
+};
+
+export default Home;

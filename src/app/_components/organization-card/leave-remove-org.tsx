@@ -32,7 +32,12 @@ const LeaveOrgButton: React.FC<ButtonProps> = ({
   });
 
   return (
-    <Tooltip borderRadius={5} label='Leave' bg='purple.900' {...tooltipProps}>
+    <Tooltip
+      borderRadius={5}
+      label='Leave'
+      bg='blackAlpha.700'
+      {...tooltipProps}
+    >
       <IconButton
         aria-label='Leave organization'
         onClick={(e) => {
@@ -65,7 +70,12 @@ const RemoveOrgButton: React.FC<ButtonProps> = ({
     },
   });
   return (
-    <Tooltip borderRadius={5} label='Delete ' bg='purple.900' {...tooltipProps}>
+    <Tooltip
+      borderRadius={5}
+      label='Delete '
+      bg='blackAlpha.700'
+      {...tooltipProps}
+    >
       <IconButton
         aria-label='Delete organization'
         onClick={(e) => {

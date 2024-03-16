@@ -24,7 +24,7 @@ interface Props {
 
 export const CardSkeleton: React.FC = () => {
   return (
-    <Card size='md' color='blackAlpha.800' minW={432}>
+    <Card size='md' color='blackAlpha.800'>
       <CardHeader
         display='flex'
         alignItems='center'
@@ -64,10 +64,9 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
       href={`/${organization.slug}`}
       size='md'
       color='blackAlpha.800'
-      minW={432}
       _hover={{
         transform: 'translateY(-4px)',
-        boxShadow: '0 4px 14px 0 rgba(0,0,0,0.1)',
+        boxShadow: '0 4px 14px 0 rgba(0,0,0,0.2)',
       }}
       transition={'all 0.2s ease-in-out'}
     >
@@ -76,7 +75,9 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
         alignItems='center'
         justifyContent='space-between'
       >
-        <Heading size='lg'>{organization.name}</Heading>
+        <Heading size='lg' color='blackAlpha.900'>
+          {organization.name}
+        </Heading>
         {isOwner ? (
           <RemoveOrgButton organizationId={organization.id} />
         ) : (
@@ -87,6 +88,7 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
         display='flex'
         justifyContent='space-between'
         alignItems='stretch'
+        flexWrap='wrap'
         gap={4}
         fontSize='md'
         paddingTop={0}
@@ -96,8 +98,8 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
           aria-label='Owner'
           placement='bottom-start'
           openDelay={500}
-          borderRadius={50}
-          bg='purple.900'
+          borderRadius={5}
+          bg='blackAlpha.700'
         >
           <span>
             <UserPlate user={org.owner} />
