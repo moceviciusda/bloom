@@ -1,5 +1,5 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
-import { type Prisma } from '@prisma/client';
+import { type Organization } from '@prisma/client';
 import {
   getServerSession,
   type DefaultSession,
@@ -23,9 +23,10 @@ declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      organizations: Prisma.OrganizationGetPayload<{
-        include: { members: true; owner: true };
-      }>[];
+      organizations: Organization[];
+      // organizations: Prisma.OrganizationGetPayload<{
+      //   include: { members: true; owner: true };
+      // }>[];
       // ...other properties
       // role: UserRole;
     } & DefaultSession['user'];
@@ -33,9 +34,10 @@ declare module 'next-auth' {
 
   interface User {
     id: string;
-    organizations: Prisma.OrganizationGetPayload<{
-      include: { members: true; owner: true };
-    }>[];
+    organizations: Organization[];
+    // organizations: Prisma.OrganizationGetPayload<{
+    //   include: { members: true; owner: true };
+    // }>[];
     // ...other properties
     // role: UserRole;
   }
@@ -51,7 +53,7 @@ export const authOptions: NextAuthOptions = {
     session: async ({ session, user }) => {
       const organizations = await db.organization.findMany({
         where: { members: { some: { id: user.id } } },
-        include: { members: true, owner: true },
+        // include: { members: true, owner: true },
       });
       return {
         ...session,

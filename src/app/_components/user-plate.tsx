@@ -7,15 +7,16 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { type User } from '@prisma/client';
+import { type User as AuthUser } from 'next-auth';
 
 interface Props {
-  user: User;
+  user: User | AuthUser;
   avatarProps?: AvatarProps;
   userNameProps?: TextProps;
   userEmailProps?: TextProps;
 }
 
-const USerPlate: React.FC<Props> = ({
+const UserPlate: React.FC<Props> = ({
   user,
   avatarProps,
   userNameProps,
@@ -45,4 +46,4 @@ const USerPlate: React.FC<Props> = ({
   </HStack>
 );
 
-export default USerPlate;
+export default UserPlate;

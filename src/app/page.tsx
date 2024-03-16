@@ -1,16 +1,21 @@
 // import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
-import { CreateOrganization } from '~/app/_components/create-organization';
+import { CreateOrganization } from '~/app/_components/organization-card/create-organization';
 import { getServerAuthSession } from '~/server/auth';
 import styles from './index.module.css';
-import { Box, Flex, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import Login from './_components/login-form';
 import SignOutButton from './_components/sign-out-button';
-import OrganizationCard, { Skeleton } from './_components/organization-card';
+import OrganizationCard, {
+  CardSkeleton,
+} from './_components/organization-card/organization-card';
+import USerPlate from './_components/user-plate';
+import { Suspense } from 'react';
 // import { signOut } from 'next-auth/react';
 
 export default async function Home() {
   // noStore();
+
   const session = await getServerAuthSession();
 
   return (
@@ -64,7 +69,7 @@ export default async function Home() {
 
 async function CrudShowcase() {
   const session = await getServerAuthSession();
-  if (!session?.user) return null;
+  if (!session) return null;
 
   return (
     <VStack
@@ -74,25 +79,29 @@ async function CrudShowcase() {
       minW='24rem'
       paddingX={8}
     >
-      <Text justifySelf='flex-start'>Logged in as {session.user?.name}</Text>
+      <HStack justifySelf={'flex-start'}>
+        <USerPlate user={session.user} />
+      </HStack>
+      <Text justifySelf='flex-start'>Logged in as {session.user.name}</Text>
       <SignOutButton colorScheme='purple' />
 
-      <VStack gap={3} align='stretch' fontSize='sm'>
+      <VStack flex={1} justify='center' align='stretch' gap={3}>
         {session.user.organizations
           // sort organizations to show the user's owned orgs first
           .sort((a, b) => {
-            if (a.owner.id === session.user.id) return -1;
-            if (b.owner.id === session.user.id) return 1;
+            if (a.ownerId === session.user.id) return -1;
+            if (b.ownerId === session.user.id) return 1;
             return 0;
           })
           .map((org) => (
-            <OrganizationCard
-              key={org.id}
-              organization={org}
-              isOwner={org.owner.id === session.user.id}
-            />
+            <Suspense key={org.id} fallback={<CardSkeleton />}>
+              <OrganizationCard
+                organization={org}
+                isOwner={org.ownerId === session.user.id}
+              />
+            </Suspense>
           ))}
-        <Skeleton />
+
         <CreateOrganization />
       </VStack>
     </VStack>
