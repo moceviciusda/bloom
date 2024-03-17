@@ -5,7 +5,7 @@ import { useState, type ReactNode } from 'react';
 import SideBar from './_components/sidebar';
 
 const MainAside = ({ children }: { children: ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <>

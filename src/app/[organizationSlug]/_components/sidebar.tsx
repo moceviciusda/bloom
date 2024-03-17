@@ -32,10 +32,9 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen, ...rest }) => {
       top={14}
       bottom={0}
       zIndex={1}
-      bg='gray.100'
-      borderRight='1px solid #000'
+      bg='gray.50'
+      borderRight='1px solid var(--chakra-colors-blackAlpha-300)'
       p={3}
-      // width={width}
       transition='width 0.3s'
       overflowX='hidden'
       {...rest}
@@ -99,13 +98,12 @@ export const NavLinks = () => {
       </ListItem>
       <ListItem>
         <NavLink>
-          <Icon as={MdOutlineSpaceDashboard} boxSize={5} m={0.5} />
+          <Icon as={RiUserLine} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
-            Matrix Builder
+            Users
           </Text>
         </NavLink>
       </ListItem>
-
       <ListItem>
         <NavLink>
           <Icon as={RiTeamLine} boxSize={5} m={0.5} />
@@ -116,9 +114,9 @@ export const NavLinks = () => {
       </ListItem>
       <ListItem>
         <NavLink>
-          <Icon as={RiUserLine} boxSize={5} m={0.5} />
+          <Icon as={MdOutlineSpaceDashboard} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
-            Users
+            Matrix Builder
           </Text>
         </NavLink>
       </ListItem>

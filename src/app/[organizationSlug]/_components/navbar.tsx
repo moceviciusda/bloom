@@ -48,6 +48,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
       bg='white'
       p={2}
       gap={2}
+      borderBottom='1px solid var(--chakra-colors-blackAlpha-300)'
       // color='white'
     >
       <Link
@@ -66,6 +67,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
             <UserPlate
               user={session.user}
               textContainerProps={{ display: { base: 'none', md: 'flex' } }}
+              userNameProps={{ fontWeight: '500' }}
             />
           </NavLink>
 

@@ -9,8 +9,10 @@ import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
   CardSkeleton,
 } from './_components/organization-card/organization-card';
-import USerPlate from './_components/user-plate';
+
 import { Suspense } from 'react';
+import UserPlate from './_components/user-plate';
+import Brand from './_components/brand';
 
 const Home = async () => {
   // noStore();
@@ -31,7 +33,7 @@ const Home = async () => {
           top={0}
         >
           <h1 className={styles.title}>
-            Someth <span className={styles.pinkSpan}>Bloom</span> Smth
+            Someth<span className={styles.pinkSpan}>Bloom</span>Smth
           </h1>
           <div className={styles.cardRow}>
             <Link
@@ -89,7 +91,7 @@ const OrgSelection = async () => {
         zIndex={1}
         bg='white'
       >
-        <USerPlate
+        <UserPlate
           avatarProps={{ size: 'md' }}
           userNameProps={{ fontSize: 'xl' }}
           userEmailProps={{ lineHeight: undefined }}
