@@ -76,12 +76,13 @@ model VerificationToken {
 }
 
 model Organization {
-    id      String @id @default(cuid())
+    id      String  @id @default(cuid())
     name    String
-    slug    String @unique
+    slug    String  @unique
+    image   String?
     ownerId String
-    owner   User   @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
-    members User[] @relation(name: "OrganizationMembers")
+    owner   User    @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
+    members User[]  @relation(name: "OrganizationMembers")
 
     @@index([name])
 }

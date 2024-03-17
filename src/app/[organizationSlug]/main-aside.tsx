@@ -12,12 +12,13 @@ const MainAside = ({ children }: { children: ReactNode }) => {
       <SideBar
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        width={isOpen ? '200px' : '65px'}
+        width={{ base: '0px', md: '65px', lg: isOpen ? '200px' : '65px' }}
+        display={{ base: 'none', md: 'block' }}
       />
       <Flex
         flex={1}
         as='main'
-        ml={isOpen ? '200px' : '65px'}
+        ml={{ base: '0px', md: '65px', lg: isOpen ? '200px' : '65px' }}
         transition={'margin-left 0.3s'}
       >
         {children}

@@ -5,6 +5,7 @@ import {
   Text,
   type TextProps,
   VStack,
+  type StackProps,
 } from '@chakra-ui/react';
 import { type User } from '@prisma/client';
 import { type User as AuthUser } from 'next-auth';
@@ -12,6 +13,7 @@ import { type User as AuthUser } from 'next-auth';
 interface Props {
   user: User | AuthUser;
   avatarProps?: AvatarProps;
+  textContainerProps?: StackProps;
   userNameProps?: TextProps;
   userEmailProps?: TextProps;
 }
@@ -21,6 +23,7 @@ const UserPlate: React.FC<Props> = ({
   avatarProps,
   userNameProps,
   userEmailProps,
+  textContainerProps,
 }) => (
   <HStack>
     <Avatar
@@ -30,7 +33,7 @@ const UserPlate: React.FC<Props> = ({
       {...avatarProps}
     />
 
-    <VStack align='flex-start' gap={0}>
+    <VStack align='flex-start' gap={0} display={'none'} {...textContainerProps}>
       <Text lineHeight={1} fontSize='md' {...userNameProps}>
         {user.name}
       </Text>

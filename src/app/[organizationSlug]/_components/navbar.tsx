@@ -1,10 +1,10 @@
 'use client';
 
 import {
-  Avatar,
   Box,
   Button,
   Flex,
+  HStack,
   Icon,
   Link,
   Popover,
@@ -13,7 +13,6 @@ import {
   PopoverFooter,
   PopoverTrigger,
   Portal,
-  Spacer,
   Stack,
   Text,
 } from '@chakra-ui/react';
@@ -23,51 +22,12 @@ import { useState } from 'react';
 import { IoClose, IoMenu } from 'react-icons/io5';
 import { HiMiniChevronUpDown } from 'react-icons/hi2';
 import { LuPlusCircle } from 'react-icons/lu';
+
 import SignOutButton from '~/app/_components/sign-out-button';
 import UserPlate from '~/app/_components/user-plate';
 import NavLink from './nav-link';
-
-const MenuToggle = ({
-  toggle,
-  isOpen,
-}: {
-  toggle: () => void;
-  isOpen: boolean;
-}) => {
-  return (
-    <Box display={{ base: 'block', sm: 'none' }} onClick={toggle}>
-      {isOpen ? <IoClose /> : <IoMenu />}
-    </Box>
-  );
-};
-
-const NavButtons = ({
-  isOpen,
-  session,
-}: {
-  isOpen: boolean;
-  session: Session;
-}) => {
-  return (
-    <Box
-      display={{ base: isOpen ? 'block' : 'none', sm: 'block' }}
-      flexBasis={{ base: '100%', md: 'auto' }}
-    >
-      <Stack
-        spacing={1}
-        align='center'
-        justify={['center', 'space-between', 'flex-end', 'flex-end']}
-        direction={['column', 'column', 'row', 'row']}
-        flexWrap={'wrap'}
-        pt={[4, 4, 0, 0]}
-      >
-        <NavLink>
-          <UserPlate user={session.user} />
-        </NavLink>
-      </Stack>
-    </Box>
-  );
-};
+import Brand from '~/app/_components/brand';
+import OrganizationPlate from '~/app/_components/organization-plate';
 
 interface NavbarProps {
   session: Session;
@@ -85,30 +45,35 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
       top={0}
       zIndex={1}
       align='center'
-      bg='purple.600'
+      bg='white'
       p={2}
       gap={2}
       // color='white'
     >
       <Link
         href='/'
-        fontSize='lg'
-        fontWeight='bold'
-        color={'purple.300'}
         _hover={{
           textDecoration: 'none',
         }}
       >
-        Bloom
+        <Brand />
       </Link>
+      <HStack flex={1} justify='space-between'>
+        <OrganizationSelector session={session} currentOrg={currentOrg} />
 
-      <OrganizationSelector session={session} currentOrg={currentOrg} />
+        <HStack>
+          <NavLink paddingY={1} paddingX={{ base: 1, md: 2 }}>
+            <UserPlate
+              user={session.user}
+              textContainerProps={{ display: { base: 'none', md: 'flex' } }}
+            />
+          </NavLink>
 
-      <Spacer />
-
-      <MenuToggle toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
-
-      <NavButtons isOpen={isOpen} session={session} />
+          <NavLink display={{ base: 'flex', md: 'none' }}>
+            <Icon as={IoMenu} boxSize={6} />
+          </NavLink>
+        </HStack>
+      </HStack>
     </Flex>
   );
 };
@@ -123,32 +88,32 @@ const OrganizationSelector = ({
   return (
     <Popover>
       <PopoverTrigger>
-        <Button gap={2}>
-          <Avatar size='xs' name={currentOrg.name} />
-          <Text as='span' fontWeight='500'>
-            {currentOrg.name}
-          </Text>
+        <Button p={2} gap={2} variant='ghost'>
+          <OrganizationPlate organization={currentOrg} />
           <Icon as={HiMiniChevronUpDown} boxSize={4} />
         </Button>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent>
-          <PopoverBody>
+        <PopoverContent
+          w={'fit-content'}
+          fontWeight='500'
+          color='blackAlpha.700'
+        >
+          <PopoverBody p={1}>
             {session.user.organizations.map((org) => (
-              <NavLink key={org.id} href={`/${org.slug}`}>
-                <Avatar size='xs' name={org.name} />
-                <Text as='span' fontWeight='500'>
-                  {org.name}
-                </Text>
+              <NavLink
+                key={org.id}
+                href={`/${org.slug}`}
+                bg={org.id === currentOrg.id ? 'purple.100' : undefined}
+              >
+                <OrganizationPlate organization={org} />
               </NavLink>
             ))}
           </PopoverBody>
-          <PopoverFooter>
+          <PopoverFooter p={1}>
             <NavLink>
               <Icon as={LuPlusCircle} boxSize={6} />
-              <Text as='span' fontWeight='500'>
-                Create Organization
-              </Text>
+              <Text as='span'>Create Organization</Text>
             </NavLink>
           </PopoverFooter>
         </PopoverContent>
