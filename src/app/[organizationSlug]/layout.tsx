@@ -1,8 +1,8 @@
-import { Box } from '@chakra-ui/react';
-import NavBar from './_components/nav-bar';
-// import { api } from '~/trpc/server';
+import { Flex } from '@chakra-ui/react';
 import { getServerAuthSession } from '~/server/auth';
 import { redirect } from 'next/navigation';
+import NavBar from './_components/navbar';
+import MainAside from './main-aside';
 
 const OrganizationRootLayout = async ({
   children,
@@ -22,13 +22,10 @@ const OrganizationRootLayout = async ({
     return redirect(`/${params.organizationSlug}/request-access`);
 
   return (
-    <Box minH='100vh'>
-      <NavBar
-        currentOrg={currentOrg}
-        organizations={session.user.organizations}
-      />
-      {children}
-    </Box>
+    <Flex minH='100vh' flexDir='column'>
+      <NavBar currentOrg={currentOrg} session={session} />
+      <MainAside>{children}</MainAside>
+    </Flex>
   );
 };
 

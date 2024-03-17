@@ -11,7 +11,6 @@ import OrganizationCard, {
 } from './_components/organization-card/organization-card';
 import USerPlate from './_components/user-plate';
 import { Suspense } from 'react';
-// import { signOut } from 'next-auth/react';
 
 const Home = async () => {
   // noStore();
@@ -82,8 +81,8 @@ const OrgSelection = async () => {
       <HStack
         justify='space-between'
         align='flex-start'
-        paddingX={{ base: 16, lg: 4, xl: 8 }}
-        paddingTop={{ base: 4, lg: 4, xl: 8 }}
+        paddingX={{ base: 4, md: 16, lg: 4, xl: 8 }}
+        paddingTop={{ base: 4, xl: 8 }}
         paddingBottom={4}
         position='sticky'
         top={0}
@@ -102,11 +101,10 @@ const OrgSelection = async () => {
 
       <VStack
         flex={1}
-        // alignSelf='center'
         justify='center'
         align='stretch'
         gap={3}
-        paddingX={{ base: 16, lg: 4, xl: 16 }}
+        paddingX={{ base: 4, md: 24, lg: 4, xl: 16 }}
       >
         {session.user.organizations
           // sort organizations to show the user's owned orgs first

@@ -89,8 +89,6 @@ export const CreateOrganization = () => {
       ) : (
         <CardBody as={VStack} gap={0.5} align='stretch'>
           <Button
-            // variant='outline'
-            // colorScheme='purple'
             flex={1}
             onClick={() => {
               setIsOpen(true);
@@ -107,7 +105,6 @@ export const CreateOrganization = () => {
             <Divider />
           </HStack>
           <Button
-            // variant='ghost'
             colorScheme='purple'
             flex={1}
             onClick={() => {
