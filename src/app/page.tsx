@@ -33,25 +33,17 @@ const Home = async () => {
           top={0}
         >
           <h1 className={styles.title}>
-            Someth<span className={styles.pinkSpan}>Bloom</span>Smth
+            Someth <span className={styles.pinkSpan}>Bloom</span> Smth
           </h1>
           <div className={styles.cardRow}>
-            <Link
-              className={styles.card}
-              href='https://create.t3.gg/en/usage/first-steps'
-              target='_blank'
-            >
+            <Link className={styles.card} href='#'>
               <h3 className={styles.cardTitle}>First Steps →</h3>
               <div className={styles.cardText}>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia,
                 tempora recusandae.
               </div>
             </Link>
-            <Link
-              className={styles.card}
-              href='https://create.t3.gg/en/introduction'
-              target='_blank'
-            >
+            <Link className={styles.card} href='#'>
               <h3 className={styles.cardTitle}>Documentation →</h3>
               <div className={styles.cardText}>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia,
