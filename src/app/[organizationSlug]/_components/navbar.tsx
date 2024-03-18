@@ -92,10 +92,20 @@ const OrganizationSelector = ({
   return (
     <Popover>
       <PopoverTrigger>
-        <Button p={2} gap={2} variant='ghost'>
+        <Button p={2} gap={2} variant='ghost' sx={{}}>
           <OrganizationPlate
             organization={currentOrg}
-            textProps={{ noOfLines: 1 }}
+            textProps={{
+              // noOfLines: 1,
+              sx: {
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: 1,
+                display: '-webkit-box',
+                overflow: 'hidden',
+                textAlign: 'left',
+                textOverflow: 'ellipsis',
+              },
+            }}
           />
           <Icon as={HiMiniChevronUpDown} boxSize={4} />
         </Button>
