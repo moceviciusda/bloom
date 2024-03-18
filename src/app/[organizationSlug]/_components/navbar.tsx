@@ -50,6 +50,8 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
       gap={2}
       borderBottom='1px solid var(--chakra-colors-blackAlpha-300)'
       // color='white'
+      maxW={'100%'}
+      overflow={'hidden'}
     >
       <Link
         href='/'
