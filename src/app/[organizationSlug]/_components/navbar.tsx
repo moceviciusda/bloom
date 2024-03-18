@@ -93,22 +93,23 @@ const OrganizationSelector = ({
         <Button p={2} gap={2} variant='ghost' sx={{}}>
           <OrganizationPlate
             organization={currentOrg}
-            noOfLines={1}
+            // noOfLines={1}
             textAlign='left'
-            avatarProps={{ mr: 2 }}
+            // avatarProps={{ mr: 2 }}
             textProps={{
-              position: 'relative',
-              top: 0.5,
-
-              display: 'inline',
-              // sx: {
-              //   WebkitBoxOrient: 'vertical',
-              //   WebkitLineClamp: 1,
-              //   display: '-webkit-box',
-              //   overflow: 'hidden',
-              //   textAlign: 'left',
-              //   textOverflow: 'ellipsis',
-              // },
+              noOfLines: 1,
+              maxWidth: { base: 40, md: 'fit-content' },
+              // position: 'relative',
+              // top: 0.5,
+              // display: 'inline',
+              // // sx: {
+              // //   WebkitBoxOrient: 'vertical',
+              // //   WebkitLineClamp: 1,
+              // //   display: '-webkit-box',
+              // //   overflow: 'hidden',
+              // //   textAlign: 'left',
+              // //   textOverflow: 'ellipsis',
+              // // },
             }}
           />
           <Icon as={HiMiniChevronUpDown} boxSize={4} />
