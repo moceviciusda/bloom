@@ -28,7 +28,7 @@ const OrganizationPlate: React.FC<OrganizationPlateProps> = ({
         icon={<GoOrganization size={18} color='black' />}
         {...avatarProps}
       />
-      <Text as='span' {...textProps}>
+      <Text as='span' whiteSpace='wrap' {...textProps}>
         {organization.name}
       </Text>
     </>

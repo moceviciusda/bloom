@@ -91,13 +91,16 @@ const OrganizationSelector = ({
     <Popover>
       <PopoverTrigger>
         <Button p={2} gap={2} variant='ghost'>
-          <OrganizationPlate organization={currentOrg} />
+          <OrganizationPlate
+            organization={currentOrg}
+            textProps={{ noOfLines: 1 }}
+          />
           <Icon as={HiMiniChevronUpDown} boxSize={4} />
         </Button>
       </PopoverTrigger>
       <Portal>
         <PopoverContent
-          w={'fit-content'}
+          // w={'fit-content'}
           fontWeight='500'
           color='blackAlpha.700'
         >
@@ -106,7 +109,7 @@ const OrganizationSelector = ({
               <NavLink
                 key={org.id}
                 href={`/${org.slug}`}
-                bg={org.id === currentOrg.id ? 'purple.100' : undefined}
+                bg={org.id === currentOrg.id ? 'gray.100' : undefined}
               >
                 <OrganizationPlate organization={org} />
               </NavLink>
