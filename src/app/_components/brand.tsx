@@ -10,7 +10,7 @@ export const MiniBrand = () => {
   return (
     <Box
       //   bg='purple.800'
-      //   paddingTop={1}
+      paddingTop={1}
       paddingX={3}
       //   borderRadius={6}
       lineHeight={1}
@@ -27,7 +27,7 @@ const Brand = () => {
   return (
     <Box
       //   bg='purple.800'
-      //   paddingTop={1}
+      paddingTop={1}
       paddingX={3}
       //   borderRadius={6}
       lineHeight={1}

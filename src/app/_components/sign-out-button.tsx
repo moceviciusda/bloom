@@ -4,7 +4,7 @@ import { Button, type ButtonProps } from '@chakra-ui/react';
 import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 
-const SignOutButton: React.FC<ButtonProps> = ({ ...props }) => {
+const SignOutButton: React.FC<ButtonProps> = ({ children, ...props }) => {
   const [loading, setLoading] = useState(false);
 
   const handleClick = async () => {
@@ -15,7 +15,7 @@ const SignOutButton: React.FC<ButtonProps> = ({ ...props }) => {
 
   return (
     <Button {...props} isLoading={loading} onClick={() => handleClick()}>
-      Sign out
+      {children}
     </Button>
   );
 };

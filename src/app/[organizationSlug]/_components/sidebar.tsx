@@ -1,23 +1,9 @@
 'use client';
 
-import {
-  Box,
-  type ChakraProps,
-  Icon,
-  List,
-  ListItem,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, type ChakraProps, Icon, Text, VStack } from '@chakra-ui/react';
 import { type SetStateAction, type Dispatch } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
-import { RiHome3Line, RiTeamLine, RiUserLine } from 'react-icons/ri';
-import {
-  MdOutlineAssessment,
-  MdOutlineAssignment,
-  MdOutlineSpaceDashboard,
-} from 'react-icons/md';
-import NavLink from './nav-link';
+import NavLinks, { NavLink } from './nav-link';
 
 interface SideBarProps extends ChakraProps {
   isOpen: boolean;
@@ -46,7 +32,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen, ...rest }) => {
         align='flex-start'
         overflowX='hidden'
       >
-        <NavLinks />
+        <NavLinks orgSlug='teltonika-telematics-testing-department' />
 
         <NavLink
           onClick={() => setIsOpen(!isOpen)}
@@ -66,61 +52,6 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen, ...rest }) => {
         </NavLink>
       </VStack>
     </Box>
-  );
-};
-
-export const NavLinks = () => {
-  return (
-    <List spacing={2} w='100%' whiteSpace='nowrap'>
-      <ListItem>
-        <NavLink>
-          <Icon as={RiHome3Line} boxSize={5} m={0.5} />
-          <Text as='span' fontWeight='500'>
-            Home
-          </Text>
-        </NavLink>
-      </ListItem>
-      <ListItem>
-        <NavLink>
-          <Icon as={MdOutlineAssessment} boxSize={5} m={0.5} />
-          <Text as='span' fontWeight='500'>
-            Dashboard
-          </Text>
-        </NavLink>
-      </ListItem>
-      <ListItem>
-        <NavLink>
-          <Icon as={MdOutlineAssignment} boxSize={5} m={0.5} />
-          <Text as='span' fontWeight='500'>
-            Assignments
-          </Text>
-        </NavLink>
-      </ListItem>
-      <ListItem>
-        <NavLink>
-          <Icon as={RiUserLine} boxSize={5} m={0.5} />
-          <Text as='span' fontWeight='500'>
-            Users
-          </Text>
-        </NavLink>
-      </ListItem>
-      <ListItem>
-        <NavLink>
-          <Icon as={RiTeamLine} boxSize={5} m={0.5} />
-          <Text as='span' fontWeight='500'>
-            Teams
-          </Text>
-        </NavLink>
-      </ListItem>
-      <ListItem>
-        <NavLink>
-          <Icon as={MdOutlineSpaceDashboard} boxSize={5} m={0.5} />
-          <Text as='span' fontWeight='500'>
-            Matrix Builder
-          </Text>
-        </NavLink>
-      </ListItem>
-    </List>
   );
 };
 

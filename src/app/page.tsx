@@ -89,7 +89,7 @@ const OrgSelection = async () => {
           user={session.user}
         />
 
-        <SignOutButton colorScheme='purple' />
+        <SignOutButton colorScheme='purple'>Sign Out</SignOutButton>
       </HStack>
 
       <VStack

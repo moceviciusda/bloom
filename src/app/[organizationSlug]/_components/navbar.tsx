@@ -15,6 +15,7 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverFooter,
+  PopoverHeader,
   PopoverTrigger,
   Portal,
   Text,
@@ -25,13 +26,14 @@ import { type Organization } from '@prisma/client';
 import { type Session } from 'next-auth';
 import { IoClose, IoMenu } from 'react-icons/io5';
 import { HiMiniChevronUpDown } from 'react-icons/hi2';
-import { LuPlusCircle } from 'react-icons/lu';
 import SignOutButton from '~/app/_components/sign-out-button';
 import UserPlate from '~/app/_components/user-plate';
-import NavLink from './nav-link';
+import NavLinks, { NavLink } from './nav-link';
 import Brand, { MiniBrand } from '~/app/_components/brand';
 import OrganizationPlate from '~/app/_components/organization-plate';
-import { NavLinks } from './sidebar';
+import { TbCalendarDollar } from 'react-icons/tb';
+import { MdHelpOutline } from 'react-icons/md';
+import { RiProfileLine, RiSettings3Line } from 'react-icons/ri';
 
 interface NavbarProps {
   session: Session;
@@ -67,14 +69,14 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
         <OrganizationSelector session={session} currentOrg={currentOrg} />
 
         <HStack>
-          <NavLink paddingY={1} paddingX={{ base: 1, md: 2 }}>
+          {/* <NavLink paddingY={1} paddingX={{ base: 1, md: 2 }}>
             <UserPlate
               user={session.user}
               textContainerProps={{ display: { base: 'none', md: 'flex' } }}
               userNameProps={{ fontWeight: '500' }}
             />
-          </NavLink>
-
+          </NavLink> */}
+          <UserMenu session={session} />
           <Button
             onClick={onOpen}
             variant='ghost'
@@ -103,7 +105,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
               </DrawerHeader>
 
               <DrawerBody p={6}>
-                <NavLinks />
+                <NavLinks orgSlug={currentOrg.slug} />
               </DrawerBody>
             </DrawerContent>
           </Drawer>
@@ -121,9 +123,9 @@ const OrganizationSelector = ({
   currentOrg: Organization;
 }) => {
   return (
-    <Popover>
+    <Popover variant='responsive' placement='bottom-start'>
       <PopoverTrigger>
-        <Button p={2} gap={2} variant='ghost' minW={0} maxW='420px'>
+        <Button p={2} gap={2} variant='ghost' minW='60px' maxW='420px'>
           <OrganizationPlate
             organization={currentOrg}
             minW={0}
@@ -137,7 +139,11 @@ const OrganizationSelector = ({
         </Button>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent fontWeight='500' color='blackAlpha.700'>
+        <PopoverContent
+          fontWeight='500'
+          color='blackAlpha.700'
+          maxW={{ base: '280px', md: '420px' }}
+        >
           <PopoverBody p={1}>
             {session.user.organizations.map((org) => (
               <NavLink
@@ -150,10 +156,69 @@ const OrganizationSelector = ({
             ))}
           </PopoverBody>
           <PopoverFooter p={1}>
-            <NavLink>
+            {/* <NavLink>
               <Icon as={LuPlusCircle} boxSize={6} />
               <Text as='span'>Create Organization</Text>
+            </NavLink> */}
+            <Button w='100%' colorScheme='purple'>
+              <Text>Create New Organization</Text>
+            </Button>
+          </PopoverFooter>
+        </PopoverContent>
+      </Portal>
+    </Popover>
+  );
+};
+
+const UserMenu = ({ session }: { session: Session }) => {
+  return (
+    <Popover variant='responsive' placement='bottom-end'>
+      <PopoverTrigger>
+        <Button variant='ghost' paddingY={1} paddingX={{ base: 1, md: 2 }}>
+          <UserPlate
+            user={session.user}
+            textContainerProps={{ display: { base: 'none', md: 'flex' } }}
+            userNameProps={{ fontWeight: '500' }}
+          />
+        </Button>
+      </PopoverTrigger>
+      <Portal>
+        <PopoverContent minW={'236px'} fontWeight='500' color='blackAlpha.700'>
+          <PopoverHeader display={{ md: 'none' }}>
+            <UserPlate
+              user={session.user}
+              textContainerProps={{ display: 'flex' }}
+              avatarProps={{ display: 'none' }}
+              userNameProps={{
+                color: 'blackAlpha.900',
+                fontWeight: '500',
+                lineHeight: 'unset',
+              }}
+              userEmailProps={{ fontSize: 'xs' }}
+            />
+          </PopoverHeader>
+          <PopoverBody p={1}>
+            <NavLink>
+              <Icon as={RiProfileLine} boxSize={5} />
+              <Text>Profile</Text>
             </NavLink>
+            <NavLink>
+              <Icon as={RiSettings3Line} boxSize={5} />
+              <Text>Settings</Text>
+            </NavLink>
+            <NavLink>
+              <Icon as={TbCalendarDollar} boxSize={5} />
+              <Text>Billing</Text>
+            </NavLink>
+            <NavLink>
+              <Icon as={MdHelpOutline} boxSize={5} />
+              <Text>Help</Text>
+            </NavLink>
+          </PopoverBody>
+          <PopoverFooter p={1}>
+            <SignOutButton w='100%' colorScheme='purple'>
+              Sign Out
+            </SignOutButton>
           </PopoverFooter>
         </PopoverContent>
       </Portal>

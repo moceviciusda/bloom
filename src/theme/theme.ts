@@ -12,6 +12,21 @@ const config = {
   initialColorMode: 'light',
 };
 
-const theme = extendTheme({ config, styles });
+const theme = extendTheme({
+  config,
+  styles,
+  components: {
+    Popover: {
+      variants: {
+        responsive: {
+          content: {
+            maxWidth: 'unset',
+            width: 'unset',
+          },
+        },
+      },
+    },
+  },
+});
 
 export default theme;
