@@ -38,7 +38,7 @@ interface NavbarProps {
 const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const [isLargerThan425] = useMediaQuery('(min-width: 425px)');
+  const [isLargerThan480] = useMediaQuery('(min-width: 480px)');
 
   return (
     <Flex
@@ -60,7 +60,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
           textDecoration: 'none',
         }}
       >
-        {isLargerThan425 ? <Brand /> : <MiniBrand />}
+        {isLargerThan480 ? <Brand /> : <MiniBrand />}
       </Link>
       <HStack flex={1} justify='space-between'>
         <OrganizationSelector session={session} currentOrg={currentOrg} />
@@ -93,27 +93,21 @@ const OrganizationSelector = ({
   return (
     <Popover>
       <PopoverTrigger>
-        <Button p={2} gap={2} variant='ghost' sx={{}}>
+        <Button p={2} gap={2} variant='ghost' maxW={'0'}>
           <OrganizationPlate
             organization={currentOrg}
-            // noOfLines={1}
             textAlign='left'
-            // avatarProps={{ mr: 2 }}
+            minWidth={0}
+            flex={1}
             textProps={{
-              noOfLines: 1,
-              wordBreak: 'break-all',
-              maxWidth: { base: '120px', md: 'fit-content' },
-              // position: 'relative',
-              // top: 0.5,
-              // display: 'inline',
-              // // sx: {
-              // //   WebkitBoxOrient: 'vertical',
-              // //   WebkitLineClamp: 1,
-              // //   display: '-webkit-box',
-              // //   overflow: 'hidden',
-              // //   textAlign: 'left',
-              // //   textOverflow: 'ellipsis',
-              // // },
+              // noOfLines: 1,
+              // wordBreak: 'break-all',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              // maxWidth: 'fit-content',
+
+              // maxWidth: { base: '140px', sm: '240px', md: 'fit-content' },
             }}
           />
           <Icon as={HiMiniChevronUpDown} boxSize={4} />
