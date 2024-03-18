@@ -2,6 +2,10 @@
 
 import {
   Button,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
   Flex,
   HStack,
   Icon,
@@ -13,20 +17,20 @@ import {
   PopoverTrigger,
   Portal,
   Text,
-  useMediaQuery,
+  useBreakpointValue,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { type Organization } from '@prisma/client';
 import { type Session } from 'next-auth';
-import { useState } from 'react';
 import { IoClose, IoMenu } from 'react-icons/io5';
 import { HiMiniChevronUpDown } from 'react-icons/hi2';
 import { LuPlusCircle } from 'react-icons/lu';
-
 import SignOutButton from '~/app/_components/sign-out-button';
 import UserPlate from '~/app/_components/user-plate';
 import NavLink from './nav-link';
 import Brand, { MiniBrand } from '~/app/_components/brand';
 import OrganizationPlate from '~/app/_components/organization-plate';
+import { NavLinks } from './sidebar';
 
 interface NavbarProps {
   session: Session;
@@ -34,9 +38,8 @@ interface NavbarProps {
 }
 
 const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const [isLargerThan480] = useMediaQuery('(min-width: 480px)');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const brand = useBreakpointValue({ base: <MiniBrand />, sm: <Brand /> });
 
   return (
     <Flex
@@ -58,7 +61,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
           textDecoration: 'none',
         }}
       >
-        {isLargerThan480 ? <Brand /> : <MiniBrand />}
+        {brand}
       </Link>
       <HStack flex={1} justify='space-between' minW={0}>
         <OrganizationSelector session={session} currentOrg={currentOrg} />
@@ -72,9 +75,28 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
             />
           </NavLink>
 
-          <NavLink display={{ base: 'flex', md: 'none' }}>
+          <Button
+            onClick={onOpen}
+            variant='ghost'
+            p={2}
+            display={{ base: 'flex', md: 'none' }}
+          >
             <Icon as={IoMenu} boxSize={6} />
-          </NavLink>
+          </Button>
+          <Drawer placement='top' onClose={onClose} isOpen={isOpen}>
+            <DrawerContent display={{ base: 'flex', md: 'none' }}>
+              <DrawerHeader p={2}>
+                <Flex justify='flex-end'>
+                  <Button onClick={onClose} variant='ghost' p={2}>
+                    <Icon as={IoClose} boxSize={6} />
+                  </Button>
+                </Flex>
+              </DrawerHeader>
+              <DrawerBody>
+                <NavLinks />
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
         </HStack>
       </HStack>
     </Flex>
@@ -105,11 +127,7 @@ const OrganizationSelector = ({
         </Button>
       </PopoverTrigger>
       <Portal>
-        <PopoverContent
-          // w={'fit-content'}
-          fontWeight='500'
-          color='blackAlpha.700'
-        >
+        <PopoverContent fontWeight='500' color='blackAlpha.700'>
           <PopoverBody p={1}>
             {session.user.organizations.map((org) => (
               <NavLink
