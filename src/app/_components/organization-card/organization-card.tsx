@@ -75,7 +75,7 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
         alignItems='center'
         justifyContent='space-between'
       >
-        <Heading size='lg' color='blackAlpha.900'>
+        <Heading size='lg' color='blackAlpha.800'>
           {organization.name}
         </Heading>
         {isOwner ? (

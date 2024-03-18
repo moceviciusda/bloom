@@ -41,6 +41,7 @@ const UserPlate: React.FC<Props> = ({
         lineHeight={1}
         fontSize='xs'
         color='blackAlpha.700'
+        fontWeight='500'
         {...userEmailProps}
       >
         {user.email}

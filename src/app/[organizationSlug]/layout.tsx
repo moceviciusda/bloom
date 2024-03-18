@@ -22,9 +22,9 @@ const OrganizationRootLayout = async ({
     return redirect(`/${params.organizationSlug}/request-access`);
 
   return (
-    <Flex minH='100vh' flexDir='column'>
+    <Flex minH='100vh' flexDir='column' color='blackAlpha.800'>
       <NavBar currentOrg={currentOrg} session={session} />
-      <MainAside>{children}</MainAside>
+      <MainAside currentOrg={currentOrg}>{children}</MainAside>
     </Flex>
   );
 };

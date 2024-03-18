@@ -8,9 +8,15 @@ import NavLinks, { NavLink } from './nav-link';
 interface SideBarProps extends ChakraProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  organizationSlug: string;
 }
 
-const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen, ...rest }) => {
+const SideBar: React.FC<SideBarProps> = ({
+  isOpen,
+  setIsOpen,
+  organizationSlug,
+  ...rest
+}) => {
   return (
     <Box
       as='aside'
@@ -32,7 +38,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen, ...rest }) => {
         align='flex-start'
         overflowX='hidden'
       >
-        <NavLinks orgSlug='teltonika-telematics-testing-department' />
+        <NavLinks orgSlug={organizationSlug} />
 
         <NavLink
           onClick={() => setIsOpen(!isOpen)}
