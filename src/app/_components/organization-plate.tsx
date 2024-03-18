@@ -3,11 +3,13 @@ import {
   Text,
   type AvatarProps,
   type TextProps,
+  HStack,
+  type StackProps,
 } from '@chakra-ui/react';
 import { type Organization } from '@prisma/client';
 import { GoOrganization } from 'react-icons/go';
 
-interface OrganizationPlateProps {
+interface OrganizationPlateProps extends StackProps {
   organization: Organization;
   avatarProps?: AvatarProps;
   textProps?: TextProps;
@@ -17,9 +19,10 @@ const OrganizationPlate: React.FC<OrganizationPlateProps> = ({
   organization,
   avatarProps,
   textProps,
+  ...rest
 }) => {
   return (
-    <>
+    <HStack {...rest}>
       <Avatar
         size='xs'
         src={organization.image ?? undefined}
@@ -31,7 +34,7 @@ const OrganizationPlate: React.FC<OrganizationPlateProps> = ({
       <Text as='span' whiteSpace='wrap' {...textProps}>
         {organization.name}
       </Text>
-    </>
+    </HStack>
   );
 };
 
