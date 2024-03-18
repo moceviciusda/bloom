@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Flex } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { useState, type ReactNode } from 'react';
 import SideBar from './_components/sidebar';
 

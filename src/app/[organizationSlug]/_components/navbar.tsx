@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Box,
   Button,
   Flex,
   HStack,
@@ -13,7 +12,6 @@ import {
   PopoverFooter,
   PopoverTrigger,
   Portal,
-  Stack,
   Text,
   useMediaQuery,
 } from '@chakra-ui/react';
@@ -62,7 +60,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
       >
         {isLargerThan480 ? <Brand /> : <MiniBrand />}
       </Link>
-      <HStack flex={1} justify='space-between'>
+      <HStack flex={1} justify='space-between' minW={0}>
         <OrganizationSelector session={session} currentOrg={currentOrg} />
 
         <HStack>
@@ -93,21 +91,14 @@ const OrganizationSelector = ({
   return (
     <Popover>
       <PopoverTrigger>
-        <Button p={2} gap={2} variant='ghost' maxW={'0'}>
+        <Button p={2} gap={2} variant='ghost' minW={0} maxW='420px'>
           <OrganizationPlate
             organization={currentOrg}
-            textAlign='left'
-            minWidth={0}
-            flex={1}
+            minW={0}
             textProps={{
-              // noOfLines: 1,
-              // wordBreak: 'break-all',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
-              // maxWidth: 'fit-content',
-
-              // maxWidth: { base: '140px', sm: '240px', md: 'fit-content' },
             }}
           />
           <Icon as={HiMiniChevronUpDown} boxSize={4} />
