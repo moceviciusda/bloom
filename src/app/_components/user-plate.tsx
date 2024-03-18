@@ -34,7 +34,7 @@ const UserPlate: React.FC<Props> = ({
     />
 
     <VStack align='flex-start' gap={0} {...textContainerProps}>
-      <Text lineHeight={1} fontSize='md' {...userNameProps}>
+      <Text lineHeight={1} {...userNameProps}>
         {user.name}
       </Text>
       <Text

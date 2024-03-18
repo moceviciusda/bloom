@@ -1,17 +1,17 @@
 import { Heading } from '@chakra-ui/react';
 
-interface UsersLayoutProps {
+interface MatrixLayoutProps {
   children: React.ReactNode;
   params: { organizationSlug: string };
 }
 
-const UsersLayout: React.FC<UsersLayoutProps> = ({ children }) => {
+const MatrixLayout: React.FC<MatrixLayoutProps> = ({ children }) => {
   return (
     <>
-      <Heading p={6}>Users</Heading>
+      <Heading p={6}>Matrix</Heading>
       {children}
     </>
   );
 };
 
-export default UsersLayout;
+export default MatrixLayout;

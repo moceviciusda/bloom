@@ -1,17 +1,17 @@
 import { Heading } from '@chakra-ui/react';
 
-interface UsersLayoutProps {
+interface TeamsLayoutProps {
   children: React.ReactNode;
   params: { organizationSlug: string };
 }
 
-const UsersLayout: React.FC<UsersLayoutProps> = ({ children }) => {
+const TeamsLayout: React.FC<TeamsLayoutProps> = ({ children }) => {
   return (
     <>
-      <Heading p={6}>Users</Heading>
+      <Heading p={6}>Teams</Heading>
       {children}
     </>
   );
 };
 
-export default UsersLayout;
+export default TeamsLayout;

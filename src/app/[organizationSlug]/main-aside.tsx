@@ -25,6 +25,9 @@ const MainAside = ({
       />
       <Box
         flex={1}
+        display='flex'
+        flexDir='column'
+        justifyContent='flex-start'
         as='main'
         ml={{ base: '0px', md: '65px', lg: isOpen ? '200px' : '65px' }}
         transition={'margin-left 0.3s'}

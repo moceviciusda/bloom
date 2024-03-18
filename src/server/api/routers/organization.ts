@@ -69,6 +69,16 @@ export const organizationRouter = createTRPCRouter({
       });
     }),
 
+  getUsers: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.organization
+        .findUnique({
+          where: { slug: input.slug },
+        })
+        .members();
+    }),
+
   removeUser: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
