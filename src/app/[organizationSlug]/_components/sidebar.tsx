@@ -33,7 +33,7 @@ const SideBar: React.FC<SideBarProps> = ({ isOpen, setIsOpen, ...rest }) => {
       bottom={0}
       zIndex={1}
       bg='gray.50'
-      borderRight='1px solid var(--chakra-colors-blackAlpha-300)'
+      borderRight='1px solid var(--chakra-colors-blackAlpha-200)'
       p={3}
       transition='width 0.3s'
       overflowX='hidden'

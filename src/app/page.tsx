@@ -12,7 +12,6 @@ import OrganizationCard, {
 
 import { Suspense } from 'react';
 import UserPlate from './_components/user-plate';
-import Brand from './_components/brand';
 
 const Home = async () => {
   // noStore();

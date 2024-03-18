@@ -6,6 +6,7 @@ import {
   DrawerBody,
   DrawerContent,
   DrawerHeader,
+  DrawerOverlay,
   Flex,
   HStack,
   Icon,
@@ -52,8 +53,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
       bg='white'
       p={2}
       gap={2}
-      borderBottom='1px solid var(--chakra-colors-blackAlpha-300)'
-      // color='white'
+      borderBottom='1px solid var(--chakra-colors-blackAlpha-200)'
     >
       <Link
         href='/'
@@ -84,15 +84,25 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
             <Icon as={IoMenu} boxSize={6} />
           </Button>
           <Drawer placement='top' onClose={onClose} isOpen={isOpen}>
+            <DrawerOverlay />
             <DrawerContent display={{ base: 'flex', md: 'none' }}>
               <DrawerHeader p={2}>
-                <Flex justify='flex-end'>
+                <Flex justify='space-between'>
+                  <Link
+                    href='/'
+                    _hover={{
+                      textDecoration: 'none',
+                    }}
+                  >
+                    <Brand />
+                  </Link>
                   <Button onClick={onClose} variant='ghost' p={2}>
                     <Icon as={IoClose} boxSize={6} />
                   </Button>
                 </Flex>
               </DrawerHeader>
-              <DrawerBody>
+
+              <DrawerBody p={6}>
                 <NavLinks />
               </DrawerBody>
             </DrawerContent>
