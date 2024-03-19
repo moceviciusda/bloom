@@ -11,6 +11,12 @@ import {
   HStack,
   Icon,
   Link,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -34,6 +40,7 @@ import OrganizationPlate from '~/app/_components/organization-plate';
 import { TbCalendarDollar } from 'react-icons/tb';
 import { MdHelpOutline } from 'react-icons/md';
 import { RiProfileLine, RiSettings3Line } from 'react-icons/ri';
+import { CreateOrganization } from '~/app/_components/organization-card/create-organization';
 
 interface NavbarProps {
   session: Session;
@@ -122,6 +129,8 @@ const OrganizationSelector = ({
   session: Session;
   currentOrg: Organization;
 }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Popover variant='responsive' placement='bottom-start'>
       <PopoverTrigger>
@@ -160,9 +169,19 @@ const OrganizationSelector = ({
               <Icon as={LuPlusCircle} boxSize={6} />
               <Text as='span'>Create Organization</Text>
             </NavLink> */}
-            <Button w='100%' colorScheme='purple'>
+            <Button w='100%' colorScheme='purple' onClick={onOpen}>
               <Text>Create New Organization</Text>
             </Button>
+            <Modal onClose={onClose} isOpen={isOpen} isCentered>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>New Organization</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <CreateOrganization />
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           </PopoverFooter>
         </PopoverContent>
       </Portal>
