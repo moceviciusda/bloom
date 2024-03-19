@@ -4,17 +4,18 @@ import { Box, type ChakraProps, Icon, Text, VStack } from '@chakra-ui/react';
 import { type SetStateAction, type Dispatch } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
 import NavLinks, { NavLink } from './nav-links';
+import { type Organization } from '@prisma/client';
 
 interface SideBarProps extends ChakraProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  organizationSlug: string;
+  currentOrg: Organization;
 }
 
 const SideBar: React.FC<SideBarProps> = ({
   isOpen,
   setIsOpen,
-  organizationSlug,
+  currentOrg,
   ...rest
 }) => {
   return (
@@ -38,7 +39,7 @@ const SideBar: React.FC<SideBarProps> = ({
         align='flex-start'
         overflowX='hidden'
       >
-        <NavLinks orgSlug={organizationSlug} />
+        <NavLinks organization={currentOrg} />
 
         <NavLink
           onClick={() => setIsOpen(!isOpen)}

@@ -54,19 +54,6 @@ model Session {
     @@index([userId])
 }
 
-model User {
-    id                 String         @id @default(cuid())
-    name               String?
-    email              String?        @unique
-    emailVerified      DateTime?
-    image              String?
-    accounts           Account[]
-    sessions           Session[]
-    posts              Post[]
-    organizations      Organization[] @relation(name: "OrganizationMembers")
-    ownedOrganizations Organization[] @relation(name: "OrganizationOwner")
-}
-
 model VerificationToken {
     identifier String
     token      String   @unique
@@ -75,14 +62,54 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
+model User {
+    id                 String                 @id @default(cuid())
+    name               String?
+    email              String?                @unique
+    emailVerified      DateTime?
+    image              String?
+    accounts           Account[]
+    sessions           Session[]
+    posts              Post[]
+    organizations      UsersOnOrganizations[]
+    // organizations      Organization[] @relation(name: "OrganizationMembers")
+    ownedOrganizations Organization[]         @relation(name: "OrganizationOwner")
+}
+
 model Organization {
-    id      String  @id @default(cuid())
-    name    String
-    slug    String  @unique
-    image   String?
-    ownerId String
-    owner   User    @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
-    members User[]  @relation(name: "OrganizationMembers")
+    id          String                 @id @default(cuid())
+    name        String
+    slug        String                 @unique
+    image       String?
+    ownerId     String
+    owner       User                   @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
+    members     UsersOnOrganizations[]
+    // members User[]  @relation(name: "OrganizationMembers")
+    invitations Invitation[]
 
     @@index([name])
+}
+
+model UsersOnOrganizations {
+    isActive       Boolean      @default(true)
+    role           Role         @default(USER)
+    userId         String
+    user           User         @relation(fields: [userId], references: [id])
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id])
+
+    @@id([userId, organizationId])
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+model Invitation {
+    id             String       @id @default(cuid())
+    email          String
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id])
+    expires        DateTime
 }

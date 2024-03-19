@@ -60,6 +60,61 @@ export const organizationRouter = createTRPCRouter({
       });
     }),
 
+  updateName: protectedProcedure
+    .input(z.object({ slug: z.string(), name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const organization = await ctx.db.organization.findUnique({
+        where: { slug: input.slug },
+      });
+
+      if (!organization) throw new Error('Organization not found');
+
+      if (organization.ownerId === ctx.session.user.id) {
+        return ctx.db.organization.update({
+          where: { slug: input.slug },
+          data: { name: input.name },
+        });
+      }
+    }),
+
+  changeOwner: protectedProcedure
+    .input(z.object({ slug: z.string(), newOwnerId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const organization = await ctx.db.organization.findUnique({
+        where: { slug: input.slug },
+      });
+
+      if (!organization) throw new Error('Organization not found');
+
+      if (organization.ownerId === ctx.session.user.id) {
+        return ctx.db.organization.update({
+          where: { slug: input.slug },
+          data: { owner: { connect: { id: input.newOwnerId } } },
+        });
+      }
+    }),
+
+  changeSlug: protectedProcedure
+    .input(z.object({ slug: z.string(), newSlug: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const slugTaken = await ctx.db.organization.findUnique({
+        where: { slug: input.newSlug },
+      });
+      if (slugTaken) throw new Error('Slug is already taken');
+
+      const organization = await ctx.db.organization.findUnique({
+        where: { slug: input.slug },
+      });
+      if (!organization) throw new Error('Organization not found');
+
+      if (organization.ownerId === ctx.session.user.id) {
+        return ctx.db.organization.update({
+          where: { slug: input.slug },
+          data: { slug: input.newSlug },
+        });
+      }
+    }),
+
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ ctx, input }) => {

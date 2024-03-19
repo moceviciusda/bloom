@@ -6,10 +6,12 @@ import {
   Text,
   type StackProps,
 } from '@chakra-ui/react';
+import { type Organization } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  MdOutlineAssessment,
+  // MdOutlineAssessment,
   MdOutlineAssignment,
   MdOutlineSpaceDashboard,
 } from 'react-icons/md';
@@ -47,14 +49,20 @@ export const NavLink: React.FC<NavLinkProps> = ({
       {...rest}
     >
       {children}
-      {/* <Icon as={FaHome} boxSize={4} m={1} />
-      <Text as='span'>Dashboard</Text> */}
     </HStack>
   );
 };
 
-const NavLinks = ({ orgSlug }: { orgSlug: string }) => {
+const NavLinks = ({ organization }: { organization: Organization }) => {
   const pathname = usePathname();
+  const { data: session, status } = useSession({ required: true });
+
+  if (status === 'loading') return null;
+
+  if (!session) return null;
+
+  const orgSlug = organization.slug;
+  const isOwner = organization.ownerId === session.user.id;
 
   return (
     <List spacing={2} w='100%' whiteSpace='nowrap'>
@@ -121,17 +129,19 @@ const NavLinks = ({ orgSlug }: { orgSlug: string }) => {
           </Text>
         </NavLink>
       </ListItem>
-      <ListItem>
-        <NavLink
-          href={`/${orgSlug}/settings`}
-          active={pathname === `/${orgSlug}/settings`}
-        >
-          <Icon as={RiSettings3Line} boxSize={5} m={0.5} />
-          <Text as='span' fontWeight='500'>
-            Settings
-          </Text>
-        </NavLink>
-      </ListItem>
+      {isOwner && (
+        <ListItem>
+          <NavLink
+            href={`/${orgSlug}/settings`}
+            active={pathname === `/${orgSlug}/settings`}
+          >
+            <Icon as={RiSettings3Line} boxSize={5} m={0.5} />
+            <Text as='span' fontWeight='500'>
+              Settings
+            </Text>
+          </NavLink>
+        </ListItem>
+      )}
     </List>
   );
 };

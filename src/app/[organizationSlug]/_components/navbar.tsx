@@ -112,7 +112,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
               </DrawerHeader>
 
               <DrawerBody p={6}>
-                <NavLinks orgSlug={currentOrg.slug} />
+                <NavLinks organization={currentOrg} />
               </DrawerBody>
             </DrawerContent>
           </Drawer>

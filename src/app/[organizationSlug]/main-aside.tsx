@@ -21,7 +21,7 @@ const MainAside = ({
         setIsOpen={setIsOpen}
         width={{ base: '0px', md: '65px', lg: isOpen ? '200px' : '65px' }}
         display={{ base: 'none', md: 'block' }}
-        organizationSlug={currentOrg.slug}
+        currentOrg={currentOrg}
       />
       <Box
         flex={1}
