@@ -5,6 +5,7 @@ import {
   Button,
   ButtonGroup,
   Divider,
+  Flex,
   FormControl,
   FormLabel,
   HStack,
@@ -51,7 +52,61 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
 
       <Divider />
 
-      <HStack align='stretch' gap={10}>
+      <Flex align='stretch' gap={10} flexDir={{ base: 'column', md: 'row' }}>
+        <VStack flex={1}>
+          {updateName.error && (
+            <Text color='red'>{updateName.error.message}</Text>
+          )}
+          <FormControl>
+            <FormLabel>Organization Name</FormLabel>
+            <Flex
+              as='form'
+              action={() =>
+                updateName.mutate({ name, slug: organization.slug })
+              }
+              gap={2}
+              flexDir={{ base: 'column', md: 'row' }}
+            >
+              <Input
+                type='text'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+
+              <Button
+                type='submit'
+                isDisabled={name === organization.name || !name.trim()}
+              >
+                Rename
+              </Button>
+            </Flex>
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Organization Slug</FormLabel>
+            <Flex
+              as='form'
+              action={() =>
+                updateSlug.mutate({ newSlug: slug, slug: organization.slug })
+              }
+              gap={2}
+              flexDir={{ base: 'column', md: 'row' }}
+            >
+              <Input
+                type='text'
+                value={slug}
+                onChange={(e) => setSlug(e.target.value)}
+              />
+              <Button
+                type='submit'
+                isDisabled={slug === organization.slug || !slug.trim()}
+              >
+                Change
+              </Button>
+            </Flex>
+          </FormControl>
+        </VStack>
+
         <VStack align='flex-start'>
           <FormLabel>Logo</FormLabel>
           <HStack>
@@ -67,57 +122,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
             </ButtonGroup>
           </HStack>
         </VStack>
-
-        <VStack flex={1}>
-          {updateName.error && (
-            <Text color='red'>{updateName.error.message}</Text>
-          )}
-          <FormControl>
-            <FormLabel>Organization Name</FormLabel>
-            <HStack
-              as='form'
-              action={() =>
-                updateName.mutate({ name, slug: organization.slug })
-              }
-            >
-              <Input
-                type='text'
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-
-              <Button
-                type='submit'
-                isDisabled={name === organization.name || !name.trim()}
-              >
-                Rename
-              </Button>
-            </HStack>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>Organization Slug</FormLabel>
-            <HStack
-              as='form'
-              action={() =>
-                updateSlug.mutate({ newSlug: slug, slug: organization.slug })
-              }
-            >
-              <Input
-                type='text'
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-              />
-              <Button
-                type='submit'
-                isDisabled={slug === organization.slug || !slug.trim()}
-              >
-                Change
-              </Button>
-            </HStack>
-          </FormControl>
-        </VStack>
-      </HStack>
+      </Flex>
 
       {/* </VStack> */}
     </>
