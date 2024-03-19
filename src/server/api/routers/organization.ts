@@ -146,7 +146,9 @@ export const organizationRouter = createTRPCRouter({
         .findUnique({
           where: { slug: input.slug },
         })
-        .members();
+        .members({
+          include: { user: true },
+        });
     }),
 
   setUserInactive: protectedProcedure

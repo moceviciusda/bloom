@@ -23,7 +23,7 @@ const UsersPage: React.FC<UsersPageProps> = async ({ params }) => {
   //   new Promise((resolve) => setTimeout(resolve, ms));
   // await sleep(100000);
 
-  const users = await api.organization.getUsers.query({
+  const usersOnOrg = await api.organization.getUsers.query({
     slug: params.organizationSlug,
   });
 
@@ -40,16 +40,16 @@ const UsersPage: React.FC<UsersPageProps> = async ({ params }) => {
           </Tr>
         </Thead>
         <Tbody>
-          {users?.map((user) => (
-            <Tr key={user.id} _hover={{ bg: 'purple.50' }}>
+          {usersOnOrg?.map((userOnOrg) => (
+            <Tr key={userOnOrg.user.id} _hover={{ bg: 'purple.50' }}>
               <Td>
                 <UserPlate
-                  key={user.id}
-                  user={user}
+                  key={userOnOrg.user.id}
+                  user={userOnOrg.user}
                   userEmailProps={{ display: 'none' }}
                 />
               </Td>
-              <Td>{user.email}</Td>
+              <Td>{userOnOrg.user.email}</Td>
               <Td>Member</Td>
               <Td>
                 <Tag colorScheme='purple'>Team</Tag>
