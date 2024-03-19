@@ -94,9 +94,9 @@ model UsersOnOrganizations {
     isActive       Boolean      @default(true)
     role           Role         @default(USER)
     userId         String
-    user           User         @relation(fields: [userId], references: [id])
+    user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     organizationId String
-    organization   Organization @relation(fields: [organizationId], references: [id])
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
     @@id([userId, organizationId])
 }
@@ -104,6 +104,7 @@ model UsersOnOrganizations {
 enum Role {
     USER
     ADMIN
+    OWNER
 }
 
 model Invitation {

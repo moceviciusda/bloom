@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session: async ({ session, user }) => {
       const organizations = await db.organization.findMany({
-        where: { members: { some: { id: user.id } } },
+        where: { members: { some: { user: { id: user.id }, isActive: true } } },
         // include: { members: true, owner: true },
       });
       return {

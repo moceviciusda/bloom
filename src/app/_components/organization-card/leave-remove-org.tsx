@@ -25,7 +25,7 @@ const LeaveOrgButton: React.FC<ButtonProps> = ({
 }) => {
   const router = useRouter();
 
-  const removeUser = api.organization.removeUser.useMutation({
+  const removeUser = api.organization.setUserInactive.useMutation({
     onSuccess: () => {
       router.refresh();
     },
@@ -42,7 +42,7 @@ const LeaveOrgButton: React.FC<ButtonProps> = ({
         aria-label='Leave organization'
         onClick={(e) => {
           e.preventDefault();
-          removeUser.mutate({ id: organizationId });
+          removeUser.mutate({ organizationId: organizationId });
         }}
         icon={<ImExit />}
         variant='ghost'

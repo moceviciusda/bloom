@@ -33,7 +33,12 @@ export const organizationRouter = createTRPCRouter({
           slug,
           name: input.name,
           owner: { connect: { id: ctx.session.user.id } },
-          members: { connect: { id: ctx.session.user.id } },
+          members: {
+            create: {
+              role: 'OWNER',
+              user: { connect: { id: ctx.session.user.id } },
+            },
+          },
         },
       });
     }),
@@ -48,7 +53,17 @@ export const organizationRouter = createTRPCRouter({
 
   getAll: protectedProcedure.query(({ ctx }) => {
     return ctx.db.organization.findMany({
-      where: { members: { some: { id: ctx.session.user.id } } },
+      where: { members: { some: { user: { id: ctx.session.user.id } } } },
+    });
+  }),
+
+  getActive: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.organization.findMany({
+      where: {
+        members: {
+          some: { user: { id: ctx.session.user.id }, isActive: true },
+        },
+      },
     });
   }),
 
@@ -116,7 +131,7 @@ export const organizationRouter = createTRPCRouter({
     }),
 
   getById: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ id: z.string().cuid() }))
     .query(({ ctx, input }) => {
       return ctx.db.organization.findUnique({
         where: { id: input.id },
@@ -134,14 +149,22 @@ export const organizationRouter = createTRPCRouter({
         .members();
     }),
 
-  removeUser: protectedProcedure
-    .input(z.object({ id: z.string() }))
+  setUserInactive: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().cuid(),
+        userId: z.string().cuid().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.organization.update({
-        where: { id: input.id },
-        data: {
-          members: { disconnect: { id: ctx.session.user.id } },
+      return ctx.db.usersOnOrganizations.update({
+        where: {
+          userId_organizationId: {
+            userId: input.userId ?? ctx.session.user.id,
+            organizationId: input.organizationId,
+          },
         },
+        data: { isActive: false },
       });
     }),
 });
