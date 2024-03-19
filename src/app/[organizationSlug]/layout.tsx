@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import { getServerAuthSession } from '~/server/auth';
 import { redirect } from 'next/navigation';
-import NavBar from './_components/navbar';
+import NavBar from '../_components/navigation/navbar';
 import MainAside from './main-aside';
 
 const OrganizationRootLayout = async ({

@@ -57,16 +57,6 @@ export const organizationRouter = createTRPCRouter({
     });
   }),
 
-  getActive: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.organization.findMany({
-      where: {
-        members: {
-          some: { user: { id: ctx.session.user.id }, isActive: true },
-        },
-      },
-    });
-  }),
-
   getBySlug: protectedProcedure
     .input(z.object({ slug: z.string() }))
     .query(({ ctx, input }) => {
@@ -81,15 +71,22 @@ export const organizationRouter = createTRPCRouter({
       const organization = await ctx.db.organization.findUnique({
         where: { slug: input.slug },
       });
-
       if (!organization) throw new Error('Organization not found');
+      if (input.name === organization.name) return;
 
-      if (organization.ownerId === ctx.session.user.id) {
-        return ctx.db.organization.update({
-          where: { slug: input.slug },
-          data: { name: input.name },
-        });
-      }
+      const isOwnerOrAdmin = await ctx.db.usersOnOrganizations.findFirst({
+        where: {
+          organizationId: organization.id,
+          userId: ctx.session.user.id,
+          role: { in: ['OWNER', 'ADMIN'] },
+        },
+      });
+      if (!isOwnerOrAdmin) throw new Error('Unauthorized');
+
+      return ctx.db.organization.update({
+        where: { slug: input.slug },
+        data: { name: input.name },
+      });
     }),
 
   changeOwner: protectedProcedure
@@ -101,33 +98,43 @@ export const organizationRouter = createTRPCRouter({
 
       if (!organization) throw new Error('Organization not found');
 
-      if (organization.ownerId === ctx.session.user.id) {
-        return ctx.db.organization.update({
-          where: { slug: input.slug },
-          data: { owner: { connect: { id: input.newOwnerId } } },
-        });
-      }
+      if (organization.ownerId !== ctx.session.user.id)
+        throw new Error('Unauthorized');
+
+      return ctx.db.organization.update({
+        where: { slug: input.slug },
+        data: { owner: { connect: { id: input.newOwnerId } } },
+      });
     }),
 
-  changeSlug: protectedProcedure
+  updateSlug: protectedProcedure
     .input(z.object({ slug: z.string(), newSlug: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const slugTaken = await ctx.db.organization.findUnique({
-        where: { slug: input.newSlug },
-      });
-      if (slugTaken) throw new Error('Slug is already taken');
-
       const organization = await ctx.db.organization.findUnique({
         where: { slug: input.slug },
       });
       if (!organization) throw new Error('Organization not found');
 
-      if (organization.ownerId === ctx.session.user.id) {
-        return ctx.db.organization.update({
-          where: { slug: input.slug },
-          data: { slug: input.newSlug },
-        });
-      }
+      if (input.newSlug === organization.slug) return;
+
+      const slugTaken = await ctx.db.organization.findUnique({
+        where: { slug: input.newSlug },
+      });
+      if (slugTaken) throw new Error('Slug is already taken');
+
+      const isOwnerOrAdmin = await ctx.db.usersOnOrganizations.findFirst({
+        where: {
+          organizationId: organization.id,
+          userId: ctx.session.user.id,
+          role: { in: ['OWNER', 'ADMIN'] },
+        },
+      });
+      if (!isOwnerOrAdmin) throw new Error('Unauthorized');
+
+      return ctx.db.organization.update({
+        where: { slug: input.slug },
+        data: { slug: input.newSlug },
+      });
     }),
 
   getById: protectedProcedure
@@ -139,6 +146,30 @@ export const organizationRouter = createTRPCRouter({
       });
     }),
 
+  addUser: protectedProcedure
+    .input(
+      z.object({
+        slug: z.string(),
+        userId: z.string().cuid(),
+        role: z.enum(['USER', 'ADMIN']).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const organization = await ctx.db.organization.findUnique({
+        where: { slug: input.slug },
+      });
+
+      if (!organization) throw new Error('Organization not found');
+
+      return ctx.db.usersOnOrganizations.create({
+        data: {
+          role: input.role,
+          user: { connect: { id: input.userId } },
+          organization: { connect: { id: organization.id } },
+        },
+      });
+    }),
+
   getUsers: protectedProcedure
     .input(z.object({ slug: z.string() }))
     .query(({ ctx, input }) => {
@@ -147,6 +178,32 @@ export const organizationRouter = createTRPCRouter({
           where: { slug: input.slug },
         })
         .members({
+          include: { user: true },
+        });
+    }),
+
+  getActiveUsers: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.organization
+        .findUnique({
+          where: { slug: input.slug },
+        })
+        .members({
+          where: { isActive: true },
+          include: { user: true },
+        });
+    }),
+
+  getAdmins: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.organization
+        .findUnique({
+          where: { slug: input.slug },
+        })
+        .members({
+          where: { role: 'ADMIN' },
           include: { user: true },
         });
     }),

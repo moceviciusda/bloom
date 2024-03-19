@@ -21,6 +21,7 @@ import {
   RiTeamLine,
   RiSettings3Line,
 } from 'react-icons/ri';
+import { api } from '~/trpc/react';
 
 interface NavLinkProps extends StackProps {
   children: React.ReactNode;
@@ -56,13 +57,22 @@ export const NavLink: React.FC<NavLinkProps> = ({
 const NavLinks = ({ organization }: { organization: Organization }) => {
   const pathname = usePathname();
   const { data: session, status } = useSession({ required: true });
+  // const [ admins, adminsQuery ]= api.organization.getAdmins.useSuspenseQuery({ slug: organization.slug })
+  const { data: admins, isLoading } = api.organization.getAdmins.useQuery({
+    slug: organization.slug,
+  });
 
-  if (status === 'loading') return null;
+  if (status === 'loading' || isLoading) return null;
+
+  // test.
+  // adminsQuery.
 
   if (!session) return null;
 
   const orgSlug = organization.slug;
-  const isOwner = organization.ownerId === session.user.id;
+  const isOwnerOrAdmin =
+    organization.ownerId === session.user.id ||
+    admins?.some((admin) => admin.user.id === session.user.id);
 
   return (
     <List spacing={2} w='100%' whiteSpace='nowrap'>
@@ -129,7 +139,7 @@ const NavLinks = ({ organization }: { organization: Organization }) => {
           </Text>
         </NavLink>
       </ListItem>
-      {isOwner && (
+      {isOwnerOrAdmin && (
         <ListItem>
           <NavLink
             href={`/${orgSlug}/settings`}

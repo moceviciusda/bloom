@@ -2,7 +2,7 @@
 
 import { Box } from '@chakra-ui/react';
 import { useState, type ReactNode } from 'react';
-import SideBar from './_components/sidebar';
+import SideBar from '../_components/navigation/sidebar';
 import { type Organization } from '@prisma/client';
 
 const MainAside = ({
