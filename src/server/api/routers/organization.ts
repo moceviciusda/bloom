@@ -115,10 +115,12 @@ export const organizationRouter = createTRPCRouter({
       });
       if (!organization) throw new Error('Organization not found');
 
-      if (input.newSlug === organization.slug) return;
+      const newSlug = slugify(input.newSlug);
+
+      if (newSlug === organization.slug) return;
 
       const slugTaken = await ctx.db.organization.findUnique({
-        where: { slug: input.newSlug },
+        where: { slug: newSlug },
       });
       if (slugTaken) throw new Error('Slug is already taken');
 
@@ -133,7 +135,7 @@ export const organizationRouter = createTRPCRouter({
 
       return ctx.db.organization.update({
         where: { slug: input.slug },
-        data: { slug: input.newSlug },
+        data: { slug: newSlug },
       });
     }),
 
