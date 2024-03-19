@@ -1,6 +1,7 @@
-import { Avatar, Divider, Heading, VStack } from '@chakra-ui/react';
-import { type Organization } from '@prisma/client';
+import { VStack } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
+import AccessSettings from '~/app/_components/organization-settings/access-form';
+import DangerZone from '~/app/_components/organization-settings/danger-zone';
 import GeneralSettings from '~/app/_components/organization-settings/general-form';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
@@ -29,8 +30,10 @@ const OrganizationPage: React.FC<OrganizationPageProps> = async ({
   if (!isAdmin && !isOwner) return redirect(`/${params.organizationSlug}`);
 
   return (
-    <VStack py={3} align='stretch' maxW='50em'>
+    <VStack py={3} align='stretch' maxW='60em'>
       <GeneralSettings organization={organization} />
+      <AccessSettings organization={organization} />
+      <DangerZone organization={organization} />
     </VStack>
   );
 };

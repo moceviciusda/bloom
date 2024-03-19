@@ -1,11 +1,14 @@
 'use client';
 
-import { Box, Text } from '@chakra-ui/react';
+import { Divider, Flex, Heading } from '@chakra-ui/react';
 
 const Dashboard = ({ params }: { params: { organizationSlug: string } }) => (
-  <Box flex={1} display='flex' alignItems='center'>
-    <Text>Welcome to the dashboard of {params.organizationSlug}</Text>
-  </Box>
+  <Flex p={3} flexDir='column'>
+    <Heading size='lg' mb={3}>
+      Dashboard
+    </Heading>
+    <Divider />
+  </Flex>
 );
 
 export default Dashboard;

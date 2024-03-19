@@ -1,4 +1,4 @@
-import { Heading } from '@chakra-ui/react';
+import { Divider, Flex, Heading } from '@chakra-ui/react';
 
 interface MatrixLayoutProps {
   children: React.ReactNode;
@@ -7,10 +7,13 @@ interface MatrixLayoutProps {
 
 const MatrixLayout: React.FC<MatrixLayoutProps> = ({ children }) => {
   return (
-    <>
-      <Heading p={6}>Matrix</Heading>
+    <Flex p={3} flexDir='column'>
+      <Heading size='lg' mb={3}>
+        Matrix
+      </Heading>
+      <Divider />
       {children}
-    </>
+    </Flex>
   );
 };
 

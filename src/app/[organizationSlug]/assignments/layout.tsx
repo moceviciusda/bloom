@@ -1,4 +1,4 @@
-import { Heading } from '@chakra-ui/react';
+import { Divider, Flex, Heading } from '@chakra-ui/react';
 
 interface AssignmentsLayoutProps {
   children: React.ReactNode;
@@ -7,10 +7,13 @@ interface AssignmentsLayoutProps {
 
 const AssignmentsLayout: React.FC<AssignmentsLayoutProps> = ({ children }) => {
   return (
-    <>
-      <Heading p={6}>Assignments</Heading>
+    <Flex p={3} flexDir='column'>
+      <Heading size='lg' mb={3}>
+        Assignments
+      </Heading>
+      <Divider />
       {children}
-    </>
+    </Flex>
   );
 };
 

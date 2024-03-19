@@ -7,6 +7,7 @@ import {
   Divider,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   HStack,
   Heading,
@@ -80,10 +81,13 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
                 Rename
               </Button>
             </Flex>
+            {updateName.error && (
+              <FormErrorMessage>{updateName.error.message}</FormErrorMessage>
+            )}
           </FormControl>
 
-          <FormControl>
-            <FormLabel>Organization Slug</FormLabel>
+          <FormControl isInvalid={!!updateSlug.error}>
+            <FormLabel>Url Slug</FormLabel>
             <Flex
               as='form'
               action={() =>
@@ -104,6 +108,9 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
                 Change
               </Button>
             </Flex>
+            {updateSlug.error && (
+              <FormErrorMessage>{updateSlug.error.message}</FormErrorMessage>
+            )}
           </FormControl>
         </VStack>
 

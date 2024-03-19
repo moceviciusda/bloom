@@ -1,5 +1,5 @@
-const TeamsPage = ({ params }: { params: { organizationSlug: string } }) => {
-  return <div>TeamsPage {params.organizationSlug}</div>;
+const TeamsPage = () => {
+  return <div>TeamsPage</div>;
 };
 
 export default TeamsPage;

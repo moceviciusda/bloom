@@ -1,4 +1,4 @@
-import { Heading } from '@chakra-ui/react';
+import { Divider, Flex, Heading } from '@chakra-ui/react';
 
 interface TeamsLayoutProps {
   children: React.ReactNode;
@@ -7,10 +7,13 @@ interface TeamsLayoutProps {
 
 const TeamsLayout: React.FC<TeamsLayoutProps> = ({ children }) => {
   return (
-    <>
-      <Heading p={6}>Teams</Heading>
+    <Flex p={3} flexDir='column'>
+      <Heading size='lg' mb={3}>
+        Organization Settings
+      </Heading>
+      <Divider />
       {children}
-    </>
+    </Flex>
   );
 };
 

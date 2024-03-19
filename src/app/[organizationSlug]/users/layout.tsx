@@ -1,4 +1,4 @@
-import { Heading } from '@chakra-ui/react';
+import { Divider, Flex, Heading } from '@chakra-ui/react';
 
 interface UsersLayoutProps {
   children: React.ReactNode;
@@ -7,10 +7,13 @@ interface UsersLayoutProps {
 
 const UsersLayout: React.FC<UsersLayoutProps> = ({ children }) => {
   return (
-    <>
-      <Heading p={6}>Users</Heading>
+    <Flex p={3} flexDir='column'>
+      <Heading size='lg' mb={3}>
+        Users
+      </Heading>
+      <Divider />
       {children}
-    </>
+    </Flex>
   );
 };
 
