@@ -34,7 +34,7 @@ import { IoClose, IoMenu } from 'react-icons/io5';
 import { HiMiniChevronUpDown } from 'react-icons/hi2';
 import SignOutButton from '~/app/_components/sign-out-button';
 import UserPlate from '~/app/_components/user-plate';
-import NavLinks, { NavLink } from './nav-link';
+import NavLinks, { NavLink } from './nav-links';
 import Brand, { MiniBrand } from '~/app/_components/brand';
 import OrganizationPlate from '~/app/_components/organization-plate';
 import { TbCalendarDollar } from 'react-icons/tb';

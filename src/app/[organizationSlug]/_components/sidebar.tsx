@@ -3,7 +3,7 @@
 import { Box, type ChakraProps, Icon, Text, VStack } from '@chakra-ui/react';
 import { type SetStateAction, type Dispatch } from 'react';
 import { FaChevronRight } from 'react-icons/fa';
-import NavLinks, { NavLink } from './nav-link';
+import NavLinks, { NavLink } from './nav-links';
 
 interface SideBarProps extends ChakraProps {
   isOpen: boolean;
