@@ -13,7 +13,7 @@ import {
   Heading,
   Input,
   InputGroup,
-  InputRightAddon,
+  InputLeftAddon,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -22,6 +22,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { GoOrganization } from 'react-icons/go';
 import { api } from '~/trpc/react';
+import slugify from '~/utils/slugify';
+import isBrowser from '~/utils/window';
 
 interface GeneralSettingsProps {
   organization: Organization;
@@ -41,7 +43,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
 
   const updateSlug = api.organization.updateSlug.useMutation({
     onSuccess: () => {
-      router.push(`/${slug}/settings`);
+      router.push(`/${slugify(slug)}/settings`);
     },
   });
 
@@ -59,7 +61,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
             <Text color='red'>{updateName.error.message}</Text>
           )}
           <FormControl>
-            <FormLabel>Organization Name</FormLabel>
+            <Text>Organization Name</Text>
             <Flex
               as='form'
               action={() =>
@@ -87,7 +89,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
           </FormControl>
 
           <FormControl isInvalid={!!updateSlug.error}>
-            <FormLabel>Url Slug</FormLabel>
+            <Text>Url Slug</Text>
             <Flex
               as='form'
               action={() =>
@@ -96,11 +98,22 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
               gap={2}
               flexDir={{ base: 'column', md: 'row' }}
             >
-              <Input
+              <InputGroup>
+                <InputLeftAddon pr={1}>https://bloom.com/</InputLeftAddon>
+
+                <Input
+                  pl={1}
+                  type='text'
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                />
+              </InputGroup>
+
+              {/* <Input
                 type='text'
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
-              />
+              /> */}
               <Button
                 type='submit'
                 isDisabled={slug === organization.slug || !slug.trim()}
@@ -115,7 +128,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
         </VStack>
 
         <VStack align='flex-start'>
-          <FormLabel>Logo</FormLabel>
+          <Text>Logo</Text>
           <HStack>
             <Avatar
               size='xl'

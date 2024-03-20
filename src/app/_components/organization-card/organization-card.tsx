@@ -98,8 +98,7 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
           aria-label='Owner'
           placement='bottom-start'
           openDelay={500}
-          borderRadius={5}
-          bg='blackAlpha.700'
+          variant='bloom'
         >
           <span>
             <UserPlate user={org.owner} />

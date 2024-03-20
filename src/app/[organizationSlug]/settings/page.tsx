@@ -1,6 +1,6 @@
 import { VStack } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
-import AccessSettings from '~/app/_components/organization-settings/access-form';
+import AccessSettings from '~/app/_components/organization-settings/access-settings';
 import DangerZone from '~/app/_components/organization-settings/danger-zone';
 import GeneralSettings from '~/app/_components/organization-settings/general-form';
 import { getServerAuthSession } from '~/server/auth';

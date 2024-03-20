@@ -1,4 +1,3 @@
-import { log } from 'console';
 import { randomBytes } from 'crypto';
 import { z } from 'zod';
 
@@ -199,6 +198,26 @@ export const organizationRouter = createTRPCRouter({
           where: { role: 'ADMIN' },
           include: { user: true },
         });
+    }),
+
+  updateUserRole: protectedProcedure
+    .input(
+      z.object({
+        organizationId: z.string().cuid(),
+        userId: z.string().cuid(),
+        role: z.enum(['USER', 'ADMIN', 'OWNER']),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.usersOnOrganizations.update({
+        where: {
+          userId_organizationId: {
+            userId: input.userId,
+            organizationId: input.organizationId,
+          },
+        },
+        data: { role: input.role },
+      });
     }),
 
   setUserInactive: protectedProcedure

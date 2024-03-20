@@ -45,6 +45,7 @@ const SideBar: React.FC<SideBarProps> = ({
           onClick={() => setIsOpen(!isOpen)}
           w='100%'
           display={{ base: 'none', lg: 'flex' }}
+          href=''
         >
           <Icon
             as={FaChevronRight}
