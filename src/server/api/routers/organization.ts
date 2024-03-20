@@ -1,14 +1,7 @@
 import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
-
-const slugify = (text: string) =>
-  text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+import slugify from '~/utils/slugify';
 
 export const organizationRouter = createTRPCRouter({
   create: protectedProcedure
