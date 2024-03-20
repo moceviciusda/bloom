@@ -72,8 +72,16 @@ model User {
     sessions           Session[]
     posts              Post[]
     organizations      UsersOnOrganizations[]
-    // organizations      Organization[] @relation(name: "OrganizationMembers")
     ownedOrganizations Organization[]         @relation(name: "OrganizationOwner")
+}
+
+model OrganizationSecret {
+    id             String       @id @default(cuid())
+    secret         String       @unique
+    organizationId String
+    organization   Organization @relation(fields: [organizationId], references: [id])
+    createdAt      DateTime     @default(now())
+    updatedAt      DateTime     @updatedAt
 }
 
 model Organization {
@@ -84,7 +92,7 @@ model Organization {
     ownerId     String
     owner       User                   @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
     members     UsersOnOrganizations[]
-    // members User[]  @relation(name: "OrganizationMembers")
+    secrets     OrganizationSecret[]
     invitations Invitation[]
 
     @@index([name])

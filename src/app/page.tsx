@@ -4,7 +4,7 @@ import { CreateOrganization } from '~/app/_components/organization-card/create-o
 import { getServerAuthSession } from '~/server/auth';
 import styles from './index.module.css';
 import { Box, Flex, HStack, VStack } from '@chakra-ui/react';
-import Login from './_components/login-form';
+import Login from './_components/login/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
   CardSkeleton,

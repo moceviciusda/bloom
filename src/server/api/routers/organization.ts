@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
@@ -44,12 +45,6 @@ export const organizationRouter = createTRPCRouter({
         where: { id: input.id },
       });
     }),
-
-  getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.organization.findMany({
-      where: { members: { some: { user: { id: ctx.session.user.id } } } },
-    });
-  }),
 
   getBySlug: protectedProcedure
     .input(z.object({ slug: z.string() }))
@@ -222,5 +217,39 @@ export const organizationRouter = createTRPCRouter({
         },
         data: { isActive: false },
       });
+    }),
+
+  generateSecret: protectedProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.organizationSecret.create({
+        data: {
+          organizationId: input.id,
+          secret: randomBytes(32).toString('base64'),
+        },
+      });
+    }),
+
+  deleteSecret: protectedProcedure
+    .input(z.object({ id: z.string().cuid() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.organizationSecret.delete({
+        where: { id: input.id },
+      });
+    }),
+
+  getSecrets: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.organization
+        .findUnique({
+          where: {
+            slug: input.slug,
+            members: {
+              some: { userId: ctx.session.user.id, role: 'ADMIN' || 'OWNER' },
+            },
+          },
+        })
+        .secrets();
     }),
 });
