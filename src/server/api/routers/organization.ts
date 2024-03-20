@@ -15,18 +15,19 @@ export const organizationRouter = createTRPCRouter({
     .input(z.object({ name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       let slug = slugify(input.name);
+      let slugTaken = !!(await ctx.db.organization.findUnique({
+        where: { slug },
+      }));
 
-      await ctx.db.organization
-        .findUnique({
+      while (slugTaken) {
+        // generate a unique slug
+        const rand1 = Math.floor(Math.random() * ctx.session.user.id.length);
+        const rand2 = Math.floor(Math.random() * ctx.session.user.id.length);
+        slug = `${slug}-${ctx.session.user.id.substring(rand1, rand2)}`;
+        slugTaken = !!(await ctx.db.organization.findUnique({
           where: { slug },
-        })
-        .then((org) => {
-          if (org) {
-            // generate a unique slug
-            const index = Math.floor(Math.random() * 22);
-            slug = `${slug}-${ctx.session.user.id.substring(index, index + 2)}`;
-          }
-        });
+        }));
+      }
 
       return ctx.db.organization.create({
         data: {
@@ -117,7 +118,8 @@ export const organizationRouter = createTRPCRouter({
 
       const newSlug = slugify(input.newSlug);
 
-      if (newSlug === organization.slug) return;
+      if (newSlug === organization.slug)
+        throw new Error('Slug is the same after removing invalid characters');
 
       const slugTaken = await ctx.db.organization.findUnique({
         where: { slug: newSlug },
