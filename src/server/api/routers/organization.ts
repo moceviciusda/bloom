@@ -1,3 +1,4 @@
+import { log } from 'console';
 import { randomBytes } from 'crypto';
 import { z } from 'zod';
 
@@ -246,7 +247,10 @@ export const organizationRouter = createTRPCRouter({
           where: {
             slug: input.slug,
             members: {
-              some: { userId: ctx.session.user.id, role: 'ADMIN' || 'OWNER' },
+              some: {
+                userId: ctx.session.user.id,
+                role: { in: ['ADMIN', 'OWNER'] },
+              },
             },
           },
         })

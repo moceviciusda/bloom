@@ -53,6 +53,7 @@ const AccessSettings: React.FC<AccessSettingsProps> = ({ organization }) => {
         />
       ))}
       <Button
+        isLoading={generateSecret.isLoading}
         isDisabled={(secrets && secrets.length > 3) ?? undefined}
         onClick={() => generateSecret.mutate({ id: organization.id })}
       >
@@ -88,6 +89,7 @@ const SecretCard: React.FC<{
         </InputGroup>
       </FormControl>
       <Button
+        isLoading={deleteSecret.isLoading}
         onClick={() => deleteSecret.mutate({ id: orgSecret.id })}
         colorScheme='red'
       >
