@@ -16,11 +16,16 @@ import {
 } from '@chakra-ui/react';
 import { api } from '~/trpc/react';
 import { FaTimes } from 'react-icons/fa';
+import { TbArrowBackUp } from 'react-icons/tb';
+import { set } from 'zod';
 
 export const CreateOrganization = () => {
   const router = useRouter();
   const [name, setName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+
+  const [secret, setSecret] = useState('');
+  const [joinOpen, setJoinOpen] = useState(false);
 
   const createOrganization = api.organization.create.useMutation({
     onSuccess: () => {
@@ -30,17 +35,16 @@ export const CreateOrganization = () => {
     },
   });
 
+  const joinOrg = api.organization.joinBySecret.useMutation({
+    onSuccess: () => {
+      router.refresh();
+      setJoinOpen(false);
+      setSecret('');
+    },
+  });
+
   return (
-    <Card
-      as={isOpen ? 'form' : undefined}
-      size='md'
-      color='blackAlpha.900'
-      h='140px'
-      onSubmit={(e) => {
-        e.preventDefault();
-        createOrganization.mutate({ name });
-      }}
-    >
+    <Card size='md' color='blackAlpha.900' h='140px'>
       {isOpen ? (
         <>
           <CardHeader
@@ -62,7 +66,7 @@ export const CreateOrganization = () => {
             />
             <IconButton
               aria-label='cancel'
-              icon={<FaTimes />}
+              icon={<TbArrowBackUp />}
               variant='ghost'
               color='gray.800'
               size={'lg'}
@@ -75,14 +79,53 @@ export const CreateOrganization = () => {
           <CardBody paddingTop={0}>
             <Button
               w='100%'
-              type='submit'
-              // size='sm'
               isLoading={createOrganization.isLoading}
-              disabled={createOrganization.isLoading}
               colorScheme='purple'
-              onClick={(e) => e.stopPropagation()}
+              onClick={() => createOrganization.mutate({ name })}
             >
               Submit
+            </Button>
+          </CardBody>
+        </>
+      ) : joinOpen ? (
+        <>
+          <CardHeader
+            display='flex'
+            alignItems='center'
+            justifyContent='space-between'
+            paddingBottom={3}
+          >
+            <Input
+              autoFocus
+              type='text'
+              variant='unstyled'
+              fontSize='1.65rem'
+              fontWeight='bold'
+              placeholder='Organization Secret'
+              _placeholder={{ fontSize: '20', fontWeight: '500' }}
+              value={secret}
+              onChange={(e) => setSecret(e.target.value)}
+            />
+            <IconButton
+              aria-label='cancel'
+              icon={<TbArrowBackUp />}
+              variant='ghost'
+              color='gray.800'
+              size={'lg'}
+              onClick={(e) => {
+                e.stopPropagation();
+                setJoinOpen(false);
+              }}
+            />
+          </CardHeader>
+          <CardBody paddingTop={0}>
+            <Button
+              w='100%'
+              isLoading={joinOrg.isLoading}
+              colorScheme='purple'
+              onClick={() => joinOrg.mutate({ secret })}
+            >
+              Join
             </Button>
           </CardBody>
         </>
@@ -91,8 +134,8 @@ export const CreateOrganization = () => {
           <Button
             flex={1}
             onClick={() => {
-              setIsOpen(true);
               setName('');
+              setIsOpen(true);
             }}
           >
             Create a new organization
@@ -108,8 +151,8 @@ export const CreateOrganization = () => {
             colorScheme='purple'
             flex={1}
             onClick={() => {
-              // setIsOpen(true);
-              // setName('');
+              setSecret('');
+              setJoinOpen(true);
             }}
           >
             Join an existing one

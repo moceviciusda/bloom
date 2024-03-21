@@ -159,13 +159,14 @@ const SecretCard: React.FC<{
             pr={16}
           >
             <Icon
+              as={copied ? LuClipboardCheck : LuClipboardCopy}
               color={'blackAlpha.500'}
               _hover={{ color: 'blackAlpha.700' }}
               onClick={async () => {
                 await navigator.clipboard.writeText(orgSecret.secret);
                 setCopied(true);
               }}
-              as={copied ? LuClipboardCheck : LuClipboardCopy}
+              onMouseLeave={() => setCopied(false)}
               boxSize='24px'
             />
 

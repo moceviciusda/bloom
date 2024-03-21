@@ -198,7 +198,7 @@ export const organizationRouter = createTRPCRouter({
       z.object({
         slug: z.string(),
         userId: z.string().cuid(),
-        role: z.enum(['USER', 'ADMIN']).optional(),
+        role: z.enum(['USER', 'ADMIN', 'OWNER']).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -215,6 +215,45 @@ export const organizationRouter = createTRPCRouter({
           organization: { connect: { id: organization.id } },
         },
       });
+    }),
+
+  joinBySecret: protectedProcedure
+    .input(z.object({ secret: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const secret = await ctx.db.organizationSecret.findUnique({
+        where: { secret: input.secret },
+        include: { organization: true },
+      });
+
+      if (!secret) throw new Error('Invalid secret');
+
+      const existing = await ctx.db.usersOnOrganizations.findFirst({
+        where: {
+          userId: ctx.session.user.id,
+          organizationId: secret.organization.id,
+        },
+      });
+      if (existing?.isActive) throw new Error('Already a member');
+
+      return existing
+        ? // If the user was previously a member, reactivate them
+          ctx.db.usersOnOrganizations.update({
+            where: {
+              userId_organizationId: {
+                userId: existing.userId,
+                organizationId: existing.organizationId,
+              },
+            },
+            data: { isActive: true },
+          })
+        : // Otherwise, create a new membership
+          ctx.db.usersOnOrganizations.create({
+            data: {
+              role: 'USER',
+              user: { connect: { id: ctx.session.user.id } },
+              organization: { connect: { id: secret.organization.id } },
+            },
+          });
     }),
 
   getUsers: protectedProcedure
