@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from 'next/cache';
 import { VStack } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
 import AccessSettings from '~/app/_components/organization-settings/access-settings';
@@ -13,6 +14,7 @@ interface OrganizationPageProps {
 const OrganizationPage: React.FC<OrganizationPageProps> = async ({
   params,
 }) => {
+  noStore();
   const session = await getServerAuthSession();
   if (!session) return redirect(`/?next=/${params.organizationSlug}`);
 

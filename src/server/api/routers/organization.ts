@@ -2,6 +2,7 @@ import { randomBytes } from 'crypto';
 import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
+import { utapi } from '~/server/uploadthing';
 import slugify from '~/utils/slugify';
 
 export const organizationRouter = createTRPCRouter({
@@ -51,6 +52,60 @@ export const organizationRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.db.organization.findUnique({
         where: { slug: input.slug },
+      });
+    }),
+
+  updateImage: protectedProcedure
+    .input(z.object({ slug: z.string(), image: z.string().url() }))
+    .mutation(async ({ ctx, input }) => {
+      const organization = await ctx.db.organization.findUnique({
+        where: {
+          slug: input.slug,
+          members: {
+            some: {
+              userId: ctx.session.user.id,
+              role: { in: ['OWNER', 'ADMIN'] },
+            },
+          },
+        },
+      });
+      if (!organization) throw new Error('Unauthorized');
+      if (organization.image)
+        await utapi.deleteFiles(
+          organization.image.substring(organization.image.lastIndexOf('/') + 1)
+        );
+
+      return ctx.db.organization.update({
+        where: { slug: input.slug },
+        data: { image: input.image },
+      });
+    }),
+
+  deleteImage: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const organization = await ctx.db.organization.findUnique({
+        where: {
+          slug: input.slug,
+          members: {
+            some: {
+              userId: ctx.session.user.id,
+              role: { in: ['OWNER', 'ADMIN'] },
+            },
+          },
+        },
+      });
+      if (!organization) throw new Error('Unauthorized');
+      if (!organization.image) return;
+
+      // Delete the file from the storage provider
+      await utapi.deleteFiles(
+        organization.image.substring(organization.image.lastIndexOf('/') + 1)
+      );
+
+      return ctx.db.organization.update({
+        where: { slug: input.slug },
+        data: { image: null },
       });
     }),
 
