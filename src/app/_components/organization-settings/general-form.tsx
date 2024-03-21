@@ -2,13 +2,13 @@
 
 import {
   Avatar,
+  AvatarBadge,
   Button,
   ButtonGroup,
   Divider,
   Flex,
   FormControl,
   FormErrorMessage,
-  FormLabel,
   HStack,
   Heading,
   Input,
@@ -20,10 +20,11 @@ import {
 import { type Organization } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { FaTrash } from 'react-icons/fa6';
 import { GoOrganization } from 'react-icons/go';
+import { MdDeleteOutline } from 'react-icons/md';
 import { api } from '~/trpc/react';
 import slugify from '~/utils/slugify';
-import isBrowser from '~/utils/window';
 
 interface GeneralSettingsProps {
   organization: Organization;
@@ -55,11 +56,42 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
 
       <Divider />
 
+      <Text fontSize={14}>Manage how your organization appears to others.</Text>
       <Flex align='stretch' gap={10} flexDir={{ base: 'column', md: 'row' }}>
+        <VStack align='flex-start' gap={0}>
+          <Text>Logo</Text>
+          <Avatar
+            size='xl'
+            boxSize='112px'
+            borderRadius={12}
+            src={organization.image ?? undefined}
+            bg={'purple.500'}
+            icon={<GoOrganization />}
+            cursor='pointer'
+            _hover={{ opacity: 0.9, transition: 'opacity 0.3s' }}
+            onClick={() => console.log('Change logo')}
+          >
+            <AvatarBadge
+              as={MdDeleteOutline}
+              color='blackAlpha.600'
+              bg='blackAlpha.600'
+              border='2px solid var(--chakra-colors-blackAlpha-400)'
+              cursor='pointer'
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('Remove logo');
+              }}
+              _hover={{
+                bg: 'blackAlpha.700',
+                color: 'red.700',
+                border: '2px solid var(--chakra-colors-red-700)',
+                transition: 'all 0.3s',
+              }}
+            />
+          </Avatar>
+        </VStack>
+
         <VStack flex={1}>
-          {updateName.error && (
-            <Text color='red'>{updateName.error.message}</Text>
-          )}
           <FormControl>
             <Text>Organization Name</Text>
             <Flex
@@ -125,22 +157,6 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
               <FormErrorMessage>{updateSlug.error.message}</FormErrorMessage>
             )}
           </FormControl>
-        </VStack>
-
-        <VStack align='flex-start'>
-          <Text>Logo</Text>
-          <HStack>
-            <Avatar
-              size='xl'
-              src={organization.image ?? undefined}
-              bg={'purple.500'}
-              icon={<GoOrganization />}
-            />
-            <ButtonGroup orientation='vertical'>
-              <Button>Change</Button>
-              <Button isDisabled={!organization.image}>Remove</Button>
-            </ButtonGroup>
-          </HStack>
         </VStack>
       </Flex>
 
