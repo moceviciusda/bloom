@@ -24,7 +24,7 @@ const OrganizationPlate: React.FC<OrganizationPlateProps> = ({
   return (
     <HStack {...rest}>
       <Avatar
-        size='xs'
+        size='sm'
         src={organization.image ?? undefined}
         border={organization.image ? undefined : '2px solid #414141'}
         bg='transparent'

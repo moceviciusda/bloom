@@ -170,16 +170,15 @@ const OrganizationSelector = ({
               <Text as='span'>Create Organization</Text>
             </NavLink> */}
             <Button w='100%' colorScheme='purple' onClick={onOpen}>
-              <Text>Create New Organization</Text>
+              <Text>Add Organization</Text>
             </Button>
             <Modal onClose={onClose} isOpen={isOpen} isCentered>
               <ModalOverlay />
               <ModalContent>
-                <ModalHeader>New Organization</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <CreateOrganization />
-                </ModalBody>
+                {/* <ModalHeader>New Organization</ModalHeader> */}
+                {/* <ModalCloseButton /> */}
+
+                <CreateOrganization />
               </ModalContent>
             </Modal>
           </PopoverFooter>
