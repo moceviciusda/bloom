@@ -24,6 +24,7 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { api } from '~/trpc/react';
 import slugify from '~/utils/slugify';
 import { useUploadThing } from '~/utils/uploadthing';
+import LoadingSpinner from '../loading-spinner';
 
 interface GeneralSettingsProps {
   organization: Organization;
@@ -142,7 +143,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
 const OrgLogo: React.FC<{ organization: Organization }> = ({
   organization,
 }) => {
-  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const router = useRouter();
 
   const hiddenInputRef = useRef<HTMLInputElement>(null);
@@ -150,6 +151,9 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
   const updateImage = api.organization.updateImage.useMutation({
     onSuccess: () => {
       router.refresh();
+    },
+    onSettled: () => {
+      setUploading(false);
     },
   });
 
@@ -170,6 +174,7 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
       console.error('Upload error:', error.message);
     },
     onUploadBegin: () => {
+      setUploading(true);
       console.log('Upload started');
     },
   });
@@ -180,31 +185,35 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
         size='xl'
         boxSize='112px'
         borderRadius={12}
-        src={organization.image ?? undefined}
+        src={!uploading ? organization.image ?? undefined : undefined}
         bg={'purple.500'}
-        icon={<GoOrganization />}
+        icon={
+          !uploading ? <GoOrganization /> : <LoadingSpinner color='white' />
+        }
         cursor='pointer'
         _hover={{ opacity: 0.9, transition: 'opacity 0.3s' }}
-        onClick={(e) => hiddenInputRef.current?.click()}
+        onClick={() => hiddenInputRef.current?.click()}
       >
-        <AvatarBadge
-          as={MdDeleteOutline}
-          color='blackAlpha.600'
-          bg='blackAlpha.600'
-          border='2px solid var(--chakra-colors-blackAlpha-400)'
-          cursor='pointer'
-          onClick={(e) => {
-            e.stopPropagation();
-            deleteImage.mutate({ slug: organization.slug });
-            router.refresh();
-          }}
-          _hover={{
-            bg: 'blackAlpha.700',
-            color: 'red.700',
-            border: '2px solid var(--chakra-colors-red-700)',
-            transition: 'all 0.3s',
-          }}
-        />
+        {!uploading && (
+          <AvatarBadge
+            as={MdDeleteOutline}
+            color='blackAlpha.600'
+            bg='blackAlpha.600'
+            border='2px solid var(--chakra-colors-blackAlpha-400)'
+            cursor='pointer'
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteImage.mutate({ slug: organization.slug });
+              router.refresh();
+            }}
+            _hover={{
+              bg: 'blackAlpha.700',
+              color: 'red.700',
+              border: '2px solid var(--chakra-colors-red-700)',
+              transition: 'all 0.3s',
+            }}
+          />
+        )}
       </Avatar>
       <input
         type='file'
@@ -212,10 +221,7 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
         style={{ display: 'none' }}
         onChange={async (e) => {
           const file = e.target.files?.[0];
-          if (file) {
-            setFile(file);
-            await startUpload([file], organization.slug);
-          }
+          if (file) await startUpload([file], organization.slug);
         }}
       />
     </>

@@ -12,10 +12,7 @@ import {
   Icon,
   Link,
   Modal,
-  ModalBody,
-  ModalCloseButton,
   ModalContent,
-  ModalHeader,
   ModalOverlay,
   Popover,
   PopoverBody,
@@ -40,7 +37,7 @@ import OrganizationPlate from '~/app/_components/organization-plate';
 import { TbCalendarDollar } from 'react-icons/tb';
 import { MdHelpOutline } from 'react-icons/md';
 import { RiProfileLine, RiSettings3Line } from 'react-icons/ri';
-import { CreateOrganization } from '~/app/_components/organization-card/create-organization';
+import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 
 interface NavbarProps {
   session: Session;
@@ -159,6 +156,8 @@ const OrganizationSelector = ({
                 key={org.id}
                 href={`/${org.slug}`}
                 bg={org.id === currentOrg.id ? 'gray.100' : undefined}
+                py={1}
+                pr={4}
               >
                 <OrganizationPlate organization={org} />
               </NavLink>
@@ -178,7 +177,7 @@ const OrganizationSelector = ({
                 {/* <ModalHeader>New Organization</ModalHeader> */}
                 {/* <ModalCloseButton /> */}
 
-                <CreateOrganization />
+                <NewOrganization />
               </ModalContent>
             </Modal>
           </PopoverFooter>

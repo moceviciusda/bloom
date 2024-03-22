@@ -17,7 +17,7 @@ import {
 import { api } from '~/trpc/react';
 import { TbArrowBackUp } from 'react-icons/tb';
 
-export const CreateOrganization = () => {
+export const NewOrganization = () => {
   const router = useRouter();
   const [name, setName] = useState('');
   const [isOpen, setIsOpen] = useState(false);

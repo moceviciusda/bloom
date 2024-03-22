@@ -1,9 +1,9 @@
-import { Center, Spinner } from '@chakra-ui/react';
+import { Center, Spinner, type SpinnerProps } from '@chakra-ui/react';
 
-const LoadingSpinner = () => {
+const LoadingSpinner: React.FC<SpinnerProps> = (props) => {
   return (
     <Center flex={1}>
-      <Spinner size='xl' color='purple.600' thickness='4px' />
+      <Spinner size='xl' color='purple.600' thickness='4px' {...props} />
     </Center>
   );
 };

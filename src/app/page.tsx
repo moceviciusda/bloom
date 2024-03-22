@@ -1,6 +1,6 @@
 // import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
-import { CreateOrganization } from '~/app/_components/organization-card/create-organization';
+import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { getServerAuthSession } from '~/server/auth';
 import styles from './index.module.css';
 import { Box, Flex, HStack, VStack } from '@chakra-ui/react';
@@ -115,7 +115,7 @@ const OrgSelection = async () => {
             </Suspense>
           ))}
 
-        <CreateOrganization />
+        <NewOrganization />
       </VStack>
     </VStack>
   );
