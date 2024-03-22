@@ -161,6 +161,9 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
     onSuccess: () => {
       router.refresh();
     },
+    onSettled: () => {
+      setUploading(false);
+    },
   });
 
   const { startUpload, permittedFileInfo } = useUploadThing('imageUploader', {
@@ -194,22 +197,22 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
         _hover={{ opacity: 0.9, transition: 'opacity 0.3s' }}
         onClick={() => hiddenInputRef.current?.click()}
       >
-        {!uploading && (
+        {organization.image && !uploading && (
           <AvatarBadge
             as={MdDeleteOutline}
-            color='blackAlpha.600'
-            bg='blackAlpha.600'
+            color='blackAlpha.800'
+            bg='blackAlpha.700'
             border='2px solid var(--chakra-colors-blackAlpha-400)'
             cursor='pointer'
             onClick={(e) => {
               e.stopPropagation();
+              setUploading(true);
               deleteImage.mutate({ slug: organization.slug });
-              router.refresh();
             }}
             _hover={{
-              bg: 'blackAlpha.700',
+              bg: 'blackAlpha.900',
               color: 'red.700',
-              border: '2px solid var(--chakra-colors-red-700)',
+              // border: '2px solid var(--chakra-colors-red-700)',
               transition: 'all 0.3s',
             }}
           />
