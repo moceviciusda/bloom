@@ -13,6 +13,7 @@ import {
   InputGroup,
   InputLeftAddon,
   Text,
+  Tooltip,
   VStack,
 } from '@chakra-ui/react';
 import { type Organization } from '@prisma/client';
@@ -76,13 +77,17 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
-
-              <Button
-                type='submit'
-                isDisabled={name === organization.name || !name.trim()}
+              <Tooltip
+                variant='bloom'
+                label={name === organization.name ? 'No changes' : ''}
               >
-                Rename
-              </Button>
+                <Button
+                  type='submit'
+                  isDisabled={name === organization.name || !name.trim()}
+                >
+                  Rename
+                </Button>
+              </Tooltip>
             </Flex>
             {updateName.error && (
               <FormErrorMessage>{updateName.error.message}</FormErrorMessage>
@@ -110,12 +115,17 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
                 />
               </InputGroup>
 
-              <Button
-                type='submit'
-                isDisabled={slug === organization.slug || !slug.trim()}
+              <Tooltip
+                variant='bloom'
+                label={slug === organization.slug ? 'No changes' : ''}
               >
-                Change
-              </Button>
+                <Button
+                  type='submit'
+                  isDisabled={slug === organization.slug || !slug.trim()}
+                >
+                  Change
+                </Button>
+              </Tooltip>
             </Flex>
             {updateSlug.error && (
               <FormErrorMessage>{updateSlug.error.message}</FormErrorMessage>
@@ -157,7 +167,7 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
       router.refresh();
     },
     onUploadError: (error) => {
-      console.error('Upload error:', error);
+      console.error('Upload error:', error.message);
     },
     onUploadBegin: () => {
       console.log('Upload started');
@@ -204,7 +214,7 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
           const file = e.target.files?.[0];
           if (file) {
             setFile(file);
-            await startUpload([file]);
+            await startUpload([file], organization.slug);
           }
         }}
       />

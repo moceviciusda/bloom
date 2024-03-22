@@ -15,9 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { api } from '~/trpc/react';
-import { FaTimes } from 'react-icons/fa';
 import { TbArrowBackUp } from 'react-icons/tb';
-import { set } from 'zod';
 
 export const CreateOrganization = () => {
   const router = useRouter();
