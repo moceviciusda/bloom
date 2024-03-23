@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { type Organization } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { type ChangeEvent, useRef, useState } from 'react';
 import { GoOrganization } from 'react-icons/go';
 import { MdDeleteOutline } from 'react-icons/md';
 import { api } from '~/trpc/react';
@@ -48,6 +48,13 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
     },
   });
 
+  const slugFieldError =
+    updateSlug.failureReason?.data?.zodError?.fieldErrors.newSlug;
+
+  const nameFieldError =
+    updateName.failureReason?.data?.zodError?.fieldErrors.name;
+  console.log('nameFieldError', nameFieldError);
+
   return (
     <>
       {/* <VStack py={2} align='stretch'> */}
@@ -63,13 +70,17 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
         </VStack>
 
         <VStack flex={1}>
-          <FormControl>
+          <FormControl isInvalid={updateName.isError}>
             <Text>Organization Name</Text>
             <Flex
               as='form'
-              action={() =>
-                updateName.mutate({ name, slug: organization.slug })
-              }
+              action={() => {
+                setName(name.trim());
+                updateName.mutate({
+                  name: name.trim(),
+                  slug: organization.slug,
+                });
+              }}
               gap={2}
               flexDir={{ base: 'column', md: 'row' }}
             >
@@ -80,28 +91,35 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
               />
               <Tooltip
                 variant='bloom'
-                label={name === organization.name ? 'No changes' : ''}
+                label={name.trim() === organization.name ? 'No changes' : ''}
               >
                 <Button
                   type='submit'
-                  isDisabled={name === organization.name || !name.trim()}
+                  isDisabled={name.trim() === organization.name || !name.trim()}
+                  isLoading={updateName.isLoading}
                 >
                   Rename
                 </Button>
               </Tooltip>
             </Flex>
             {updateName.error && (
-              <FormErrorMessage>{updateName.error.message}</FormErrorMessage>
+              <FormErrorMessage fontSize='xs'>
+                {nameFieldError?.[0] ?? updateName.error.message}
+              </FormErrorMessage>
             )}
           </FormControl>
 
-          <FormControl isInvalid={!!updateSlug.error}>
+          <FormControl isInvalid={updateSlug.isError}>
             <Text>Url Slug</Text>
             <Flex
               as='form'
-              action={() =>
-                updateSlug.mutate({ newSlug: slug, slug: organization.slug })
-              }
+              action={() => {
+                setSlug(slug.trim());
+                updateSlug.mutate({
+                  newSlug: slug.trim(),
+                  slug: organization.slug,
+                });
+              }}
               gap={2}
               flexDir={{ base: 'column', md: 'row' }}
             >
@@ -118,18 +136,21 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
 
               <Tooltip
                 variant='bloom'
-                label={slug === organization.slug ? 'No changes' : ''}
+                label={slug.trim() === organization.slug ? 'No changes' : ''}
               >
                 <Button
                   type='submit'
-                  isDisabled={slug === organization.slug || !slug.trim()}
+                  isDisabled={slug.trim() === organization.slug || !slug.trim()}
+                  isLoading={updateSlug.isLoading}
                 >
                   Change
                 </Button>
               </Tooltip>
             </Flex>
             {updateSlug.error && (
-              <FormErrorMessage>{updateSlug.error.message}</FormErrorMessage>
+              <FormErrorMessage fontSize='xs'>
+                {slugFieldError?.[0] ?? updateSlug.error.message}
+              </FormErrorMessage>
             )}
           </FormControl>
         </VStack>
@@ -144,6 +165,8 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
   organization,
 }) => {
   const [uploading, setUploading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+
   const router = useRouter();
 
   const hiddenInputRef = useRef<HTMLInputElement>(null);
@@ -166,34 +189,42 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
     },
   });
 
-  const { startUpload, permittedFileInfo } = useUploadThing('imageUploader', {
-    onClientUploadComplete: (file) => {
-      const imageUrl = file[0]?.url;
-      imageUrl &&
-        updateImage.mutate({ slug: organization.slug, image: imageUrl });
-      router.refresh();
-    },
-    onUploadError: (error) => {
-      console.error('Upload error:', error.message);
-    },
-    onUploadBegin: () => {
-      setUploading(true);
-      console.log('Upload started');
-    },
-  });
+  const { startUpload, permittedFileInfo } = useUploadThing(
+    'orgImageUploader',
+    {
+      onClientUploadComplete: (file) => {
+        const imageUrl = file[0]?.url;
+        imageUrl &&
+          updateImage.mutate({ slug: organization.slug, image: imageUrl });
+        router.refresh();
+      },
+      onUploadBegin: () => setUploading(true),
+    }
+  );
+
+  const uploadHandler = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFile(file);
+    await startUpload([file]);
+  };
 
   return (
-    <>
+    <FormControl isInvalid={true}>
       <Avatar
         size='xl'
         boxSize='112px'
         borderRadius={12}
-        src={!uploading ? organization.image ?? undefined : undefined}
-        bg={'purple.500'}
-        icon={
-          !uploading ? <GoOrganization /> : <LoadingSpinner color='white' />
+        border={
+          !!organization.image
+            ? 'none'
+            : '1px solid var(--chakra-colors-chakra-border-color)'
         }
-        cursor='pointer'
+        color='blackAlpha.700'
+        src={!uploading ? organization.image ?? undefined : undefined}
+        bg={'transparent'}
+        icon={!uploading ? <GoOrganization /> : <LoadingSpinner />}
+        cursor={uploading ? 'wait' : 'pointer'}
         _hover={{ opacity: 0.9, transition: 'opacity 0.3s' }}
         onClick={() => hiddenInputRef.current?.click()}
       >
@@ -212,22 +243,26 @@ const OrgLogo: React.FC<{ organization: Organization }> = ({
             _hover={{
               bg: 'blackAlpha.900',
               color: 'red.700',
-              // border: '2px solid var(--chakra-colors-red-700)',
               transition: 'all 0.3s',
             }}
           />
         )}
       </Avatar>
+      {file && file?.size > 2097152 && (
+        <FormErrorMessage fontSize='xs'>
+          Max file size: {permittedFileInfo?.config.image?.maxFileSize}
+        </FormErrorMessage>
+      )}
       <input
         type='file'
         ref={hiddenInputRef}
         style={{ display: 'none' }}
-        onChange={async (e) => {
-          const file = e.target.files?.[0];
-          if (file) await startUpload([file], organization.slug);
-        }}
+        disabled={uploading}
+        value=''
+        accept='image/*'
+        onChange={(e) => uploadHandler(e)}
       />
-    </>
+    </FormControl>
   );
 };
 

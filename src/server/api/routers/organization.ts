@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import { randomBytes } from 'crypto';
 import { z } from 'zod';
 
@@ -110,12 +111,12 @@ export const organizationRouter = createTRPCRouter({
     }),
 
   updateName: protectedProcedure
-    .input(z.object({ slug: z.string(), name: z.string().min(1) }))
+    .input(z.object({ slug: z.string(), name: z.string().min(1).max(64) }))
     .mutation(async ({ ctx, input }) => {
       const organization = await ctx.db.organization.findUnique({
         where: { slug: input.slug },
       });
-      if (!organization) throw new Error('Organization not found');
+      if (!organization) throw new Error('Unexpected Error');
       if (input.name === organization.name) return;
 
       const isOwnerOrAdmin = await ctx.db.usersOnOrganizations.findFirst({
@@ -152,12 +153,12 @@ export const organizationRouter = createTRPCRouter({
     }),
 
   updateSlug: protectedProcedure
-    .input(z.object({ slug: z.string(), newSlug: z.string() }))
+    .input(z.object({ slug: z.string(), newSlug: z.string().max(128) }))
     .mutation(async ({ ctx, input }) => {
       const organization = await ctx.db.organization.findUnique({
         where: { slug: input.slug },
       });
-      if (!organization) throw new Error('Organization not found');
+      if (!organization) throw new Error('Unexpected Error');
 
       const newSlug = slugify(input.newSlug);
 
