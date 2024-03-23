@@ -286,6 +286,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
         </AutoComplete>
 
         <Button
+          isDisabled={!selectedUser}
           onClick={() => {
             updateRole.mutate({
               organizationId: organization.id,
@@ -295,7 +296,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
             setSelectedUser('');
           }}
         >
-          New admin
+          Add admin
         </Button>
       </CardFooter>
     </Card>

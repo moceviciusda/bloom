@@ -3,19 +3,13 @@
 import {
   Avatar,
   Button,
-  ButtonGroup,
   Card,
   CardBody,
   CardHeader,
   Divider,
-  Flex,
-  FormControl,
-  FormLabel,
   HStack,
   Heading,
   Input,
-  InputGroup,
-  InputRightAddon,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -27,7 +21,6 @@ import {
   StatLabel,
   StatNumber,
   Text,
-  VStack,
   useDisclosure,
 } from '@chakra-ui/react';
 import { type Organization } from '@prisma/client';
@@ -53,8 +46,8 @@ const DangerZone: React.FC<DangerZoneProps> = ({ organization }) => {
             <Text as='span' color='red.600'>
               Danger Zone
             </Text>{' '}
-            actions are only available to the owner and could have a negative
-            impact on your organization and its data.
+            actions could have a negative impact on your organization and its
+            data are only available to the owner.
           </Text>
           <Text>
             These actions are irreversible. Please be certain before proceeding.
