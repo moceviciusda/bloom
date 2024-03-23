@@ -23,10 +23,9 @@ import {
   AutoCompleteInput,
   AutoCompleteItem,
   AutoCompleteList,
-  AutoCompleteTag,
 } from '@choc-ui/chakra-autocomplete';
 import { type OrganizationSecret, type Organization } from '@prisma/client';
-import { useState } from 'react';
+import { type FocusEvent, useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { LuClipboardCheck, LuClipboardCopy } from 'react-icons/lu';
 import { api } from '~/trpc/react';
@@ -42,23 +41,9 @@ const AccessSettings: React.FC<AccessSettingsProps> = ({ organization }) => {
     slug: organization.slug,
   });
 
-  const admins = api.organization.getAdmins.useQuery({
-    slug: organization.slug,
-  });
-
-  const users = api.organization.getUsers.useQuery({
-    slug: organization.slug,
-  });
-
   const generateSecret = api.organization.generateSecret.useMutation({
     onSuccess: async () => {
       await secrets.refetch();
-    },
-  });
-
-  const demoteAdmin = api.organization.updateUserRole.useMutation({
-    onSuccess: async () => {
-      await admins.refetch();
     },
   });
 
@@ -115,95 +100,7 @@ const AccessSettings: React.FC<AccessSettingsProps> = ({ organization }) => {
         </CardFooter>
       </Card>
 
-      <Card size='sm' variant='outline'>
-        <CardHeader>
-          <Text>Admins</Text>
-          <Text fontSize={14}>
-            Admins can manage organization settings and invite new members. They
-            can&apos;t access the{' '}
-            <Text as='span' color='red.500'>
-              Danger Zone
-            </Text>
-            , assign or remove admins.
-          </Text>
-        </CardHeader>
-        <Divider />
-        <CardBody p={0}>
-          {admins.isLoading ? (
-            <>
-              <HStack justify='space-between' p={2}>
-                <UserPlateSkeleton />
-                <Skeleton w='92px' h={10} borderRadius={6} />
-              </HStack>
-              <HStack justify='space-between' p={2}>
-                <UserPlateSkeleton />
-                <Skeleton w='92px' h={10} borderRadius={6} />
-              </HStack>
-              <HStack justify='space-between' p={2}>
-                <UserPlateSkeleton />
-                <Skeleton w='92px' h={10} borderRadius={6} />
-              </HStack>
-            </>
-          ) : (
-            admins.data?.map((admin) => (
-              <HStack
-                key={admin.user.id}
-                justify='space-between'
-                p={2}
-                _hover={{
-                  bg: 'gray.50',
-                  transition: 'background-color 0.3s ease',
-                }}
-              >
-                <UserPlate user={admin.user} />
-                <Button
-                  onClick={() =>
-                    demoteAdmin.mutate({
-                      organizationId: organization.id,
-                      userId: admin.user.id,
-                      role: 'USER',
-                    })
-                  }
-                  colorScheme='red'
-                  variant='ghost'
-                  _hover={{ color: 'white', bg: 'red.600' }}
-                >
-                  Demote
-                </Button>
-              </HStack>
-            ))
-          )}
-        </CardBody>
-        <Divider />
-        <CardFooter gap={2}>
-          <AutoComplete
-            openOnFocus
-            multiple
-            isLoading={users.isLoading}
-            onChange={(vals: string[]) => console.log(vals)}
-          >
-            <AutoCompleteInput minH='26px' loadingIcon>
-              {({ tags }) =>
-                tags.map((tag, tid) => (
-                  <AutoCompleteTag
-                    key={tid}
-                    label={tag.label}
-                    onRemove={tag.onRemove}
-                  />
-                ))
-              }
-            </AutoCompleteInput>
-            <AutoCompleteList loadingState={<LoadingSpinner />}>
-              {users.data?.map((user) => (
-                <AutoCompleteItem key={user.userId} value={user.user.name}>
-                  <UserPlate user={user.user} />
-                </AutoCompleteItem>
-              ))}
-            </AutoCompleteList>
-          </AutoComplete>
-          <Button>New admin</Button>
-        </CardFooter>
-      </Card>
+      <AdminsCard organization={organization} />
     </>
   );
 };
@@ -281,6 +178,131 @@ const SecretCard: React.FC<{
         Delete
       </Button>
     </HStack>
+  );
+};
+
+const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
+  const [selectedUser, setSelectedUser] = useState('');
+
+  const admins = api.organization.getAdmins.useQuery({
+    slug: organization.slug,
+  });
+
+  const users = api.organization.getUsers.useQuery({
+    slug: organization.slug,
+  });
+
+  const updateRole = api.organization.updateUserRole.useMutation({
+    onSuccess: async () => {
+      await admins.refetch();
+    },
+  });
+
+  return (
+    <Card size='sm' variant='outline'>
+      <CardHeader>
+        <Text>Admins</Text>
+        <Text fontSize={14}>
+          Admins can manage organization settings and invite new members. They
+          can&apos;t access the{' '}
+          <Text as='span' color='red.500'>
+            Danger Zone
+          </Text>
+          , assign or remove admins.
+        </Text>
+      </CardHeader>
+      <Divider />
+      <CardBody p={0}>
+        {admins.isLoading ? (
+          <>
+            <HStack justify='space-between' p={2}>
+              <UserPlateSkeleton />
+              <Skeleton w='92px' h={10} borderRadius={6} />
+            </HStack>
+            <HStack justify='space-between' p={2}>
+              <UserPlateSkeleton />
+              <Skeleton w='92px' h={10} borderRadius={6} />
+            </HStack>
+            <HStack justify='space-between' p={2}>
+              <UserPlateSkeleton />
+              <Skeleton w='92px' h={10} borderRadius={6} />
+            </HStack>
+          </>
+        ) : (
+          admins.data?.map((admin) => (
+            <HStack
+              key={admin.user.id}
+              justify='space-between'
+              p={2}
+              _hover={{
+                bg: 'gray.50',
+                transition: 'background-color 0.3s ease',
+              }}
+            >
+              <UserPlate user={admin.user} />
+              <Button
+                onClick={() =>
+                  updateRole.mutate({
+                    organizationId: organization.id,
+                    userId: admin.user.id,
+                    role: 'USER',
+                  })
+                }
+                colorScheme='red'
+                variant='ghost'
+                _hover={{ color: 'white', bg: 'red.600' }}
+              >
+                Demote
+              </Button>
+            </HStack>
+          ))
+        )}
+      </CardBody>
+      <Divider />
+
+      <CardFooter gap={2}>
+        <AutoComplete
+          openOnFocus
+          isLoading={users.isLoading}
+          onChange={(userId: string) => setSelectedUser(userId)}
+        >
+          <AutoCompleteInput
+            loadingIcon
+            onFocus={(e: FocusEvent<HTMLInputElement>) => e.target.select()}
+          />
+          <AutoCompleteList loadingState={<LoadingSpinner />}>
+            {users.data?.map(
+              (user) =>
+                user.role !== 'OWNER' &&
+                !admins.data?.some(
+                  (admin) => admin.user.id === user.userId
+                ) && (
+                  <AutoCompleteItem
+                    key={user.userId}
+                    value={user.userId}
+                    label={user.user.name}
+                  >
+                    <UserPlate user={user.user} />
+                  </AutoCompleteItem>
+                )
+            )}
+          </AutoCompleteList>
+        </AutoComplete>
+
+        <Button
+          onClick={() => {
+            updateRole.mutate({
+              organizationId: organization.id,
+              userId: selectedUser,
+              role: 'ADMIN',
+            });
+            setSelectedUser('');
+          }}
+        >
+          Add admin
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 
