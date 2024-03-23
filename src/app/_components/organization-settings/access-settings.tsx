@@ -2,6 +2,10 @@
 
 import {
   Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
   Divider,
   FormControl,
   HStack,
@@ -10,37 +14,39 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  Skeleton,
   Text,
   Tooltip,
 } from '@chakra-ui/react';
 import {
-  type OrganizationSecret,
-  type Organization,
-  type Prisma,
-} from '@prisma/client';
+  AutoComplete,
+  AutoCompleteInput,
+  AutoCompleteItem,
+  AutoCompleteList,
+  AutoCompleteTag,
+} from '@choc-ui/chakra-autocomplete';
+import { type OrganizationSecret, type Organization } from '@prisma/client';
 import { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { LuClipboardCheck, LuClipboardCopy } from 'react-icons/lu';
 import { api } from '~/trpc/react';
-import UserPlate from '../user-plate';
+import UserPlate, { UserPlateSkeleton } from '../user-plate';
 import LoadingSpinner from '../loading-spinner';
 
 interface AccessSettingsProps {
   organization: Organization;
-  // admins: Prisma.UsersOnOrganizationsGetPayload<{
-  //   include: { user: true };
-  // }>[];
 }
 
-const AccessSettings: React.FC<AccessSettingsProps> = ({
-  organization,
-  // admins,
-}) => {
+const AccessSettings: React.FC<AccessSettingsProps> = ({ organization }) => {
   const secrets = api.organization.getSecrets.useQuery({
     slug: organization.slug,
   });
 
   const admins = api.organization.getAdmins.useQuery({
+    slug: organization.slug,
+  });
+
+  const users = api.organization.getUsers.useQuery({
     slug: organization.slug,
   });
 
@@ -56,7 +62,7 @@ const AccessSettings: React.FC<AccessSettingsProps> = ({
     },
   });
 
-  if (secrets.isLoading || admins.isLoading) return <LoadingSpinner />;
+  // if (admins.isLoading) return <LoadingSpinner />;
 
   return (
     <>
@@ -64,67 +70,150 @@ const AccessSettings: React.FC<AccessSettingsProps> = ({
 
       <Divider />
 
-      <Text>Secrets</Text>
-      <Text fontSize={14}>
-        Secrets are used to join your organization without an invitation link or
-        admin approval. Only share them with people you trust.
-      </Text>
+      <Card size='sm' variant='outline'>
+        <CardHeader>
+          <Text>Secrets</Text>
+          <Text fontSize={14}>
+            Secrets are used to join your organization without an invitation
+            link or admin approval. Only share them with people you trust.
+          </Text>
+        </CardHeader>
 
-      {secrets.data?.map((secret) => (
-        <SecretCard
-          key={secret.id}
-          orgSecret={secret}
-          onDelete={async () => secrets.refetch()}
-        />
-      ))}
-      <Tooltip
-        variant='bloom'
-        label={
-          secrets.data && secrets.data.length > 3
-            ? 'You can only have 4 secrets at a time'
-            : ''
-        }
-      >
-        <Button
-          isLoading={generateSecret.isLoading}
-          isDisabled={(secrets.data && secrets.data.length > 3) ?? undefined}
-          onClick={() => generateSecret.mutate({ id: organization.id })}
-        >
-          Generate new secret
-        </Button>
-      </Tooltip>
-
-      <Divider />
-
-      <Text>Admins</Text>
-      <Text fontSize={14}>
-        Admins can manage organization settings, invite new members. They
-        can&apos;t access the{' '}
-        <Text as='span' color='red.500'>
-          Danger Zone
-        </Text>
-        , assign or remove admins.
-      </Text>
-
-      {admins.data?.map((admin) => (
-        <HStack key={admin.user.id}>
-          <UserPlate user={admin.user} />
-          <Button
-            onClick={() =>
-              demoteAdmin.mutate({
-                organizationId: organization.id,
-                userId: admin.user.id,
-                role: 'USER',
-              })
+        <CardBody py={0}>
+          {secrets.isLoading ? (
+            <SecretCardSkeleton />
+          ) : (
+            secrets.data?.map((secret) => (
+              <SecretCard
+                key={secret.id}
+                orgSecret={secret}
+                onDelete={async () => secrets.refetch()}
+              />
+            ))
+          )}
+        </CardBody>
+        <CardFooter>
+          <Tooltip
+            variant='bloom'
+            label={
+              secrets.data && secrets.data.length > 1
+                ? 'You can only have 2 secrets at a time'
+                : ''
             }
-            colorScheme='red'
-            variant='ghost'
           >
-            X
-          </Button>
-        </HStack>
-      ))}
+            <Button
+              flex={1}
+              isLoading={generateSecret.isLoading}
+              isDisabled={
+                (secrets.data && secrets.data.length > 1) ?? secrets.isLoading
+              }
+              onClick={() => generateSecret.mutate({ id: organization.id })}
+            >
+              Generate new secret
+            </Button>
+          </Tooltip>
+        </CardFooter>
+      </Card>
+
+      <Card size='sm' variant='outline'>
+        <CardHeader>
+          <Text>Admins</Text>
+          <Text fontSize={14}>
+            Admins can manage organization settings and invite new members. They
+            can&apos;t access the{' '}
+            <Text as='span' color='red.500'>
+              Danger Zone
+            </Text>
+            , assign or remove admins.
+          </Text>
+        </CardHeader>
+        <Divider />
+        <CardBody p={0}>
+          {admins.isLoading ? (
+            <>
+              <HStack justify='space-between' p={2}>
+                <UserPlateSkeleton />
+                <Skeleton w='92px' h={10} borderRadius={6} />
+              </HStack>
+              <HStack justify='space-between' p={2}>
+                <UserPlateSkeleton />
+                <Skeleton w='92px' h={10} borderRadius={6} />
+              </HStack>
+              <HStack justify='space-between' p={2}>
+                <UserPlateSkeleton />
+                <Skeleton w='92px' h={10} borderRadius={6} />
+              </HStack>
+            </>
+          ) : (
+            admins.data?.map((admin) => (
+              <HStack
+                key={admin.user.id}
+                justify='space-between'
+                p={2}
+                _hover={{
+                  bg: 'gray.50',
+                  transition: 'background-color 0.3s ease',
+                }}
+              >
+                <UserPlate user={admin.user} />
+                <Button
+                  onClick={() =>
+                    demoteAdmin.mutate({
+                      organizationId: organization.id,
+                      userId: admin.user.id,
+                      role: 'USER',
+                    })
+                  }
+                  colorScheme='red'
+                  variant='ghost'
+                  _hover={{ color: 'white', bg: 'red.600' }}
+                >
+                  Demote
+                </Button>
+              </HStack>
+            ))
+          )}
+        </CardBody>
+        <Divider />
+        <CardFooter gap={2}>
+          <AutoComplete
+            openOnFocus
+            multiple
+            isLoading={users.isLoading}
+            onChange={(vals: string[]) => console.log(vals)}
+          >
+            <AutoCompleteInput minH='26px' loadingIcon>
+              {({ tags }) =>
+                tags.map((tag, tid) => (
+                  <AutoCompleteTag
+                    key={tid}
+                    label={tag.label}
+                    onRemove={tag.onRemove}
+                  />
+                ))
+              }
+            </AutoCompleteInput>
+            <AutoCompleteList loadingState={<LoadingSpinner />}>
+              {users.data?.map((user) => (
+                <AutoCompleteItem key={user.userId} value={user.user.name}>
+                  <UserPlate user={user.user} />
+                </AutoCompleteItem>
+              ))}
+            </AutoCompleteList>
+          </AutoComplete>
+          <Button>New admin</Button>
+        </CardFooter>
+      </Card>
     </>
+  );
+};
+
+const SecretCardSkeleton: React.FC = () => {
+  return (
+    <HStack align='stretch'>
+      <Skeleton flex={1} h={10} borderRadius={6} fadeDuration={2} />
+      <Skeleton w={20} borderRadius={6} fadeDuration={2} />
+    </HStack>
   );
 };
 
@@ -144,6 +233,7 @@ const SecretCard: React.FC<{
       <FormControl>
         <InputGroup>
           <Input
+            variant='filled'
             value={orgSecret.secret}
             isReadOnly
             type={hidden ? 'password' : 'text'}

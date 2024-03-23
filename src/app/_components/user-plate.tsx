@@ -6,6 +6,9 @@ import {
   type TextProps,
   VStack,
   type StackProps,
+  Skeleton,
+  SkeletonCircle,
+  SkeletonText,
 } from '@chakra-ui/react';
 import { type User } from '@prisma/client';
 import { type User as AuthUser } from 'next-auth';
@@ -47,6 +50,13 @@ const UserPlate: React.FC<Props> = ({
         {user.email}
       </Text>
     </VStack>
+  </HStack>
+);
+
+export const UserPlateSkeleton: React.FC = () => (
+  <HStack>
+    <SkeletonCircle size='8' />
+    <SkeletonText noOfLines={2} w='170px' />
   </HStack>
 );
 
