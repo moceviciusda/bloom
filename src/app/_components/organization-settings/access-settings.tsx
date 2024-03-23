@@ -47,13 +47,9 @@ const AccessSettings: React.FC<AccessSettingsProps> = ({ organization }) => {
     },
   });
 
-  // if (admins.isLoading) return <LoadingSpinner />;
-
   return (
     <>
       <Heading size='md'>Access</Heading>
-
-      <Divider />
 
       <Card size='sm' variant='outline'>
         <CardHeader>

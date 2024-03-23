@@ -9,6 +9,7 @@ import {
   Flex,
   FormControl,
   FormErrorMessage,
+  Heading,
   Input,
   InputGroup,
   InputLeftAddon,
@@ -55,114 +56,116 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
     updateName.failureReason?.data?.zodError?.fieldErrors.name;
 
   return (
-    <Card size='sm' variant='outline'>
-      <CardBody>
-        {/* <VStack py={2} align='stretch'> */}
-        {/* <Heading size='md'>General</Heading>
+    <>
+      <Heading size='md'>General</Heading>
 
-        <Divider /> */}
+      <Card size='sm' variant='outline'>
+        <CardBody>
+          <Flex
+            align='stretch'
+            gap={10}
+            flexDir={{ base: 'column', md: 'row' }}
+          >
+            <VStack align='flex-start' gap={0}>
+              <Text>Logo</Text>
+              <OrgLogo organization={organization} />
+            </VStack>
 
-        <Text fontSize={14}>
-          Manage how your organization appears to others.
-        </Text>
-        <Flex align='stretch' gap={10} flexDir={{ base: 'column', md: 'row' }}>
-          <VStack align='flex-start' gap={0}>
-            <Text>Logo</Text>
-            <OrgLogo organization={organization} />
-          </VStack>
-
-          <VStack flex={1}>
-            <FormControl isInvalid={updateName.isError}>
-              <Text>Organization Name</Text>
-              <Flex
-                as='form'
-                action={() => {
-                  setName(name.trim());
-                  updateName.mutate({
-                    name: name.trim(),
-                    slug: organization.slug,
-                  });
-                }}
-                gap={2}
-                flexDir={{ base: 'column', md: 'row' }}
-              >
-                <Input
-                  type='text'
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
-                <Tooltip
-                  variant='bloom'
-                  label={name.trim() === organization.name ? 'No changes' : ''}
+            <VStack flex={1}>
+              <FormControl isInvalid={updateName.isError}>
+                <Text>Organization Name</Text>
+                <Flex
+                  as='form'
+                  action={() => {
+                    setName(name.trim());
+                    updateName.mutate({
+                      name: name.trim(),
+                      slug: organization.slug,
+                    });
+                  }}
+                  gap={2}
+                  flexDir={{ base: 'column', md: 'row' }}
                 >
-                  <Button
-                    type='submit'
-                    isDisabled={
-                      name.trim() === organization.name || !name.trim()
-                    }
-                    isLoading={updateName.isLoading}
-                  >
-                    Rename
-                  </Button>
-                </Tooltip>
-              </Flex>
-
-              <FormErrorMessage fontSize='xs'>
-                {nameFieldError?.[0] ?? updateName.error?.message}
-              </FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid={updateSlug.isError}>
-              <Text>Url Slug</Text>
-              <Flex
-                as='form'
-                action={() => {
-                  setSlug(slug.trim());
-                  updateSlug.mutate({
-                    newSlug: slug.trim(),
-                    slug: organization.slug,
-                  });
-                }}
-                gap={2}
-                flexDir={{ base: 'column', md: 'row' }}
-              >
-                <InputGroup>
-                  <InputLeftAddon pr={1}>https://bloom.com/</InputLeftAddon>
-
                   <Input
-                    pl={1}
                     type='text'
-                    value={slug}
-                    onChange={(e) => setSlug(e.target.value)}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                   />
-                </InputGroup>
-
-                <Tooltip
-                  variant='bloom'
-                  label={slug.trim() === organization.slug ? 'No changes' : ''}
-                >
-                  <Button
-                    type='submit'
-                    isDisabled={
-                      slug.trim() === organization.slug || !slug.trim()
+                  <Tooltip
+                    variant='bloom'
+                    label={
+                      name.trim() === organization.name ? 'No changes' : ''
                     }
-                    isLoading={updateSlug.isLoading}
                   >
-                    Change
-                  </Button>
-                </Tooltip>
-              </Flex>
+                    <Button
+                      type='submit'
+                      isDisabled={
+                        name.trim() === organization.name || !name.trim()
+                      }
+                      isLoading={updateName.isLoading}
+                    >
+                      Rename
+                    </Button>
+                  </Tooltip>
+                </Flex>
 
-              <FormErrorMessage fontSize='xs'>
-                {slugFieldError?.[0] ?? updateSlug.error?.message}
-              </FormErrorMessage>
-            </FormControl>
-          </VStack>
-        </Flex>
+                <FormErrorMessage fontSize='xs'>
+                  {nameFieldError?.[0] ?? updateName.error?.message}
+                </FormErrorMessage>
+              </FormControl>
 
-        {/* </VStack> */}
-      </CardBody>
-    </Card>
+              <FormControl isInvalid={updateSlug.isError}>
+                <Text>Url Slug</Text>
+                <Flex
+                  as='form'
+                  action={() => {
+                    setSlug(slug.trim());
+                    updateSlug.mutate({
+                      newSlug: slug.trim(),
+                      slug: organization.slug,
+                    });
+                  }}
+                  gap={2}
+                  flexDir={{ base: 'column', md: 'row' }}
+                >
+                  <InputGroup>
+                    <InputLeftAddon pr={1}>https://bloom.com/</InputLeftAddon>
+
+                    <Input
+                      pl={1}
+                      type='text'
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                    />
+                  </InputGroup>
+
+                  <Tooltip
+                    variant='bloom'
+                    label={
+                      slug.trim() === organization.slug ? 'No changes' : ''
+                    }
+                  >
+                    <Button
+                      type='submit'
+                      isDisabled={
+                        slug.trim() === organization.slug || !slug.trim()
+                      }
+                      isLoading={updateSlug.isLoading}
+                    >
+                      Change
+                    </Button>
+                  </Tooltip>
+                </Flex>
+
+                <FormErrorMessage fontSize='xs'>
+                  {slugFieldError?.[0] ?? updateSlug.error?.message}
+                </FormErrorMessage>
+              </FormControl>
+            </VStack>
+          </Flex>
+        </CardBody>
+      </Card>
+    </>
   );
 };
 

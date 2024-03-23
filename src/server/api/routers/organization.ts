@@ -51,7 +51,7 @@ export const organizationRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.organization.delete({
-        where: { id: input.id },
+        where: { id: input.id, ownerId: ctx.session.user.id },
       });
     }),
 

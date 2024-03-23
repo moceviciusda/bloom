@@ -4,6 +4,9 @@ import {
   Avatar,
   Button,
   ButtonGroup,
+  Card,
+  CardBody,
+  CardHeader,
   Divider,
   Flex,
   FormControl,
@@ -13,8 +16,19 @@ import {
   Input,
   InputGroup,
   InputRightAddon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Stat,
+  StatLabel,
+  StatNumber,
   Text,
   VStack,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { type Organization } from '@prisma/client';
 import { useRouter } from 'next/navigation';
@@ -27,30 +41,175 @@ interface DangerZoneProps {
 }
 
 const DangerZone: React.FC<DangerZoneProps> = ({ organization }) => {
-  const [name, setName] = useState(organization.name);
-  const [slug, setSlug] = useState(organization.slug);
+  return (
+    <>
+      <Heading size='md'>Danger Zone</Heading>
+
+      <Card size='sm' variant='outline' borderColor='red.600'>
+        <CardHeader>
+          {/* <Text color='red.600'>Danger Zone</Text> */}
+
+          <Text>
+            <Text as='span' color='red.600'>
+              Danger Zone
+            </Text>{' '}
+            actions are only available to the owner and could have a negative
+            impact on your organization and its data.
+          </Text>
+          <Text>
+            These actions are irreversible. Please be certain before proceeding.
+          </Text>
+        </CardHeader>
+
+        <Divider />
+
+        <CardBody p={0}>
+          <HStack justifyContent='space-between' p={2}>
+            <Text fontSize={14}>
+              Transfer organization ownership to another user
+            </Text>
+            <Button colorScheme='red' size='sm' whiteSpace='wrap'>
+              Transfer ownership
+            </Button>
+          </HStack>
+
+          <Divider />
+
+          <HStack justifyContent='space-between' p={2}>
+            <Text fontSize={14}>
+              Permanently delete organization and all associated data
+            </Text>
+            <DeleteOrganizationModal organization={organization} />
+          </HStack>
+        </CardBody>
+      </Card>
+    </>
+  );
+};
+
+const DeleteOrganizationModal: React.FC<DangerZoneProps> = ({
+  organization,
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirm, setConfirm] = useState('');
 
   const router = useRouter();
 
-  const updateName = api.organization.updateName.useMutation({
+  const deleteOrganization = api.organization.delete.useMutation({
     onSuccess: () => {
+      router.push('/');
       router.refresh();
     },
   });
 
-  const updateSlug = api.organization.updateSlug.useMutation({
-    onSuccess: () => {
-      router.push(`/${slug}/settings`);
-    },
-  });
+  const deleteHandler = () => {
+    deleteOrganization.mutate({ id: organization.id });
+  };
 
   return (
     <>
-      {/* <VStack py={2} align='stretch'> */}
+      <Button colorScheme='red' size='sm' whiteSpace='wrap' onClick={onOpen}>
+        Delete organization
+      </Button>
 
-      <Heading size='md'>Danger Zone</Heading>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size='lg'>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <Text fontSize={16}>Delete organization - {organization.name}</Text>
+            <ModalCloseButton />
+          </ModalHeader>
+          <Divider />
+          <ModalBody display='flex' flexDir='column' gap={2}>
+            <HStack>
+              <Avatar
+                src={organization.image ?? undefined}
+                size='xl'
+                boxSize={20}
+                color='blackAlpha.700'
+                bg={'transparent'}
+                borderRadius={12}
+                border={
+                  !!organization.image
+                    ? 'none'
+                    : '1px solid var(--chakra-colors-chakra-border-color)'
+                }
+                icon={<GoOrganization />}
+              />
+              <Heading size='lg'>{organization.name}</Heading>
+            </HStack>
+            <HStack justify='space-between' flexWrap='wrap'>
+              <Stat textAlign='center'>
+                <StatLabel>Assignments</StatLabel>
+                <StatNumber>0</StatNumber>
+              </Stat>
+              <Stat textAlign='center'>
+                <StatLabel>Matrices</StatLabel>
+                <StatNumber>0</StatNumber>
+              </Stat>
+              <Stat textAlign='center'>
+                <StatLabel>Teams</StatLabel>
+                <StatNumber>0</StatNumber>
+              </Stat>
+              <Stat textAlign='center'>
+                <StatLabel>Users</StatLabel>
+                <StatNumber>0</StatNumber>
+              </Stat>
+            </HStack>
+          </ModalBody>
+          <Divider />
+          <ModalFooter flexDir='column' alignItems='stretch' gap={2}>
+            {!confirmOpen ? (
+              <>
+                <Text textAlign='justify' fontSize={14}>
+                  This action is irreversible.{' '}
+                  <Text as='span' color='red.700'>
+                    All data
+                  </Text>{' '}
+                  associated with this organization including matrices, skills,
+                  assignment history and growth plans will be{' '}
+                  <Text as='span' color='red.700'>
+                    permanently
+                  </Text>{' '}
+                  deleted.
+                </Text>
+                <Button
+                  variant='ghost'
+                  colorScheme='red'
+                  onClick={() => setConfirmOpen(true)}
+                >
+                  Delete organization
+                </Button>
+              </>
+            ) : (
+              <>
+                <Text fontSize={14}>
+                  Endter{' '}
+                  <Text as='span' color='red.700' userSelect='none'>
+                    Delete {organization.name}
+                  </Text>{' '}
+                  bellow to confirm
+                </Text>
+                <Input
+                  type='text'
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                />
 
-      <Divider />
+                <Button
+                  colorScheme='red'
+                  isLoading={deleteOrganization.isLoading}
+                  isDisabled={confirm !== `Delete ${organization.name}`}
+                  onClick={deleteHandler}
+                >
+                  Confirm
+                </Button>
+              </>
+            )}
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 };

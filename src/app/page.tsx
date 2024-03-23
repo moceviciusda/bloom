@@ -1,4 +1,4 @@
-// import { unstable_noStore as noStore } from 'next/cache';
+import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { getServerAuthSession } from '~/server/auth';
@@ -14,7 +14,7 @@ import { Suspense } from 'react';
 import UserPlate from './_components/user-plate';
 
 const Home = async () => {
-  // noStore();
+  noStore();
 
   const session = await getServerAuthSession();
 
