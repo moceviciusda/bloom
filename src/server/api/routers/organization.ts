@@ -8,7 +8,14 @@ import slugify from '~/utils/slugify';
 
 export const organizationRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ name: z.string().min(1) }))
+    .input(
+      z.object({
+        name: z
+          .string()
+          .min(1, 'Name is required')
+          .max(64, 'Maximum name length is 64 characters'),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       let slug = slugify(input.name);
       let slugTaken = !!(await ctx.db.organization.findUnique({
@@ -111,7 +118,12 @@ export const organizationRouter = createTRPCRouter({
     }),
 
   updateName: protectedProcedure
-    .input(z.object({ slug: z.string(), name: z.string().min(1).max(64) }))
+    .input(
+      z.object({
+        slug: z.string(),
+        name: z.string().min(1).max(64, 'Maximum name length is 64 characters'),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const organization = await ctx.db.organization.findUnique({
         where: { slug: input.slug },
@@ -153,7 +165,12 @@ export const organizationRouter = createTRPCRouter({
     }),
 
   updateSlug: protectedProcedure
-    .input(z.object({ slug: z.string(), newSlug: z.string().max(128) }))
+    .input(
+      z.object({
+        slug: z.string(),
+        newSlug: z.string().max(64, 'Maximum slug length is 64 characters'),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const organization = await ctx.db.organization.findUnique({
         where: { slug: input.slug },

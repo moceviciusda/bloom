@@ -64,7 +64,7 @@ const AccessSettings: React.FC<AccessSettingsProps> = ({ organization }) => {
           </Text>
         </CardHeader>
 
-        <CardBody py={0}>
+        <CardBody display='flex' flexDir='column' py={0} gap={2}>
           {secrets.isLoading ? (
             <SecretCardSkeleton />
           ) : (
@@ -270,7 +270,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
             loadingIcon
             onFocus={(e: FocusEvent<HTMLInputElement>) => e.target.select()}
           />
-          <AutoCompleteList loadingState={<LoadingSpinner />}>
+          <AutoCompleteList loadingState={<LoadingSpinner />} py={2}>
             {users.data?.map(
               (user) =>
                 user.role !== 'OWNER' &&
@@ -299,7 +299,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
             setSelectedUser('');
           }}
         >
-          Add admin
+          New admin
         </Button>
       </CardFooter>
     </Card>

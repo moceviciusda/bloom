@@ -1,4 +1,6 @@
-import { Grand_Hotel, Inter } from 'next/font/google';
+import { Inter } from 'next/font/google';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 
 import { TRPCReactProvider } from '~/trpc/react';
 
@@ -17,6 +19,8 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
     <html lang='en'>
       <body className={inter.className}>
         <TRPCReactProvider>{children}</TRPCReactProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
