@@ -38,7 +38,7 @@ const DangerZone: React.FC<DangerZoneProps> = ({ organization }) => {
     <>
       <Heading size='md'>Danger Zone</Heading>
 
-      <Card size='sm' variant='outline' borderColor='red.600'>
+      <Card size='sm' variant='outline' borderColor='red.600' fontSize={14}>
         <CardHeader>
           {/* <Text color='red.600'>Danger Zone</Text> */}
 
@@ -58,9 +58,7 @@ const DangerZone: React.FC<DangerZoneProps> = ({ organization }) => {
 
         <CardBody p={0}>
           <HStack justifyContent='space-between' p={2}>
-            <Text fontSize={14}>
-              Transfer organization ownership to another user
-            </Text>
+            <Text>Transfer organization ownership to another user</Text>
             <Button colorScheme='red' size='sm' whiteSpace='wrap'>
               Transfer ownership
             </Button>
@@ -69,9 +67,7 @@ const DangerZone: React.FC<DangerZoneProps> = ({ organization }) => {
           <Divider />
 
           <HStack justifyContent='space-between' p={2}>
-            <Text fontSize={14}>
-              Permanently delete organization and all associated data
-            </Text>
+            <Text>Permanently delete organization and all associated data</Text>
             <DeleteOrganizationModal organization={organization} />
           </HStack>
         </CardBody>
@@ -106,7 +102,15 @@ const DeleteOrganizationModal: React.FC<DangerZoneProps> = ({
         Delete organization
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size='lg'>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          onClose();
+          setConfirmOpen(false);
+        }}
+        isCentered
+        size='lg'
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>
@@ -152,10 +156,15 @@ const DeleteOrganizationModal: React.FC<DangerZoneProps> = ({
             </HStack>
           </ModalBody>
           <Divider />
-          <ModalFooter flexDir='column' alignItems='stretch' gap={2}>
+          <ModalFooter
+            fontSize={14}
+            flexDir='column'
+            alignItems='stretch'
+            gap={2}
+          >
             {!confirmOpen ? (
               <>
-                <Text textAlign='justify' fontSize={14}>
+                <Text textAlign='justify' mt='6px'>
                   This action is irreversible.{' '}
                   <Text as='span' color='red.700'>
                     All data
@@ -177,8 +186,8 @@ const DeleteOrganizationModal: React.FC<DangerZoneProps> = ({
               </>
             ) : (
               <>
-                <Text fontSize={14}>
-                  Endter{' '}
+                <Text>
+                  Enter{' '}
                   <Text as='span' color='red.700' userSelect='none'>
                     Delete {organization.name}
                   </Text>{' '}
