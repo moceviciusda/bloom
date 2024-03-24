@@ -38,6 +38,7 @@ import { TbCalendarDollar } from 'react-icons/tb';
 import { MdHelpOutline } from 'react-icons/md';
 import { RiProfileLine, RiSettings3Line } from 'react-icons/ri';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
+import { usePathname } from 'next/navigation';
 
 interface NavbarProps {
   session: Session;
@@ -128,6 +129,8 @@ const OrganizationSelector = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const pathname = usePathname();
+
   return (
     <Popover variant='responsive' placement='bottom-start'>
       <PopoverTrigger>
@@ -144,6 +147,7 @@ const OrganizationSelector = ({
           <Icon as={HiMiniChevronUpDown} boxSize={4} />
         </Button>
       </PopoverTrigger>
+
       <Portal>
         <PopoverContent
           fontWeight='500'
@@ -154,7 +158,7 @@ const OrganizationSelector = ({
             {session.user.organizations.map((org) => (
               <NavLink
                 key={org.id}
-                href={`/${org.slug}`}
+                href={`/${org.slug}/${pathname.split('/', 3)[2]}`}
                 bg={org.id === currentOrg.id ? 'gray.100' : undefined}
                 py={1}
                 pr={4}
@@ -163,20 +167,14 @@ const OrganizationSelector = ({
               </NavLink>
             ))}
           </PopoverBody>
+
           <PopoverFooter p={1}>
-            {/* <NavLink>
-              <Icon as={LuPlusCircle} boxSize={6} />
-              <Text as='span'>Create Organization</Text>
-            </NavLink> */}
             <Button w='100%' colorScheme='purple' onClick={onOpen}>
               <Text>Add Organization</Text>
             </Button>
             <Modal onClose={onClose} isOpen={isOpen} isCentered>
               <ModalOverlay />
               <ModalContent>
-                {/* <ModalHeader>New Organization</ModalHeader> */}
-                {/* <ModalCloseButton /> */}
-
                 <NewOrganization />
               </ModalContent>
             </Modal>

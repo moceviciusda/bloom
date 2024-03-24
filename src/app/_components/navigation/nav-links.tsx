@@ -56,28 +56,23 @@ export const NavLink: React.FC<NavLinkProps> = ({
 
 const NavLinks = ({ organization }: { organization: Organization }) => {
   const pathname = usePathname();
-  const { data: session, status } = useSession({ required: true });
-  // const [ admins, adminsQuery ]= api.organization.getAdmins.useSuspenseQuery({ slug: organization.slug })
-  const { data: admins, isLoading } = api.organization.getAdmins.useQuery({
+
+  const { data: session } = useSession({ required: true });
+  const { data: admins } = api.organization.getAdmins.useQuery({
     slug: organization.slug,
   });
 
-  if (status === 'loading' || isLoading) return null;
-
-  // test.
-  // adminsQuery.
-
-  if (!session) return null;
-
-  const orgSlug = organization.slug;
   const isOwnerOrAdmin =
-    organization.ownerId === session.user.id ||
-    admins?.some((admin) => admin.user.id === session.user.id);
+    organization.ownerId === session?.user.id ||
+    admins?.some((admin) => admin.user.id === session?.user.id);
 
   return (
     <List spacing={2} w='100%' whiteSpace='nowrap'>
       <ListItem>
-        <NavLink href={`/${orgSlug}`} active={pathname === `/${orgSlug}`}>
+        <NavLink
+          href={`/${organization.slug}`}
+          active={pathname === `/${organization.slug}`}
+        >
           <Icon as={RiHome3Line} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
             Home
@@ -86,8 +81,8 @@ const NavLinks = ({ organization }: { organization: Organization }) => {
       </ListItem>
       {/* <ListItem>
         <NavLink
-          href={`/${orgSlug}/dashboard`}
-          active={pathname === `/${orgSlug}/dashboard`}
+          href={`/${organization.slug}/dashboard`}
+          active={pathname === `/${organization.slug}/dashboard`}
         >
           <Icon as={MdOutlineAssessment} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
@@ -97,8 +92,8 @@ const NavLinks = ({ organization }: { organization: Organization }) => {
       </ListItem> */}
       <ListItem>
         <NavLink
-          href={`/${orgSlug}/assignments`}
-          active={pathname === `/${orgSlug}/assignments`}
+          href={`/${organization.slug}/assignments`}
+          active={pathname === `/${organization.slug}/assignments`}
         >
           <Icon as={MdOutlineAssignment} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
@@ -108,8 +103,8 @@ const NavLinks = ({ organization }: { organization: Organization }) => {
       </ListItem>
       <ListItem>
         <NavLink
-          href={`/${orgSlug}/users`}
-          active={pathname === `/${orgSlug}/users`}
+          href={`/${organization.slug}/users`}
+          active={pathname === `/${organization.slug}/users`}
         >
           <Icon as={RiUserLine} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
@@ -119,8 +114,8 @@ const NavLinks = ({ organization }: { organization: Organization }) => {
       </ListItem>
       <ListItem>
         <NavLink
-          href={`/${orgSlug}/teams`}
-          active={pathname === `/${orgSlug}/teams`}
+          href={`/${organization.slug}/teams`}
+          active={pathname === `/${organization.slug}/teams`}
         >
           <Icon as={RiTeamLine} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
@@ -130,8 +125,8 @@ const NavLinks = ({ organization }: { organization: Organization }) => {
       </ListItem>
       <ListItem>
         <NavLink
-          href={`/${orgSlug}/matrix`}
-          active={pathname === `/${orgSlug}/matrix`}
+          href={`/${organization.slug}/matrix`}
+          active={pathname === `/${organization.slug}/matrix`}
         >
           <Icon as={MdOutlineSpaceDashboard} boxSize={5} m={0.5} />
           <Text as='span' fontWeight='500'>
@@ -142,8 +137,8 @@ const NavLinks = ({ organization }: { organization: Organization }) => {
       {isOwnerOrAdmin && (
         <ListItem>
           <NavLink
-            href={`/${orgSlug}/settings`}
-            active={pathname === `/${orgSlug}/settings`}
+            href={`/${organization.slug}/settings`}
+            active={pathname === `/${organization.slug}/settings`}
           >
             <Icon as={RiSettings3Line} boxSize={5} m={0.5} />
             <Text as='span' fontWeight='500'>

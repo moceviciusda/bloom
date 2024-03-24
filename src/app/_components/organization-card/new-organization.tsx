@@ -7,6 +7,7 @@ import {
   Card,
   CardBody,
   CardHeader,
+  type CardProps,
   Divider,
   HStack,
   IconButton,
@@ -17,7 +18,7 @@ import {
 import { api } from '~/trpc/react';
 import { TbArrowBackUp } from 'react-icons/tb';
 
-export const NewOrganization = () => {
+export const NewOrganization: React.FC<CardProps> = (props) => {
   const router = useRouter();
   const [name, setName] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -26,23 +27,25 @@ export const NewOrganization = () => {
   const [joinOpen, setJoinOpen] = useState(false);
 
   const createOrganization = api.organization.create.useMutation({
-    onSuccess: () => {
-      router.refresh();
+    onSuccess: (organization) => {
+      // router.refresh();
       setIsOpen(false);
       setName('');
+      router.push(`/${organization.slug}/settings`);
     },
   });
 
   const joinOrg = api.organization.joinBySecret.useMutation({
-    onSuccess: () => {
-      router.refresh();
+    onSuccess: (organization) => {
+      // router.refresh();
       setJoinOpen(false);
       setSecret('');
+      router.push(`/${organization.slug}`);
     },
   });
 
   return (
-    <Card size='md' color='blackAlpha.900' h='140px'>
+    <Card size='md' color='blackAlpha.900' h='140px' {...props}>
       {isOpen ? (
         <>
           <CardHeader

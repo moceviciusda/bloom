@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Card,
   CardBody,
   CardHeader,
@@ -15,7 +16,9 @@ import Link from 'next/link';
 import { type Organization } from '@prisma/client';
 import UserPlate from '../user-plate';
 import { api } from '~/trpc/server';
-import { LeaveOrgButton, RemoveOrgButton } from './leave-remove-org';
+import { LeaveOrgButton } from './leave-remove-org';
+import { DeleteOrganizationModal } from '../organization-settings/danger-zone';
+import { FaTrash } from 'react-icons/fa6';
 
 interface Props {
   organization: Organization;
@@ -62,25 +65,33 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
     <Card
       as={Link}
       href={`/${organization.slug}`}
+      variant='hover'
       size='md'
       color='blackAlpha.800'
-      _hover={{
-        transform: 'translateY(-4px)',
-        boxShadow: '0 4px 14px 0 rgba(0,0,0,0.2)',
-      }}
-      transition={'all 0.2s ease-in-out'}
     >
       <CardHeader
         display='flex'
-        alignItems='center'
+        alignItems='flex-start'
         justifyContent='space-between'
       >
-        <Heading size='lg' color='blackAlpha.800'>
-          {organization.name}
-        </Heading>
+        <HStack>
+          {org.image && <Avatar src={org.image} size='md' />}
+          <Heading size='lg' color='blackAlpha.800'>
+            {organization.name}
+          </Heading>
+        </HStack>
         {isOwner ? (
-          <RemoveOrgButton organizationId={organization.id} />
+          <DeleteOrganizationModal
+            organization={organization}
+            size='lg'
+            variant='ghost'
+            colorScheme='gray'
+            p={0}
+          >
+            <FaTrash />
+          </DeleteOrganizationModal>
         ) : (
+          // <RemoveOrgButton organizationId={organization.id} />
           <LeaveOrgButton organizationId={organization.id} />
         )}
       </CardHeader>

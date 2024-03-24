@@ -9,7 +9,7 @@ const TeamsLayout: React.FC<TeamsLayoutProps> = ({ children }) => {
   return (
     <Flex p={3} flexDir='column'>
       <Heading size='lg' mb={3}>
-        Organization Settings
+        Teams
       </Heading>
       <Divider />
       {children}

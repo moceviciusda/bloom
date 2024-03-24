@@ -70,12 +70,13 @@ const OrgSelection = async () => {
       fontSize='sm'
       fontWeight='semibold'
       minW='24rem'
+      p={{ base: 4, md: 6, lg: 4, '2xl': 6 }}
     >
       <HStack
         justify='space-between'
         align='flex-start'
-        paddingX={{ base: 4, md: 16, lg: 4, xl: 8 }}
-        paddingTop={{ base: 4, xl: 8 }}
+        // paddingX={{ base: 4, md: 16, lg: 4, xl: 8 }}
+        // paddingTop={{ base: 4, xl: 8 }}
         paddingBottom={4}
         position='sticky'
         top={0}
@@ -97,7 +98,7 @@ const OrgSelection = async () => {
         justify='center'
         align='stretch'
         gap={3}
-        paddingX={{ base: 4, md: 24, lg: 4, xl: 16 }}
+        paddingX={{ base: 0, sm: 4, md: 24, lg: 0, '2xl': 8 }}
       >
         {session.user.organizations
           // sort organizations to show the user's owned orgs first
@@ -115,7 +116,7 @@ const OrgSelection = async () => {
             </Suspense>
           ))}
 
-        <NewOrganization />
+        <NewOrganization variant='hover' />
       </VStack>
     </VStack>
   );

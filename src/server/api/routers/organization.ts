@@ -253,9 +253,9 @@ export const organizationRouter = createTRPCRouter({
       });
       if (existing?.isActive) throw new Error('Already a member');
 
-      return existing
+      existing
         ? // If the user was previously a member, reactivate them
-          ctx.db.usersOnOrganizations.update({
+          await ctx.db.usersOnOrganizations.update({
             where: {
               userId_organizationId: {
                 userId: existing.userId,
@@ -265,13 +265,15 @@ export const organizationRouter = createTRPCRouter({
             data: { isActive: true },
           })
         : // Otherwise, create a new membership
-          ctx.db.usersOnOrganizations.create({
+          await ctx.db.usersOnOrganizations.create({
             data: {
               role: 'USER',
               user: { connect: { id: ctx.session.user.id } },
               organization: { connect: { id: secret.organization.id } },
             },
           });
+
+      return secret.organization;
     }),
 
   getUsers: protectedProcedure
