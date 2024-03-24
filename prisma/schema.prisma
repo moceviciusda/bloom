@@ -99,7 +99,9 @@ model Organization {
 }
 
 model UsersOnOrganizations {
+    joinedAt       DateTime     @default(now())
     isActive       Boolean      @default(true)
+    lastActive     DateTime     @default(now())
     role           Role         @default(USER)
     userId         String
     user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)

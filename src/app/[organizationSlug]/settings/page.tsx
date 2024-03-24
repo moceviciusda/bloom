@@ -35,7 +35,7 @@ const OrganizationPage: React.FC<OrganizationPageProps> = async ({
     <VStack py={3} align='stretch' maxW='60em'>
       <GeneralSettings organization={organization} />
       <AccessSettings organization={organization} />
-      <DangerZone organization={organization} />
+      {isOwner && <DangerZone organization={organization} />}
     </VStack>
   );
 };

@@ -31,6 +31,7 @@ import { LuClipboardCheck, LuClipboardCopy } from 'react-icons/lu';
 import { api } from '~/trpc/react';
 import UserPlate, { UserPlateSkeleton } from '../user-plate';
 import LoadingSpinner from '../loading-spinner';
+import { useSession } from 'next-auth/react';
 
 interface AccessSettingsProps {
   organization: Organization;
@@ -180,6 +181,8 @@ const SecretCard: React.FC<{
 const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
   const [selectedUser, setSelectedUser] = useState('');
 
+  const session = useSession();
+
   const admins = api.organization.getAdmins.useQuery({
     slug: organization.slug,
   });
@@ -190,6 +193,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
 
   const updateRole = api.organization.updateUserRole.useMutation({
     onSuccess: async () => {
+      setSelectedUser('');
       await admins.refetch();
     },
   });
@@ -237,6 +241,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
             >
               <UserPlate user={admin.user} />
               <Button
+                isDisabled={session.data?.user.id !== organization.ownerId}
                 onClick={() =>
                   updateRole.mutate({
                     organizationId: organization.id,
@@ -264,6 +269,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
         >
           <AutoCompleteInput
             loadingIcon
+            isDisabled={session.data?.user.id !== organization.ownerId}
             onFocus={(e: FocusEvent<HTMLInputElement>) => e.target.select()}
           />
           <AutoCompleteList loadingState={<LoadingSpinner />} py={2}>
@@ -285,19 +291,21 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
           </AutoCompleteList>
         </AutoComplete>
 
-        <Button
-          isDisabled={!selectedUser}
-          onClick={() => {
-            updateRole.mutate({
-              organizationId: organization.id,
-              userId: selectedUser,
-              role: 'ADMIN',
-            });
-            setSelectedUser('');
-          }}
-        >
-          Add admin
-        </Button>
+        <Tooltip variant='bloom' label={selectedUser ? '' : 'Select a user'}>
+          <Button
+            isDisabled={!selectedUser}
+            onClick={() => {
+              updateRole.mutate({
+                organizationId: organization.id,
+                userId: selectedUser,
+                role: 'ADMIN',
+              });
+              setSelectedUser('');
+            }}
+          >
+            Add admin
+          </Button>
+        </Tooltip>
       </CardFooter>
     </Card>
   );

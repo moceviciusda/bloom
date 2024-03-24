@@ -50,8 +50,6 @@ const DangerZone: React.FC<DangerZoneProps> = ({ organization }) => {
 
       <Card size='sm' variant='outline' borderColor='red.600' fontSize={14}>
         <CardHeader>
-          {/* <Text color='red.600'>Danger Zone</Text> */}
-
           <Text>
             <Text as='span' color='red.600'>
               Danger Zone
@@ -94,15 +92,21 @@ const TransferOwnershipModal: React.FC<DangerZoneProps> = ({
   const [selectedUserId, setSelectedUserId] = useState('');
   const [confirm, setConfirm] = useState('');
 
-  const router = useRouter();
+  const utils = api.useUtils();
 
   const users = api.organization.getUsers.useQuery({
     slug: organization.slug,
   });
 
   const changeOwner = api.organization.changeOwner.useMutation({
-    onSuccess: () => {
-      router.refresh();
+    onSuccess: async () => {
+      await utils.organization.getAdmins.invalidate({
+        slug: organization.slug,
+      });
+      setSelectedUserId('');
+      setConfirm('');
+      setConfirmOpen(false);
+      onClose();
     },
   });
   const updateRole = api.organization.updateUserRole.useMutation();
@@ -110,16 +114,6 @@ const TransferOwnershipModal: React.FC<DangerZoneProps> = ({
   const selectedUser = users.data?.find((u) => u.userId === selectedUserId);
 
   const transferHandler = () => {
-    updateRole.mutate({
-      userId: selectedUserId,
-      role: 'OWNER',
-      organizationId: organization.id,
-    });
-    updateRole.mutate({
-      userId: organization.ownerId,
-      role: 'ADMIN',
-      organizationId: organization.id,
-    });
     changeOwner.mutate({ slug: organization.slug, newOwnerId: selectedUserId });
   };
 
@@ -177,15 +171,18 @@ const TransferOwnershipModal: React.FC<DangerZoneProps> = ({
                     placeholder='Search for a user'
                   />
                   <AutoCompleteList loadingState={<LoadingSpinner />} py={2}>
-                    {users.data?.map((user) => (
-                      <AutoCompleteItem
-                        key={user.userId}
-                        value={user.userId}
-                        label={user.user.name}
-                      >
-                        <UserPlate user={user.user} />
-                      </AutoCompleteItem>
-                    ))}
+                    {users.data?.map(
+                      (user) =>
+                        user.role !== 'OWNER' && (
+                          <AutoCompleteItem
+                            key={user.userId}
+                            value={user.userId}
+                            label={user.user.name}
+                          >
+                            <UserPlate user={user.user} />
+                          </AutoCompleteItem>
+                        )
+                    )}
                   </AutoCompleteList>
                 </AutoComplete>
                 <Tooltip
@@ -214,7 +211,6 @@ const TransferOwnershipModal: React.FC<DangerZoneProps> = ({
                 <HStack justify='space-around'>
                   <UserPlate user={selectedUser.user} />
                   <Button
-                    // variant='ghost'
                     size='sm'
                     onClick={() => {
                       setConfirmOpen(false);

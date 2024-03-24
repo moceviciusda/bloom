@@ -9,7 +9,7 @@ const OrganizationSettingsLayout: React.FC<OrganizationSettingsLayoutProps> = ({
   children,
 }) => {
   return (
-    <Flex p={3} flexDir='column'>
+    <Flex flex={1} p={3} flexDir='column'>
       <Heading size='lg' mb={3}>
         Organization Settings
       </Heading>

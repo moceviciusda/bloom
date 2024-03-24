@@ -1,4 +1,3 @@
-import { TRPCError } from '@trpc/server';
 import { randomBytes } from 'crypto';
 import { z } from 'zod';
 
@@ -157,6 +156,27 @@ export const organizationRouter = createTRPCRouter({
 
       if (organization.ownerId !== ctx.session.user.id)
         throw new Error('Unauthorized');
+
+      await ctx.db.usersOnOrganizations.update({
+        where: {
+          userId_organizationId: {
+            userId: ctx.session.user.id,
+            organizationId: organization.id,
+          },
+          role: 'OWNER',
+        },
+        data: { role: 'ADMIN' },
+      });
+
+      await ctx.db.usersOnOrganizations.update({
+        where: {
+          userId_organizationId: {
+            userId: input.newOwnerId,
+            organizationId: organization.id,
+          },
+        },
+        data: { role: 'OWNER' },
+      });
 
       return ctx.db.organization.update({
         where: { slug: input.slug },
@@ -349,7 +369,7 @@ export const organizationRouter = createTRPCRouter({
             organizationId: input.organizationId,
           },
         },
-        data: { isActive: false },
+        data: { isActive: false, lastActive: new Date() },
       });
     }),
 

@@ -158,7 +158,7 @@ const OrganizationSelector = ({
             {session.user.organizations.map((org) => (
               <NavLink
                 key={org.id}
-                href={`/${org.slug}/${pathname.split('/', 3)[2]}`}
+                href={`/${org.slug}/${pathname.split('/', 3)[2] ?? ''}`}
                 bg={org.id === currentOrg.id ? 'gray.100' : undefined}
                 py={1}
                 pr={4}
