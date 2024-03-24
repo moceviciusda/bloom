@@ -7,7 +7,7 @@ interface MatrixLayoutProps {
 
 const MatrixLayout: React.FC<MatrixLayoutProps> = ({ children }) => {
   return (
-    <Flex p={3} flexDir='column'>
+    <Flex flex={1} p={3} flexDir='column'>
       <Heading size='lg' mb={3}>
         Matrix
       </Heading>

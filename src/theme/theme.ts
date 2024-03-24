@@ -27,7 +27,7 @@ const components = {
     variants: {
       bloom: {
         borderRadius: 5,
-        bg: 'blackAlpha.700',
+        bg: 'blackAlpha.800',
       },
     },
   },
