@@ -120,7 +120,14 @@ const PlaceholderMatrix = () => {
 
 const NewMatrixCard = () => {
   return (
-    <Card variant='hover' justify='center' size='lg' minW='436px'>
+    <Card
+      variant='hover'
+      justify='center'
+      size='lg'
+      maxW='436px'
+      minW='340px'
+      flex={1}
+    >
       <CardBody
         display='flex'
         justifyContent='center'
