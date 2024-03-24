@@ -1,8 +1,4 @@
-import {
-  CardProps,
-  extendTheme,
-  theme as defaultTheme,
-} from '@chakra-ui/react';
+import { extendTheme, theme as defaultTheme } from '@chakra-ui/react';
 
 const styles = {
   global: {
