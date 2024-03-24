@@ -7,6 +7,8 @@ import {
   CardBody,
   CardFooter,
   CardHeader,
+  CircularProgress,
+  CircularProgressLabel,
   Divider,
   Heading,
   Stack,
@@ -60,40 +62,50 @@ const PlaceholderMatrix = () => {
         <Heading size='lg'>Placeholder Matrix</Heading>
       </CardHeader>
 
-      <CardBody py={0} gap={2}>
-        <StatGroup textAlign='center'>
-          <Stat>
-            <StatLabel>Assignees</StatLabel>
-            <StatNumber>
-              <Tooltip
-                variant='bloom'
-                openDelay={500}
-                label={assignees.map((assignee) => (
-                  <Text key={assignee}>{assignee}</Text>
+      <CardBody
+        py={0}
+        display='flex'
+        flexDir='row'
+        justifyContent='space-between'
+        alignItems='stretch'
+        gap={2}
+        textAlign='center'
+      >
+        <Stat>
+          <StatLabel>Assignees</StatLabel>
+          <StatNumber py={2}>
+            <Tooltip
+              variant='bloom'
+              openDelay={500}
+              label={assignees.map((assignee) => (
+                <Text key={assignee}>{assignee}</Text>
+              ))}
+              aria-label='Assignees'
+            >
+              <AvatarGroup size='sm' max={3} justifyContent='center'>
+                {assignees.map((assignee) => (
+                  <Avatar key={assignee} name={assignee} />
                 ))}
-                aria-label='Assignees'
-              >
-                <AvatarGroup size='sm' max={3} justifyContent='center'>
-                  {assignees.map((assignee) => (
-                    <Avatar key={assignee} name={assignee} />
-                  ))}
-                </AvatarGroup>
-              </Tooltip>
-            </StatNumber>
-          </Stat>
-          <Stat>
-            <StatLabel>Assigned</StatLabel>
-            <StatNumber>22</StatNumber>
-          </Stat>
-          <Stat>
-            <StatLabel>Completed</StatLabel>
-            <StatNumber>13</StatNumber>
-          </Stat>
-          <Stat>
-            <StatLabel>Average</StatLabel>
-            <StatNumber>72%</StatNumber>
-          </Stat>
-        </StatGroup>
+              </AvatarGroup>
+            </Tooltip>
+          </StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel>Assigned</StatLabel>
+          <StatNumber py={2}>22</StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel>Completed</StatLabel>
+          <StatNumber py={2}>13</StatNumber>
+        </Stat>
+        <Stat>
+          <StatLabel>Average</StatLabel>
+          <CircularProgress size='48px' value={68} color='purple.500'>
+            <CircularProgressLabel>
+              <StatNumber fontSize={20}>65</StatNumber>
+            </CircularProgressLabel>
+          </CircularProgress>
+        </Stat>
       </CardBody>
 
       <CardFooter as={ButtonGroup} isAttached colorScheme='purple' p={6}>
