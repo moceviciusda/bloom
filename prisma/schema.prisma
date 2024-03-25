@@ -2,125 +2,227 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider        = "prisma-client-js"
-    previewFeatures = ["driverAdapters"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-}
-
-model Post {
-    id          Int      @id @default(autoincrement())
-    name        String
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-    createdBy   User     @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-    @@index([createdById])
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // Necessary for Next auth
 model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? @db.Text
-    refresh_token_expires_in Int?
-    access_token             String? @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                       String  @id @default(cuid())
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String? @db.Text
+  refresh_token_expires_in Int?
+  access_token             String? @db.Text
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String? @db.Text
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
+  @@index([userId])
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 model User {
-    id                 String                 @id @default(cuid())
-    name               String?
-    email              String?                @unique
-    emailVerified      DateTime?
-    image              String?
-    accounts           Account[]
-    sessions           Session[]
-    posts              Post[]
-    organizations      UsersOnOrganizations[]
-    ownedOrganizations Organization[]         @relation(name: "OrganizationOwner")
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+
+  organizations      UsersOnOrganizations[]
+  ownedOrganizations Organization[]         @relation(name: "OrganizationOwner")
+  matrices           UsersOnMatrices[]
+  skills             SkillsOnUsers[]
+  approved           SkillAproval[]
 }
 
 model OrganizationSecret {
-    id             String       @id @default(cuid())
-    secret         String       @unique
-    organizationId String
-    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-    createdAt      DateTime     @default(now())
-    updatedAt      DateTime     @updatedAt
+  id             String       @id @default(cuid())
+  secret         String       @unique
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model Organization {
-    id          String                 @id @default(cuid())
-    name        String
-    slug        String                 @unique
-    image       String?
-    ownerId     String
-    owner       User                   @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
-    members     UsersOnOrganizations[]
-    secrets     OrganizationSecret[]
-    invitations Invitation[]
+  id          String                 @id @default(cuid())
+  name        String
+  slug        String                 @unique
+  image       String?
+  ownerId     String
+  owner       User                   @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
+  members     UsersOnOrganizations[]
+  secrets     OrganizationSecret[]
+  invitations Invitation[]
+  matrices    Matrix[]
 
-    @@index([name])
+  @@index([slug])
 }
 
 model UsersOnOrganizations {
-    joinedAt       DateTime     @default(now())
-    isActive       Boolean      @default(true)
-    lastActive     DateTime     @default(now())
-    role           Role         @default(USER)
-    userId         String
-    user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    organizationId String
-    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  joinedAt       DateTime     @default(now())
+  isActive       Boolean      @default(true)
+  lastActive     DateTime     @default(now())
+  role           Role         @default(USER)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-    @@id([userId, organizationId])
+  @@id([userId, organizationId])
+  @@unique([userId, organizationId])
 }
 
 enum Role {
-    USER
-    ADMIN
-    OWNER
+  USER
+  ADMIN
+  OWNER
 }
 
 model Invitation {
-    id             String       @id @default(cuid())
-    email          String
-    organizationId String
-    organization   Organization @relation(fields: [organizationId], references: [id])
-    expires        DateTime
+  id             String       @id @default(cuid())
+  email          String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  expires        DateTime
+}
+
+model UsersOnMatrices {
+  joinedAt   DateTime   @default(now())
+  isActive   Boolean    @default(true)
+  lastActive DateTime   @default(now())
+  permission Permission @default(VIEWER)
+  userId     String
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matrixId   String
+  matrix     Matrix     @relation(fields: [matrixId], references: [id], onDelete: Cascade)
+
+  @@id([userId, matrixId])
+  @@unique([userId, matrixId])
+}
+
+enum Permission {
+  VIEWER
+  EDITOR
+  OWNER
+}
+
+model Matrix {
+  id               String            @id @default(cuid())
+  name             String
+  slug             String
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  users            UsersOnMatrices[]
+  organizationSlug String
+  organization     Organization      @relation(fields: [organizationSlug], references: [slug])
+  categories       MatrixCategory[]
+
+  @@unique([organizationSlug, slug])
+  @@index([slug])
+}
+
+model MatrixCategory {
+  id          String             @id @default(cuid())
+  name        String
+  matrixId    String
+  matrix      Matrix             @relation(fields: [matrixId], references: [id])
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  competences MatrixCompetence[]
+  weight      Int                @default(1)
+
+  @@index([matrixId])
+}
+
+model MatrixCompetence {
+  id         String                @id @default(cuid())
+  name       String
+  categoryId String
+  category   MatrixCategory        @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime              @default(now())
+  updatedAt  DateTime              @updatedAt
+  weight     Int                   @default(1)
+  skills     SkillsOnCompetences[]
+
+  @@index([categoryId])
+}
+
+model Skill {
+  id          String                @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime              @default(now())
+  createdById String
+  updatedAt   DateTime              @updatedAt
+  updatedById String
+  competences SkillsOnCompetences[]
+  users       SkillsOnUsers[]
+}
+
+model SkillsOnCompetences {
+  id           String           @id @default(cuid())
+  skillId      String
+  skill        Skill            @relation(fields: [skillId], references: [id])
+  competenceId String
+  competence   MatrixCompetence @relation(fields: [competenceId], references: [id])
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([skillId, competenceId])
+}
+
+model SkillsOnUsers {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id])
+  skillId   String
+  skill     Skill          @relation(fields: [skillId], references: [id])
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  approved  SkillAproval[]
+
+  @@unique([userId, skillId])
+}
+
+model SkillAproval {
+  id           String        @id @default(cuid())
+  userSkill    SkillsOnUsers @relation(fields: [userSkillId], references: [id])
+  userSkillId  String
+  approvedById String
+  approvedBy   User          @relation(fields: [approvedById], references: [id])
+  approvedAt   DateTime      @default(now())
+
+  @@unique([userSkillId, approvedById])
 }

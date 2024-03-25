@@ -8,6 +8,7 @@ const Dashboard = ({ params }: { params: { organizationSlug: string } }) => (
       Dashboard
     </Heading>
     <Divider />
+    <div>Coming soon...</div>
   </Flex>
 );
 

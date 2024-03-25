@@ -13,7 +13,6 @@ import {
   Heading,
   Stack,
   Stat,
-  StatGroup,
   StatLabel,
   StatNumber,
   Text,
