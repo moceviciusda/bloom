@@ -20,8 +20,19 @@ import {
   Wrap,
 } from '@chakra-ui/react';
 import { MdDelete, MdEdit, MdShare, MdViewAgenda } from 'react-icons/md';
+// import { api } from '~/trpc/server';
 
-const MatrixPage = ({ params }: { params: { organizationSlug: string } }) => {
+const MatrixPage = async ({
+  params,
+}: {
+  params: { organizationSlug: string };
+}) => {
+  // const matrix = await api.matrix.create.mutate({
+  //   orgSlug: params.organizationSlug,
+  //   name: 'testing api route',
+  // });
+  // console.log(matrix);
+
   return (
     <Stack gap={4}>
       <Heading size='md'>My Matrices</Heading>

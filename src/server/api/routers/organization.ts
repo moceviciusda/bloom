@@ -25,7 +25,7 @@ export const organizationRouter = createTRPCRouter({
         // generate a unique slug
         const rand1 = Math.floor(Math.random() * ctx.session.user.id.length);
         const rand2 = Math.floor(Math.random() * ctx.session.user.id.length);
-        slug = `${slug}-${ctx.session.user.id.substring(rand1, rand2)}`;
+        slug = `${slug}-${ctx.session.user.id[rand1]}${ctx.session.user.id[rand2]}`;
         slugTaken = !!(await ctx.db.organization.findUnique({
           where: { slug },
         }));

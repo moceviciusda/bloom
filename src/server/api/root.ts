@@ -1,5 +1,6 @@
 import { createTRPCRouter } from '~/server/api/trpc';
 import { organizationRouter } from './routers/organization';
+import { matrixRouter } from './routers/matrix';
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { organizationRouter } from './routers/organization';
  */
 export const appRouter = createTRPCRouter({
   organization: organizationRouter,
+  matrix: matrixRouter,
 });
 
 // export type definition of API
