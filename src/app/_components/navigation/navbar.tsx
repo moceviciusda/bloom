@@ -10,7 +10,6 @@ import {
   Flex,
   HStack,
   Icon,
-  Link,
   Modal,
   ModalContent,
   ModalOverlay,
@@ -39,6 +38,7 @@ import { MdHelpOutline } from 'react-icons/md';
 import { RiProfileLine, RiSettings3Line } from 'react-icons/ri';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 interface NavbarProps {
   session: Session;
@@ -62,14 +62,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
       gap={2}
       borderBottom='1px solid var(--chakra-colors-blackAlpha-200)'
     >
-      <Link
-        href='/'
-        _hover={{
-          textDecoration: 'none',
-        }}
-      >
-        {brand}
-      </Link>
+      <Link href='/'>{brand}</Link>
       <HStack flex={1} justify='space-between' minW={0}>
         <OrganizationSelector session={session} currentOrg={currentOrg} />
 
@@ -95,12 +88,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
             <DrawerContent display={{ base: 'flex', md: 'none' }}>
               <DrawerHeader p={2}>
                 <Flex justify='space-between'>
-                  <Link
-                    href='/'
-                    _hover={{
-                      textDecoration: 'none',
-                    }}
-                  >
+                  <Link href='/'>
                     <Brand />
                   </Link>
                   <Button onClick={onClose} variant='ghost' p={2}>

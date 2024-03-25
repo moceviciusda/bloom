@@ -38,26 +38,34 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
-  getOwned: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.matrix.findMany({
-      where: {
-        users: { some: { userId: ctx.session.user.id, permissions: 'OWNER' } },
-      },
-    });
-  }),
-
-  getShared: protectedProcedure.query(({ ctx }) => {
-    return ctx.db.matrix.findMany({
-      where: {
-        users: {
-          some: {
-            userId: ctx.session.user.id,
-            permissions: { in: ['EDITOR', 'VIEWER'] },
+  getOwned: protectedProcedure
+    .input(z.object({ organizationSlug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.matrix.findMany({
+        where: {
+          organizationSlug: input.organizationSlug,
+          users: {
+            some: { userId: ctx.session.user.id, permissions: 'OWNER' },
           },
         },
-      },
-    });
-  }),
+      });
+    }),
+
+  getShared: protectedProcedure
+    .input(z.object({ organizationSlug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.matrix.findMany({
+        where: {
+          organizationSlug: input.organizationSlug,
+          users: {
+            some: {
+              userId: ctx.session.user.id,
+              permissions: { in: ['EDITOR', 'VIEWER'] },
+            },
+          },
+        },
+      });
+    }),
 
   share: protectedProcedure
     .input(

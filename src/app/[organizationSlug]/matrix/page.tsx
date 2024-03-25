@@ -49,7 +49,9 @@ const MatrixPage = async ({
 };
 
 const MyMatrices = async ({ orgSlug }: { orgSlug: string }) => {
-  const matrices = await api.matrix.getOwned.query();
+  const matrices = await api.matrix.getOwned.query({
+    organizationSlug: orgSlug,
+  });
 
   return (
     <Wrap spacing={3} py={4}>
@@ -63,7 +65,9 @@ const MyMatrices = async ({ orgSlug }: { orgSlug: string }) => {
 };
 
 const SharedMatrices = async ({ orgSlug }: { orgSlug: string }) => {
-  const matrices = await api.matrix.getShared.query();
+  const matrices = await api.matrix.getShared.query({
+    organizationSlug: orgSlug,
+  });
 
   return (
     <Wrap spacing={3} py={4}>

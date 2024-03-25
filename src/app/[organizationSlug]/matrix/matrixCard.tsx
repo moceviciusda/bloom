@@ -10,6 +10,7 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Heading,
+  Icon,
   Stat,
   StatLabel,
   StatNumber,
@@ -17,11 +18,18 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import { type Matrix } from '@prisma/client';
+import Link from 'next/link';
 import { MdViewAgenda, MdEdit, MdShare, MdDelete } from 'react-icons/md';
 
 const MatrixCard: React.FC<{ matrix: Matrix }> = ({ matrix }) => {
   return (
-    <Card variant='hover' fontSize={14} size={{ base: 'md', md: 'lg' }}>
+    <Card
+      as={Link}
+      href={`/${matrix.organizationSlug}/matrix/${matrix.slug}`}
+      variant='hover'
+      fontSize={14}
+      size={{ base: 'md', md: 'lg' }}
+    >
       <CardHeader>
         <Heading size='lg'>{matrix.name}</Heading>
       </CardHeader>
