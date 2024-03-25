@@ -10,8 +10,8 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Divider,
+  Flex,
   Heading,
-  Stack,
   Stat,
   StatLabel,
   StatNumber,
@@ -20,36 +20,58 @@ import {
   Wrap,
 } from '@chakra-ui/react';
 import { MdDelete, MdEdit, MdShare, MdViewAgenda } from 'react-icons/md';
-// import { api } from '~/trpc/server';
+import { api } from '~/trpc/server';
+import MatrixCard from './matrixCard';
+import NewMatrixCard from './newMatrix';
 
 const MatrixPage = async ({
   params,
 }: {
   params: { organizationSlug: string };
 }) => {
-  // const matrix = await api.matrix.create.mutate({
-  //   orgSlug: params.organizationSlug,
-  //   name: 'testing api route',
-  // });
-  // console.log(matrix);
-
   return (
-    <Stack gap={4}>
-      <Heading size='md'>My Matrices</Heading>
-      <Wrap spacing={3}>
-        <PlaceholderMatrix />
-
-        <NewMatrixCard />
-      </Wrap>
-
+    <Flex flex={1} p={3} flexDir='column'>
+      <Heading size='lg' mb={3}>
+        My Matrices
+      </Heading>
       <Divider />
 
-      <Heading size='md'>Shared with me</Heading>
-      <Wrap spacing={3}>
-        <PlaceholderMatrix />
-        <PlaceholderMatrix />
-      </Wrap>
-    </Stack>
+      <MyMatrices orgSlug={params.organizationSlug} />
+
+      <Heading size='lg' mb={3}>
+        Shared with me
+      </Heading>
+      <Divider />
+
+      <SharedMatrices orgSlug={params.organizationSlug} />
+    </Flex>
+  );
+};
+
+const MyMatrices = async ({ orgSlug }: { orgSlug: string }) => {
+  const matrices = await api.matrix.getOwned.query();
+
+  return (
+    <Wrap spacing={3} py={4}>
+      {matrices.map((matrix) => (
+        <MatrixCard key={matrix.id} matrix={matrix} />
+      ))}
+
+      <NewMatrixCard orgSlug={orgSlug} />
+    </Wrap>
+  );
+};
+
+const SharedMatrices = async ({ orgSlug }: { orgSlug: string }) => {
+  const matrices = await api.matrix.getShared.query();
+
+  return (
+    <Wrap spacing={3} py={4}>
+      <PlaceholderMatrix />
+      {matrices.map((matrix) => (
+        <MatrixCard key={matrix.id} matrix={matrix} />
+      ))}
+    </Wrap>
   );
 };
 
@@ -67,7 +89,7 @@ const PlaceholderMatrix = () => {
   ];
 
   return (
-    <Card variant='hover' fontSize={14} size='lg'>
+    <Card variant='hover' fontSize={14} size={{ base: 'md', md: 'lg' }}>
       <CardHeader>
         <Heading size='lg'>Placeholder Matrix</Heading>
       </CardHeader>
@@ -124,31 +146,6 @@ const PlaceholderMatrix = () => {
         <Button leftIcon={<MdShare />}>Share</Button>
         <Button leftIcon={<MdDelete />}>Delete</Button>
       </CardFooter>
-    </Card>
-  );
-};
-
-const NewMatrixCard = () => {
-  return (
-    <Card
-      variant='hover'
-      justify='center'
-      size='lg'
-      maxW='436px'
-      minW='340px'
-      flex={1}
-    >
-      <CardBody
-        display='flex'
-        justifyContent='center'
-        flexDirection='column'
-        textAlign='center'
-        fontSize={28}
-        fontWeight='600'
-      >
-        <Text>Create a new matrix</Text>
-        <Text>+</Text>
-      </CardBody>
     </Card>
   );
 };

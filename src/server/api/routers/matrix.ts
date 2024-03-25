@@ -38,6 +38,27 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
+  getOwned: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.matrix.findMany({
+      where: {
+        users: { some: { userId: ctx.session.user.id, permissions: 'OWNER' } },
+      },
+    });
+  }),
+
+  getShared: protectedProcedure.query(({ ctx }) => {
+    return ctx.db.matrix.findMany({
+      where: {
+        users: {
+          some: {
+            userId: ctx.session.user.id,
+            permissions: { in: ['EDITOR', 'VIEWER'] },
+          },
+        },
+      },
+    });
+  }),
+
   share: protectedProcedure
     .input(
       z.object({

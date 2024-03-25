@@ -63,7 +63,7 @@ const GeneralSettings: React.FC<GeneralSettingsProps> = ({ organization }) => {
         <CardBody>
           <Flex
             align='stretch'
-            gap={10}
+            gap={{ base: 4, md: 10 }}
             flexDir={{ base: 'column', md: 'row' }}
           >
             <VStack align='flex-start' gap={0}>
