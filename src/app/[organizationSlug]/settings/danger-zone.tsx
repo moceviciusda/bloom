@@ -35,9 +35,9 @@ import { type Organization } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { type FocusEvent, useState } from 'react';
 import { GoOrganization } from 'react-icons/go';
+import LoadingSpinner from '~/app/_components/loading-spinner';
+import UserPlate from '~/app/_components/user-plate';
 import { api } from '~/trpc/react';
-import LoadingSpinner from '../loading-spinner';
-import UserPlate from '../user-plate';
 
 interface DangerZoneProps {
   organization: Organization;

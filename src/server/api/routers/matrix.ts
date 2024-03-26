@@ -5,7 +5,15 @@ import slugify from '~/utils/slugify';
 
 export const matrixRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ orgSlug: z.string(), name: z.string() }))
+    .input(
+      z.object({
+        orgSlug: z.string().min(1),
+        name: z
+          .string()
+          .min(1, 'Name is required')
+          .max(64, 'Maximum name length is 64 characters'),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       let slug = slugify(input.name);
       let slugTaken = !!(await ctx.db.matrix.findFirst({

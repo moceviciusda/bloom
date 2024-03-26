@@ -42,6 +42,10 @@ const components = {
             transform: 'translateY(-4px)',
             boxShadow: '0 4px 14px 0 rgba(0,0,0,0.2)',
           },
+          _active: {
+            transform: 'translateY(0)',
+            boxShadow: 'var(--chakra-shadows-base)',
+          },
           transition: 'all 0.2s ease-in-out',
         },
       },

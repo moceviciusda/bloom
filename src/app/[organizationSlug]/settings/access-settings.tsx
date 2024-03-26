@@ -29,8 +29,8 @@ import { type FocusEvent, useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa6';
 import { LuClipboardCheck, LuClipboardCopy } from 'react-icons/lu';
 import { api } from '~/trpc/react';
-import UserPlate, { UserPlateSkeleton } from '../user-plate';
-import LoadingSpinner from '../loading-spinner';
+import UserPlate, { UserPlateSkeleton } from '../../_components/user-plate';
+import LoadingSpinner from '../../_components/loading-spinner';
 import { useSession } from 'next-auth/react';
 
 interface AccessSettingsProps {

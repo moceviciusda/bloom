@@ -25,7 +25,7 @@ import { MdDeleteOutline } from 'react-icons/md';
 import { api } from '~/trpc/react';
 import slugify from '~/utils/slugify';
 import { useUploadThing } from '~/utils/uploadthing';
-import LoadingSpinner from '../loading-spinner';
+import LoadingSpinner from '../../_components/loading-spinner';
 
 interface GeneralSettingsProps {
   organization: Organization;
