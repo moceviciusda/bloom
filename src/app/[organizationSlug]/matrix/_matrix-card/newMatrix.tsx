@@ -48,7 +48,7 @@ const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
       variant={isOpen ? 'elevated' : 'hover'}
       justify='center'
       size='lg'
-      maxW='436px'
+      maxW='420px'
       flex='0 1 100%'
       transition='all 0.2s ease-in-out'
     >

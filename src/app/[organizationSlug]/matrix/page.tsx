@@ -70,7 +70,7 @@ const SharedMatrices = async ({ orgSlug }: { orgSlug: string }) => {
   });
 
   return (
-    <Wrap spacing={3} py={4} justify='center'>
+    <Wrap spacing={3} py={4} justify={{ base: 'center', md: 'flex-start' }}>
       <PlaceholderMatrix />
       {matrices.map((matrix) => (
         <MatrixCard key={matrix.id} matrix={matrix} />
