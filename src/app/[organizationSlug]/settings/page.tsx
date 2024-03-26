@@ -1,17 +1,17 @@
 import { unstable_noStore as noStore } from 'next/cache';
 import { VStack } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
-import AccessSettings from '~/app/[organizationSlug]/settings/access-settings';
-import DangerZone from '~/app/[organizationSlug]/settings/danger-zone';
-import GeneralSettings from '~/app/[organizationSlug]/settings/general-form';
+import AccessSettings from '~/app/[organizationSlug]/settings/_sections/access-settings';
+import DangerZone from '~/app/[organizationSlug]/settings/_sections/danger-zone';
+import GeneralSettings from '~/app/[organizationSlug]/settings/_sections/general-form';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/trpc/server';
 
-interface OrganizationPageProps {
+interface OrganizationSettingsProps {
   params: { organizationSlug: string };
 }
 
-const OrganizationPage: React.FC<OrganizationPageProps> = async ({
+const OrganizationSettings: React.FC<OrganizationSettingsProps> = async ({
   params,
 }) => {
   noStore();
@@ -40,4 +40,4 @@ const OrganizationPage: React.FC<OrganizationPageProps> = async ({
   );
 };
 
-export default OrganizationPage;
+export default OrganizationSettings;

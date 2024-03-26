@@ -17,7 +17,7 @@ import { type Organization } from '@prisma/client';
 import UserPlate from '../user-plate';
 import { api } from '~/trpc/server';
 import { LeaveOrgButton } from './leave-remove-org';
-import { DeleteOrganizationModal } from '../../[organizationSlug]/settings/danger-zone';
+import { DeleteOrganizationModal } from '../../[organizationSlug]/settings/_sections/danger-zone';
 import { FaTrash } from 'react-icons/fa6';
 
 interface Props {

@@ -10,7 +10,6 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Heading,
-  Icon,
   Stat,
   StatLabel,
   StatNumber,
@@ -29,6 +28,7 @@ const MatrixCard: React.FC<{ matrix: Matrix }> = ({ matrix }) => {
       variant='hover'
       fontSize={14}
       size={{ base: 'md', md: 'lg' }}
+      maxW='420px'
     >
       <CardHeader>
         <Heading size='lg'>{matrix.name}</Heading>

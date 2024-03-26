@@ -1,15 +1,15 @@
 import { Divider, Flex, Heading } from '@chakra-ui/react';
 
-interface UsersLayoutProps {
+interface DashboardLayoutProps {
   children: React.ReactNode;
   params: { organizationSlug: string };
 }
 
-const UsersLayout: React.FC<UsersLayoutProps> = ({ children }) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (
     <Flex flex={1} p={3} flexDir='column'>
       <Heading size='lg' mb={3}>
-        Users
+        Dashboard
       </Heading>
       <Divider />
       {children}
@@ -17,4 +17,4 @@ const UsersLayout: React.FC<UsersLayoutProps> = ({ children }) => {
   );
 };
 
-export default UsersLayout;
+export default DashboardLayout;

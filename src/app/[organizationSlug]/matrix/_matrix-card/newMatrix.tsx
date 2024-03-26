@@ -8,6 +8,7 @@ import {
   FormErrorMessage,
   Input,
   Text,
+  Tooltip,
   VStack,
   useDisclosure,
   useOutsideClick,
@@ -18,17 +19,13 @@ import { api } from '~/trpc/react';
 
 const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
   const router = useRouter();
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [name, setName] = useState('');
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const ref = useRef(null);
   useOutsideClick({
     ref: ref,
-    handler: () => {
-      setName('');
-      onClose();
-    },
+    handler: onClose,
   });
 
   const createMatrix = api.matrix.create.useMutation({
@@ -52,8 +49,7 @@ const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
       justify='center'
       size='lg'
       maxW='436px'
-      minW='340px'
-      flex={1}
+      flex='0 1 100%'
       transition='all 0.2s ease-in-out'
     >
       <CardBody
@@ -85,22 +81,26 @@ const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
                   if (e.key === 'Enter') {
                     submitHandler();
                   }
-
                   if (e.key === 'Escape') {
                     onClose();
                   }
                 }}
               />
             </FormControl>
-            <Button
-              isLoading={createMatrix.isLoading}
-              isDisabled={!!!name.trim()}
-              colorScheme='purple'
-              size='md'
-              onClick={submitHandler}
+            <Tooltip
+              variant='bloom'
+              label={!!!name.trim() ? 'Name cannot be empty' : ''}
             >
-              Create Matrix
-            </Button>
+              <Button
+                isLoading={createMatrix.isLoading}
+                isDisabled={!!!name.trim()}
+                colorScheme='purple'
+                size='md'
+                onClick={submitHandler}
+              >
+                Create Matrix
+              </Button>
+            </Tooltip>
           </VStack>
         )}
       </CardBody>

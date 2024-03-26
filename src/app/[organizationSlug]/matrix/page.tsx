@@ -21,8 +21,8 @@ import {
 } from '@chakra-ui/react';
 import { MdDelete, MdEdit, MdShare, MdViewAgenda } from 'react-icons/md';
 import { api } from '~/trpc/server';
-import MatrixCard from './matrixCard';
-import NewMatrixCard from './newMatrix';
+import MatrixCard from './_matrix-card/matrixCard';
+import NewMatrixCard from './_matrix-card/newMatrix';
 
 const MatrixPage = async ({
   params,
@@ -54,7 +54,7 @@ const MyMatrices = async ({ orgSlug }: { orgSlug: string }) => {
   });
 
   return (
-    <Wrap spacing={3} py={4}>
+    <Wrap spacing={3} py={4} justify={{ base: 'center', md: 'flex-start' }}>
       {matrices.map((matrix) => (
         <MatrixCard key={matrix.id} matrix={matrix} />
       ))}
@@ -70,7 +70,7 @@ const SharedMatrices = async ({ orgSlug }: { orgSlug: string }) => {
   });
 
   return (
-    <Wrap spacing={3} py={4}>
+    <Wrap spacing={3} py={4} justify='center'>
       <PlaceholderMatrix />
       {matrices.map((matrix) => (
         <MatrixCard key={matrix.id} matrix={matrix} />
