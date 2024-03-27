@@ -125,6 +125,29 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
+  getUsers: protectedProcedure
+    .input(z.object({ matrixId: z.string().cuid() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.usersOnMatrices.findMany({
+        where: { matrixId: input.matrixId },
+        include: { user: true },
+        orderBy: { permissions: 'desc' },
+      });
+    }),
+
+  getFull: protectedProcedure
+    .input(z.object({ matrixId: z.string().cuid() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.matrix.findFirst({
+        where: { id: input.matrixId },
+        include: {
+          categories: {
+            include: { competences: { include: { skills: true } } },
+          },
+        },
+      });
+    }),
+
   getOwned: protectedProcedure
     .input(z.object({ organizationSlug: z.string() }))
     .query(({ ctx, input }) => {

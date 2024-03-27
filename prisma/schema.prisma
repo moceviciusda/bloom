@@ -119,9 +119,7 @@ model Invitation {
 }
 
 model UsersOnMatrices {
-    joinedAt    DateTime    @default(now())
-    isActive    Boolean     @default(true)
-    lastActive  DateTime    @default(now())
+    createdAt   DateTime    @default(now())
     permissions Permissions @default(VIEWER)
     userId      String
     user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
