@@ -59,6 +59,40 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
+  delete: protectedProcedure
+    .input(z.object({ matrixId: z.string().cuid() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.matrix.delete({
+        where: {
+          id: input.matrixId,
+          users: { some: { userId: ctx.session.user.id } },
+        },
+      });
+    }),
+
+  unshare: protectedProcedure
+    .input(
+      z.object({
+        matrixId: z.string().cuid(),
+        userId: z.string().cuid(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db.matrix.update({
+        where: { id: input.matrixId },
+        data: {
+          users: {
+            delete: {
+              userId_matrixId: {
+                userId: input.userId,
+                matrixId: input.matrixId,
+              },
+            },
+          },
+        },
+      });
+    }),
+
   getShared: protectedProcedure
     .input(z.object({ organizationSlug: z.string() }))
     .query(({ ctx, input }) => {
