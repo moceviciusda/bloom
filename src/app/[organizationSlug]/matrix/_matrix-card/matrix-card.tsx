@@ -19,6 +19,7 @@ import {
 import { type Matrix } from '@prisma/client';
 import Link from 'next/link';
 import { MdViewAgenda, MdEdit, MdShare, MdDelete } from 'react-icons/md';
+import { MatrixCardControls } from './controls';
 
 const MatrixCard: React.FC<{ matrix: Matrix }> = ({ matrix }) => {
   return (
@@ -36,11 +37,8 @@ const MatrixCard: React.FC<{ matrix: Matrix }> = ({ matrix }) => {
 
       <MatrixStats matrix={matrix} />
 
-      <CardFooter as={ButtonGroup} isAttached colorScheme='purple' p={6}>
-        <Button leftIcon={<MdViewAgenda />}>View</Button>
-        <Button leftIcon={<MdEdit />}>Edit</Button>
-        <Button leftIcon={<MdShare />}>Share</Button>
-        <Button leftIcon={<MdDelete />}>Delete</Button>
+      <CardFooter p={6}>
+        <MatrixCardControls matrix={matrix} />
       </CardFooter>
     </Card>
   );

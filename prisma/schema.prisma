@@ -199,6 +199,7 @@ model SkillsOnCompetences {
     competence   MatrixCompetence @relation(fields: [competenceId], references: [id])
     createdAt    DateTime         @default(now())
     updatedAt    DateTime         @updatedAt
+    weight       Int              @default(1)
 
     @@unique([skillId, competenceId])
 }

@@ -21,8 +21,8 @@ import {
 } from '@chakra-ui/react';
 import { MdDelete, MdEdit, MdShare, MdViewAgenda } from 'react-icons/md';
 import { api } from '~/trpc/server';
-import MatrixCard from './_matrix-card/matrixCard';
-import NewMatrixCard from './_matrix-card/newMatrix';
+import MatrixCard from './_matrix-card/matrix-card';
+import NewMatrixCard from './_matrix-card/new-matrix';
 
 const MatrixPage = async ({
   params,

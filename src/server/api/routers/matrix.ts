@@ -46,6 +46,85 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
+  clone: protectedProcedure
+    .input(
+      z.object({
+        matrixId: z.string().cuid(),
+        name: z
+          .string()
+          .min(1, 'Name is required')
+          .max(64, 'Maximum name length is 64 characters'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const matrix = await ctx.db.matrix.findFirst({
+        where: { id: input.matrixId },
+        include: {
+          categories: {
+            include: { competences: { include: { skills: true } } },
+          },
+        },
+      });
+
+      if (!matrix) {
+        throw new Error('Matrix not found');
+      }
+
+      let slug = slugify(input.name);
+      let slugTaken = !!(await ctx.db.matrix.findFirst({
+        where: { organizationSlug: matrix.organizationSlug, slug },
+      }));
+
+      while (slugTaken) {
+        const rand1 = Math.floor(Math.random() * ctx.session.user.id.length);
+        const rand2 = Math.floor(Math.random() * ctx.session.user.id.length);
+        slug = `${slug}-${ctx.session.user.id[rand1]}${ctx.session.user.id[rand2]}`;
+        slugTaken = !!(await ctx.db.matrix.findFirst({
+          where: { organizationSlug: matrix.organizationSlug, slug },
+        }));
+      }
+
+      return ctx.db.matrix.create({
+        data: {
+          name: input.name,
+          slug,
+          organizationSlug: matrix.organizationSlug,
+          users: {
+            create: [
+              {
+                userId: ctx.session.user.id,
+                permissions: 'OWNER',
+              },
+            ],
+          },
+          categories: {
+            createMany: {
+              data: matrix.categories.map((category) => ({
+                name: category.name,
+                weight: category.weight,
+                competences: {
+                  createMany: {
+                    data: category.competences.map((competence) => ({
+                      name: competence.name,
+                      weight: competence.weight,
+                      skills: {
+                        createMany: {
+                          data: competence.skills.map((skill) => ({
+                            skillId: skill.skillId,
+                            weight: skill.weight,
+                          })),
+                        },
+                      },
+                    })),
+                  },
+                },
+              })),
+            },
+          },
+        },
+      });
+    }),
+
   getOwned: protectedProcedure
     .input(z.object({ organizationSlug: z.string() }))
     .query(({ ctx, input }) => {
