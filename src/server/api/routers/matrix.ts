@@ -141,8 +141,27 @@ export const matrixRouter = createTRPCRouter({
       return ctx.db.matrix.findFirst({
         where: { id: input.matrixId },
         include: {
+          users: { include: { user: true } },
           categories: {
             include: { competences: { include: { skills: true } } },
+          },
+        },
+      });
+    }),
+
+  getFullBySlug: protectedProcedure
+    .input(z.object({ orgSlug: z.string(), matrixSlug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.matrix.findFirst({
+        where: { organizationSlug: input.orgSlug, slug: input.matrixSlug },
+        include: {
+          users: { select: { permissions: true, user: true } },
+          categories: {
+            include: {
+              competences: {
+                include: { skills: { include: { skill: true } } },
+              },
+            },
           },
         },
       });
