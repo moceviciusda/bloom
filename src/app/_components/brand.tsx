@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, BoxProps } from '@chakra-ui/react';
 import { Grand_Hotel } from 'next/font/google';
 
 const grandHotel = Grand_Hotel({
@@ -23,7 +23,7 @@ export const MiniBrand = () => {
   );
 };
 
-const Brand = () => {
+const Brand: React.FC<BoxProps> = (props) => {
   return (
     <Box
       //   bg='purple.800'
@@ -34,6 +34,7 @@ const Brand = () => {
       className={grandHotel.className}
       color={'purple.600'}
       fontSize={40}
+      {...props}
     >
       Bloom
     </Box>

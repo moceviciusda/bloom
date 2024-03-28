@@ -12,6 +12,7 @@ import OrganizationCard, {
 
 import { Suspense } from 'react';
 import UserPlate from './_components/user-plate';
+import Brand from './_components/brand';
 
 const Home = async () => {
   noStore();
@@ -32,7 +33,7 @@ const Home = async () => {
           top={0}
         >
           <h1 className={styles.title}>
-            Someth <span className={styles.pinkSpan}>Bloom</span> Smth
+            Someth <Brand as='span' fontSize='110' color='purple.500' /> Smth
           </h1>
           <div className={styles.cardRow}>
             <Link className={styles.card} href='#'>
