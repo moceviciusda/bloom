@@ -450,7 +450,6 @@ const DeleteMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
             <Button
               mt={2}
               colorScheme='red'
-              variant='ghost'
               onClick={(e) => {
                 e.preventDefault();
                 deleteMatrix.mutate({ matrixId: matrix.id });

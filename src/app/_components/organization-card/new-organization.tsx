@@ -14,6 +14,8 @@ import {
   Input,
   Text,
   VStack,
+  FormControl,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import { api } from '~/trpc/react';
 import { TbArrowBackUp } from 'react-icons/tb';
@@ -44,8 +46,11 @@ export const NewOrganization: React.FC<CardProps> = (props) => {
     },
   });
 
+  const nameInputError =
+    createOrganization.error?.data?.zodError?.fieldErrors?.name?.[0];
+
   return (
-    <Card size='md' color='blackAlpha.900' h='140px' {...props}>
+    <Card size='md' color='blackAlpha.900' {...props}>
       {isOpen ? (
         <>
           <CardHeader
@@ -54,17 +59,30 @@ export const NewOrganization: React.FC<CardProps> = (props) => {
             justifyContent='space-between'
             paddingBottom={3}
           >
-            <Input
-              autoFocus
-              type='text'
-              variant='unstyled'
-              fontSize='1.65rem'
-              fontWeight='bold'
-              placeholder='Organization Name'
-              _placeholder={{ fontSize: '20', fontWeight: '500' }}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <FormControl isInvalid={createOrganization.isError}>
+              <FormErrorMessage fontWeight='500' mt={0}>
+                {nameInputError}
+              </FormErrorMessage>
+
+              <Input
+                autoFocus
+                variant='unstyled'
+                fontSize='1.65rem'
+                fontWeight='bold'
+                placeholder='Organization Name'
+                _placeholder={{ fontSize: '20', fontWeight: '500' }}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter') {
+                    createOrganization.mutate({ name: name.trim() });
+                  }
+                  if (e.key === 'Escape') {
+                    setIsOpen(false);
+                  }
+                }}
+              />
+            </FormControl>
             <IconButton
               aria-label='cancel'
               icon={<TbArrowBackUp />}
@@ -82,7 +100,8 @@ export const NewOrganization: React.FC<CardProps> = (props) => {
               w='100%'
               isLoading={createOrganization.isLoading}
               colorScheme='purple'
-              onClick={() => createOrganization.mutate({ name })}
+              onClick={() => createOrganization.mutate({ name: name.trim() })}
+              isDisabled={!name.trim()}
             >
               Submit
             </Button>
@@ -96,17 +115,27 @@ export const NewOrganization: React.FC<CardProps> = (props) => {
             justifyContent='space-between'
             paddingBottom={3}
           >
-            <Input
-              autoFocus
-              type='text'
-              variant='unstyled'
-              fontSize='1.65rem'
-              fontWeight='bold'
-              placeholder='Organization Secret'
-              _placeholder={{ fontSize: '20', fontWeight: '500' }}
-              value={secret}
-              onChange={(e) => setSecret(e.target.value)}
-            />
+            <FormControl isInvalid={joinOrg.isError}>
+              <FormErrorMessage fontWeight='500' mt={0}>
+                {joinOrg.error?.message}
+              </FormErrorMessage>
+              <Input
+                variant='unstyled'
+                autoFocus
+                _focusVisible={{ outline: 'none' }}
+                placeholder='Organization Secret'
+                value={secret}
+                onChange={(e) => setSecret(e.target.value)}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter') {
+                    joinOrg.mutate({ secret });
+                  }
+                  if (e.key === 'Escape') {
+                    setJoinOpen(false);
+                  }
+                }}
+              />
+            </FormControl>
             <IconButton
               aria-label='cancel'
               icon={<TbArrowBackUp />}
@@ -119,12 +148,14 @@ export const NewOrganization: React.FC<CardProps> = (props) => {
               }}
             />
           </CardHeader>
+
           <CardBody paddingTop={0}>
             <Button
               w='100%'
               isLoading={joinOrg.isLoading}
               colorScheme='purple'
               onClick={() => joinOrg.mutate({ secret })}
+              isDisabled={!secret.trim()}
             >
               Join
             </Button>
@@ -133,7 +164,6 @@ export const NewOrganization: React.FC<CardProps> = (props) => {
       ) : (
         <CardBody as={VStack} gap={0.5} align='stretch'>
           <Button
-            flex={1}
             onClick={() => {
               setName('');
               setIsOpen(true);
@@ -150,7 +180,6 @@ export const NewOrganization: React.FC<CardProps> = (props) => {
           </HStack>
           <Button
             colorScheme='purple'
-            flex={1}
             onClick={() => {
               setSecret('');
               setJoinOpen(true);

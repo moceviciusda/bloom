@@ -318,7 +318,9 @@ export const DeleteOrganizationModal: React.FC<
                 }
                 icon={<GoOrganization />}
               />
-              <Heading size='lg'>{organization.name}</Heading>
+              <Heading size='lg' wordBreak='break-all'>
+                {organization.name}
+              </Heading>
             </HStack>
             <HStack justify='space-between' flexWrap='wrap'>
               <Stat textAlign='center'>
