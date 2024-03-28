@@ -4,11 +4,15 @@ import {
   CircularProgress,
   CircularProgressLabel,
   HStack,
+  Skeleton,
+  SkeletonCircle,
+  SkeletonText,
   Stat,
   StatLabel,
   StatNumber,
   Text,
   Tooltip,
+  VStack,
 } from '@chakra-ui/react';
 import { type Matrix } from '@prisma/client';
 
@@ -67,6 +71,42 @@ export const MatrixStats = async ({ matrix }: { matrix: Matrix }) => {
           </CircularProgressLabel>
         </CircularProgress>
       </Stat>
+    </HStack>
+  );
+};
+
+export const MatrixStatsSkeleton = () => {
+  return (
+    <HStack
+      flex={1}
+      justifyContent='space-between'
+      alignItems='stretch'
+      textAlign='center'
+    >
+      <VStack gap={4}>
+        <SkeletonText noOfLines={1} w='80px' skeletonHeight='21px' />
+
+        <AvatarGroup size='sm' max={3} justifyContent='center'>
+          <SkeletonCircle boxSize='8' />
+          <SkeletonCircle boxSize='8' />
+          <SkeletonCircle boxSize='8' />
+        </AvatarGroup>
+      </VStack>
+
+      <VStack gap={3.5}>
+        <SkeletonText noOfLines={1} w='80px' skeletonHeight='21px' />
+        <Skeleton h='36px' w='50px' borderRadius={6} />
+      </VStack>
+
+      <VStack gap={3.5}>
+        <SkeletonText noOfLines={1} w='80px' skeletonHeight='21px' />
+        <Skeleton h='36px' w='50px' borderRadius={6} />
+      </VStack>
+
+      <VStack>
+        <SkeletonText noOfLines={1} w='80px' skeletonHeight='21px' />
+        <CircularProgress size='48px' isIndeterminate color='gray.300' />
+      </VStack>
     </HStack>
   );
 };

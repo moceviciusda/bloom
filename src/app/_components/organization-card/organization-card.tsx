@@ -121,14 +121,14 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
             <Text lineHeight={1} fontSize='xs'>
               Matrices
             </Text>
-            <Text lineHeight={1}>24</Text>
+            <Text lineHeight={1}>{org._count.matrices}</Text>
           </VStack>
 
           <VStack justify='center' gap={0}>
             <Text lineHeight={1} fontSize='xs'>
               Teams
             </Text>
-            <Text lineHeight={1}>4</Text>
+            <Text lineHeight={1}>0</Text>
           </VStack>
 
           <VStack justify='center' gap={0}>

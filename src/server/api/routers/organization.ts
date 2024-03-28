@@ -227,7 +227,10 @@ export const organizationRouter = createTRPCRouter({
     .query(({ ctx, input }) => {
       return ctx.db.organization.findUnique({
         where: { id: input.id },
-        include: { owner: true, _count: { select: { members: true } } },
+        include: {
+          owner: true,
+          _count: { select: { members: true, matrices: true } },
+        },
       });
     }),
 
