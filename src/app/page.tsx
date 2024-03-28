@@ -33,7 +33,13 @@ const Home = async () => {
           top={0}
         >
           <h1 className={styles.title}>
-            Someth <Brand as='span' fontSize='110' color='purple.500' /> Smth
+            Something{' '}
+            <Brand
+              as='span'
+              fontSize={{ base: '70', sm: '110' }}
+              color='purple.500'
+            />{' '}
+            smth
           </h1>
           <div className={styles.cardRow}>
             <Link className={styles.card} href='#'>

@@ -282,6 +282,7 @@ const DeleteMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
 
   const deleteMatrix = api.matrix.delete.useMutation({
     onSuccess: () => {
+      onClose();
       router.refresh();
     },
   });

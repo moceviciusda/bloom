@@ -7,6 +7,7 @@ import {
   CardHeader,
   CircularProgress,
   CircularProgressLabel,
+  HStack,
   Heading,
   Stat,
   StatLabel,
@@ -32,7 +33,9 @@ const MatrixCard: React.FC<{ matrix: Matrix }> = ({ matrix }) => {
         <Heading size='lg'>{matrix.name}</Heading>
       </CardHeader>
 
-      <MatrixStats matrix={matrix} />
+      <CardBody py={0} display='flex' alignItems='flex-end'>
+        <MatrixStats matrix={matrix} />
+      </CardBody>
 
       <CardFooter p={6}>
         <MatrixCardControls matrix={matrix} />
@@ -55,13 +58,10 @@ const MatrixStats = async ({ matrix }: { matrix: Matrix }) => {
   ];
 
   return (
-    <CardBody
-      py={0}
-      display='flex'
-      flexDir='row'
+    <HStack
+      flex={1}
       justifyContent='space-between'
       alignItems='stretch'
-      gap={2}
       textAlign='center'
     >
       <Stat>
@@ -99,7 +99,7 @@ const MatrixStats = async ({ matrix }: { matrix: Matrix }) => {
           </CircularProgressLabel>
         </CircularProgress>
       </Stat>
-    </CardBody>
+    </HStack>
   );
 };
 
