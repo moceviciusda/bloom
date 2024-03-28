@@ -1,7 +1,7 @@
 import { Divider, Flex, Heading, Wrap } from '@chakra-ui/react';
 import { api } from '~/trpc/server';
-import MatrixCard from './_matrix-card/matrix-card';
-import NewMatrixCard from './_matrix-card/new-matrix';
+import { MatrixCard } from './_matrix-card/matrix-card';
+import { NewMatrixCard } from './_matrix-card/new-matrix';
 
 const MatrixPage = async ({
   params,
@@ -35,7 +35,7 @@ const MyMatrices = async ({ orgSlug }: { orgSlug: string }) => {
   return (
     <Wrap spacing={3} py={4} justify={{ base: 'center', md: 'flex-start' }}>
       {matrices.map((matrix) => (
-        <MatrixCard key={matrix.id} matrix={matrix} />
+        <MatrixCard key={matrix.id} matrix={matrix} isOwner />
       ))}
 
       <NewMatrixCard orgSlug={orgSlug} />

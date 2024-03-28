@@ -17,7 +17,7 @@ import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { api } from '~/trpc/react';
 
-const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
+export const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
   const router = useRouter();
   const [name, setName] = useState('');
 
@@ -107,5 +107,3 @@ const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
     </Card>
   );
 };
-
-export default NewMatrixCard;

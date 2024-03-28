@@ -35,29 +35,57 @@ import { Permissions, type Matrix } from '@prisma/client';
 import { useRouter } from 'next/navigation';
 import { useState, type FocusEvent } from 'react';
 import { HiChevronUpDown } from 'react-icons/hi2';
-import { MdAssignmentAdd, MdDelete, MdFileCopy, MdShare } from 'react-icons/md';
+import { MdAssignmentAdd, MdClose, MdDelete, MdFileCopy } from 'react-icons/md';
+import { RiShareForwardFill } from 'react-icons/ri';
 import LoadingSpinner from '~/app/_components/loading-spinner';
 import UserPlate from '~/app/_components/user-plate';
 import { api } from '~/trpc/react';
 
-export const MatrixCardControls: React.FC<{ matrix: Matrix }> = ({
-  matrix,
-}) => {
+export const MatrixCardControls: React.FC<{
+  matrix: Matrix;
+  isOwner: boolean;
+}> = ({ matrix, isOwner }) => {
+  const router = useRouter();
+
+  const selfUnshare = api.matrix.selfUnshare.useMutation({
+    onSuccess: () => router.refresh(),
+  });
+
   return (
-    <ButtonGroup isAttached colorScheme='purple' size='sm'>
-      <CloneMatrixButton matrix={matrix} leftIcon={<MdFileCopy />}>
+    <ButtonGroup isAttached colorScheme='purple' size='sm' w='352px'>
+      <CloneMatrixButton matrix={matrix} leftIcon={<MdFileCopy />} flex={1}>
         Clone
       </CloneMatrixButton>
-      <Button isDisabled leftIcon={<MdAssignmentAdd />}>
+
+      <Button isDisabled leftIcon={<MdAssignmentAdd />} flex={1}>
         Assign
       </Button>
-      <ShareMatrixButton matrix={matrix} leftIcon={<MdShare />}>
-        Share
-      </ShareMatrixButton>
-
-      <DeleteMatrixButton matrix={matrix} leftIcon={<MdDelete />}>
-        Delete
-      </DeleteMatrixButton>
+      {isOwner && (
+        <ShareMatrixButton
+          matrix={matrix}
+          leftIcon={<RiShareForwardFill />}
+          flex={1}
+        >
+          Share
+        </ShareMatrixButton>
+      )}
+      {isOwner ? (
+        <DeleteMatrixButton matrix={matrix} leftIcon={<MdDelete />} flex={1}>
+          Delete
+        </DeleteMatrixButton>
+      ) : (
+        <Button
+          leftIcon={<MdClose />}
+          flex={1}
+          onClick={(e) => {
+            e.preventDefault();
+            selfUnshare.mutate({ matrixId: matrix.id });
+          }}
+          isLoading={selfUnshare.isLoading}
+        >
+          Remove
+        </Button>
+      )}
     </ButtonGroup>
   );
 };
@@ -140,6 +168,10 @@ const CloneMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
                 autoFocus
                 onFocus={(e) => e.target.select()}
                 onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) =>
+                  e.key === 'Enter' &&
+                  cloneMatrix.mutate({ matrixId: matrix.id, name })
+                }
               />
               <FormErrorMessage fontSize={12}>{inputError}</FormErrorMessage>
             </FormControl>
@@ -390,7 +422,7 @@ const DeleteMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
         {children}
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} isCentered size='sm'>
+      <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent fontSize={14}>
           <ModalHeader>
