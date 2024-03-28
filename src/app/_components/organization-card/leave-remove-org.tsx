@@ -1,6 +1,5 @@
 'use client';
 
-import { FaTrash } from 'react-icons/fa';
 import { ImExit } from 'react-icons/im';
 import {
   Tooltip,
@@ -11,6 +10,7 @@ import {
 
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
+import { MdDelete } from 'react-icons/md';
 
 interface ButtonProps {
   organizationId: string;
@@ -82,7 +82,7 @@ const RemoveOrgButton: React.FC<ButtonProps> = ({
           e.preventDefault();
           deleteOrganization.mutate({ id: organizationId });
         }}
-        icon={<FaTrash />}
+        icon={<MdDelete />}
         variant='ghost'
         color='gray.800'
         size={'lg'}

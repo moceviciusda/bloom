@@ -47,12 +47,6 @@ export const MatrixCardControls: React.FC<{ matrix: Matrix }> = ({
     },
   });
 
-  const deleteMatrix = api.matrix.delete.useMutation({
-    onSuccess: () => {
-      router.refresh();
-    },
-  });
-
   return (
     <ButtonGroup isAttached colorScheme='purple' size='sm'>
       <Button
@@ -74,16 +68,10 @@ export const MatrixCardControls: React.FC<{ matrix: Matrix }> = ({
       <ShareMatrixButton matrix={matrix} leftIcon={<MdShare />}>
         Share
       </ShareMatrixButton>
-      <Button
-        isLoading={deleteMatrix.isLoading}
-        onClick={(e) => {
-          e.preventDefault();
-          deleteMatrix.mutate({ matrixId: matrix.id });
-        }}
-        leftIcon={<MdDelete />}
-      >
+
+      <DeleteMatrixButton matrix={matrix} leftIcon={<MdDelete />}>
         Delete
-      </Button>
+      </DeleteMatrixButton>
     </ButtonGroup>
   );
 };
@@ -137,7 +125,7 @@ const ShareMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
         <ModalContent fontSize={14}>
           <ModalHeader>
             <Heading size='sm'>
-              Share - <Text as='span'>{matrix.name}</Text>
+              Share Matrix - <Text as='span'>{matrix.name}</Text>
             </Heading>
             <ModalCloseButton top={3} />
           </ModalHeader>
@@ -276,6 +264,81 @@ const ShareMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
                 </Popover>
               </HStack>
             ))}
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
+const DeleteMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
+  matrix,
+  children,
+  ...rest
+}) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const router = useRouter();
+
+  const deleteMatrix = api.matrix.delete.useMutation({
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
+
+  return (
+    <>
+      <Button
+        {...rest}
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+      >
+        {children}
+      </Button>
+
+      <Modal isOpen={isOpen} onClose={onClose} isCentered size='sm'>
+        <ModalOverlay />
+        <ModalContent fontSize={14}>
+          <ModalHeader>
+            <Heading size='sm'>
+              Delete Matrix - <Text as='span'>{matrix.name}</Text>
+            </Heading>{' '}
+            <ModalCloseButton top={3} />
+          </ModalHeader>
+
+          <Divider />
+
+          <ModalFooter
+            flexDir='column'
+            alignItems='stretch'
+            textAlign='justify'
+          >
+            <Text>
+              Are you sure you want to delete {''}
+              <Text as='span' color='red.600'>
+                {matrix.name}
+              </Text>
+              ?
+            </Text>
+            <Text>
+              All data associated with this matrix will be lost. This action is
+              irreversible.
+            </Text>
+
+            <Button
+              mt={2}
+              colorScheme='red'
+              variant='ghost'
+              onClick={(e) => {
+                e.preventDefault();
+                deleteMatrix.mutate({ matrixId: matrix.id });
+              }}
+              isLoading={deleteMatrix.isLoading}
+            >
+              Delete
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

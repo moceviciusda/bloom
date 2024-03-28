@@ -18,7 +18,7 @@ import UserPlate from '../user-plate';
 import { api } from '~/trpc/server';
 import { LeaveOrgButton } from './leave-remove-org';
 import { DeleteOrganizationModal } from '../../[organizationSlug]/settings/_sections/danger-zone';
-import { FaTrash } from 'react-icons/fa6';
+import { MdDelete } from 'react-icons/md';
 
 interface Props {
   organization: Organization;
@@ -88,7 +88,7 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
             colorScheme='gray'
             p={0}
           >
-            <FaTrash />
+            <MdDelete />
           </DeleteOrganizationModal>
         ) : (
           // <RemoveOrgButton organizationId={organization.id} />
