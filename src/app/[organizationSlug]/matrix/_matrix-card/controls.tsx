@@ -5,7 +5,6 @@ import {
   ButtonGroup,
   type ButtonProps,
   Heading,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -16,7 +15,6 @@ import {
   useDisclosure,
   Divider,
   ModalCloseButton,
-  VStack,
   HStack,
   Popover,
   PopoverBody,
@@ -31,7 +29,8 @@ import {
 } from '@choc-ui/chakra-autocomplete';
 import { Permissions, type Matrix } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import { FocusEvent } from 'react';
+import { type FocusEvent } from 'react';
+import { HiChevronUpDown } from 'react-icons/hi2';
 import { MdAssignmentAdd, MdDelete, MdFileCopy, MdShare } from 'react-icons/md';
 import LoadingSpinner from '~/app/_components/loading-spinner';
 import UserPlate from '~/app/_components/user-plate';
@@ -69,7 +68,9 @@ export const MatrixCardControls: React.FC<{ matrix: Matrix }> = ({
       >
         Clone
       </Button>
-      <Button leftIcon={<MdAssignmentAdd />}>Assign</Button>
+      <Button isDisabled leftIcon={<MdAssignmentAdd />}>
+        Assign
+      </Button>
       <ShareMatrixButton matrix={matrix} leftIcon={<MdShare />}>
         Share
       </ShareMatrixButton>
@@ -189,59 +190,89 @@ const ShareMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
 
           <Divider />
 
-          <ModalFooter flexDir='column' alignItems='stretch' gap={2}>
+          <ModalFooter flexDir='column' alignItems='stretch'>
             <Text>Shared with:</Text>
             {sharedWith.map((user) => (
-              <HStack key={user.userId} justify='space-between'>
+              <HStack
+                p={2}
+                key={user.userId}
+                justify='space-between'
+                borderRadius={6}
+                _hover={{ bg: 'gray.100' }}
+              >
                 <UserPlate user={user.user} />
                 <Popover variant='responsive'>
-                  <PopoverTrigger>
-                    <Button size='xs' variant='ghost'>
-                      <Text>{user.permissions}</Text>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <PopoverBody p={0} border='none'>
-                      <ButtonGroup isAttached orientation='vertical' size='sm'>
+                  {({ onClose }) => (
+                    <>
+                      <PopoverTrigger>
                         <Button
-                          onClick={() => {
-                            if (user.permissions === 'VIEWER') return;
-                            shareMatrix.mutate({
-                              matrixId: matrix.id,
-                              users: [
-                                { userId: user.userId, permissions: 'VIEWER' },
-                              ],
-                            });
-                          }}
-                        >
-                          Viewer
-                        </Button>
-                        <Button
-                          onClick={() => {
-                            if (user.permissions === 'EDITOR') return;
-                            shareMatrix.mutate({
-                              matrixId: matrix.id,
-                              users: [
-                                { userId: user.userId, permissions: 'EDITOR' },
-                              ],
-                            });
-                          }}
-                        >
-                          Editor
-                        </Button>
-                        <Button
-                          onClick={() =>
-                            unshareMatrix.mutate({
-                              userId: user.userId,
-                              matrixId: matrix.id,
-                            })
+                          isLoading={
+                            shareMatrix.isLoading || unshareMatrix.isLoading
+                          }
+                          w={24}
+                          size='sm'
+                          colorScheme='gray'
+                          justifyContent={
+                            shareMatrix.isLoading || unshareMatrix.isLoading
+                              ? 'center'
+                              : 'space-between'
                           }
                         >
-                          Remove
+                          <Text textTransform='capitalize'>
+                            {user.permissions.toLowerCase()}
+                          </Text>
+                          <HiChevronUpDown />
                         </Button>
-                      </ButtonGroup>
-                    </PopoverBody>
-                  </PopoverContent>
+                      </PopoverTrigger>
+
+                      <PopoverContent>
+                        <PopoverBody p={0} border='none'>
+                          <ButtonGroup
+                            isAttached
+                            orientation='vertical'
+                            size='sm'
+                          >
+                            <Button
+                              onClick={() => {
+                                onClose();
+                                shareMatrix.mutate({
+                                  matrixId: matrix.id,
+                                  users: [
+                                    {
+                                      userId: user.userId,
+                                      permissions:
+                                        user.permissions === 'VIEWER'
+                                          ? 'EDITOR'
+                                          : 'VIEWER',
+                                    },
+                                  ],
+                                });
+                              }}
+                              variant='ghost'
+                            >
+                              {user.permissions === 'VIEWER'
+                                ? 'Editor'
+                                : 'Viewer'}
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                onClose();
+                                unshareMatrix.mutate({
+                                  userId: user.userId,
+                                  matrixId: matrix.id,
+                                });
+                              }}
+                              colorScheme='red'
+                              variant='ghost'
+                              _hover={{ bg: 'red.600', color: 'white' }}
+                            >
+                              Remove
+                            </Button>
+                          </ButtonGroup>
+                        </PopoverBody>
+                      </PopoverContent>
+                    </>
+                  )}
                 </Popover>
               </HStack>
             ))}

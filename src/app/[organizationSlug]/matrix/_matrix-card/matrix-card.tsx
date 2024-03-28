@@ -1,8 +1,6 @@
 import {
   Avatar,
   AvatarGroup,
-  Button,
-  ButtonGroup,
   Card,
   CardBody,
   CardFooter,
@@ -18,7 +16,6 @@ import {
 } from '@chakra-ui/react';
 import { type Matrix } from '@prisma/client';
 import Link from 'next/link';
-import { MdViewAgenda, MdEdit, MdShare, MdDelete } from 'react-icons/md';
 import { MatrixCardControls } from './controls';
 
 const MatrixCard: React.FC<{ matrix: Matrix }> = ({ matrix }) => {
@@ -29,7 +26,7 @@ const MatrixCard: React.FC<{ matrix: Matrix }> = ({ matrix }) => {
       variant='hover'
       fontSize={14}
       size={{ base: 'md', md: 'lg' }}
-      maxW='420px'
+      maxW='400px'
     >
       <CardHeader>
         <Heading size='lg'>{matrix.name}</Heading>

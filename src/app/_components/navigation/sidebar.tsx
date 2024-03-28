@@ -39,7 +39,7 @@ const SideBar: React.FC<SideBarProps> = ({
         align='flex-start'
         overflowX='hidden'
       >
-        <NavLinks organization={currentOrg} />
+        <NavLinks organization={currentOrg} showLabels={!isOpen} />
 
         <NavLink
           onClick={() => setIsOpen(!isOpen)}
