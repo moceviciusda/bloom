@@ -20,6 +20,10 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Input,
+  FormControl,
+  FormErrorMessage,
+  Tooltip,
 } from '@chakra-ui/react';
 import {
   AutoComplete,
@@ -29,7 +33,7 @@ import {
 } from '@choc-ui/chakra-autocomplete';
 import { Permissions, type Matrix } from '@prisma/client';
 import { useRouter } from 'next/navigation';
-import { type FocusEvent } from 'react';
+import { useState, type FocusEvent } from 'react';
 import { HiChevronUpDown } from 'react-icons/hi2';
 import { MdAssignmentAdd, MdDelete, MdFileCopy, MdShare } from 'react-icons/md';
 import LoadingSpinner from '~/app/_components/loading-spinner';
@@ -39,29 +43,11 @@ import { api } from '~/trpc/react';
 export const MatrixCardControls: React.FC<{ matrix: Matrix }> = ({
   matrix,
 }) => {
-  const router = useRouter();
-
-  const cloneMatrix = api.matrix.clone.useMutation({
-    onSuccess: () => {
-      router.refresh();
-    },
-  });
-
   return (
     <ButtonGroup isAttached colorScheme='purple' size='sm'>
-      <Button
-        isLoading={cloneMatrix.isLoading}
-        leftIcon={<MdFileCopy />}
-        onClick={(e) => {
-          e.preventDefault();
-          cloneMatrix.mutate({
-            name: matrix.name + ' (copy)',
-            matrixId: matrix.id,
-          });
-        }}
-      >
+      <CloneMatrixButton matrix={matrix} leftIcon={<MdFileCopy />}>
         Clone
-      </Button>
+      </CloneMatrixButton>
       <Button isDisabled leftIcon={<MdAssignmentAdd />}>
         Assign
       </Button>
@@ -73,6 +59,111 @@ export const MatrixCardControls: React.FC<{ matrix: Matrix }> = ({
         Delete
       </DeleteMatrixButton>
     </ButtonGroup>
+  );
+};
+
+const CloneMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
+  matrix,
+  children,
+  ...rest
+}) => {
+  const router = useRouter();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const [name, setName] = useState(matrix.name + ' (copy)');
+
+  const cloneMatrix = api.matrix.clone.useMutation({
+    onSuccess: () => {
+      setName(matrix.name + ' (copy)');
+      onClose();
+      router.refresh();
+    },
+  });
+
+  const inputError = cloneMatrix.error?.data?.zodError?.fieldErrors?.name?.[0];
+
+  return (
+    <>
+      <Button
+        {...rest}
+        onClick={(e) => {
+          e.preventDefault();
+          onOpen();
+        }}
+      >
+        {children}
+      </Button>
+
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setName(matrix.name + ' (copy)');
+          onClose();
+        }}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent fontSize={14}>
+          <ModalHeader>
+            <Heading size='sm'>
+              Clone Matrix - <Text as='span'>{matrix.name}</Text>
+            </Heading>
+            <ModalCloseButton top={3} />
+          </ModalHeader>
+
+          <Divider />
+
+          <ModalBody>
+            <Text>
+              Create a new matrix with the same categories, competences, skills
+              and their weights as{' '}
+              <Text as='span' fontWeight='600'>
+                {matrix.name}
+              </Text>
+              .
+            </Text>
+            <Text mt={1}>
+              Any other associated data such as assignments, and historical
+              stats will not be cloned.
+            </Text>
+          </ModalBody>
+
+          <Divider />
+
+          <ModalFooter flexDir='column' alignItems='flex-start'>
+            <Text>Enter a name for the new matrix:</Text>
+            <FormControl isInvalid={!!inputError}>
+              <Input
+                mt={2}
+                value={name}
+                autoFocus
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <FormErrorMessage fontSize={12}>{inputError}</FormErrorMessage>
+            </FormControl>
+            <Tooltip
+              variant='bloom'
+              label={!name.trim() ? 'Name is required' : ''}
+            >
+              <Button
+                mt={2}
+                alignSelf='stretch'
+                colorScheme='purple'
+                onClick={() =>
+                  cloneMatrix.mutate({ matrixId: matrix.id, name })
+                }
+                isLoading={cloneMatrix.isLoading}
+                isDisabled={!name.trim()}
+              >
+                Submit
+              </Button>
+            </Tooltip>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 
@@ -311,11 +402,7 @@ const DeleteMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
 
           <Divider />
 
-          <ModalFooter
-            flexDir='column'
-            alignItems='stretch'
-            textAlign='justify'
-          >
+          <ModalFooter flexDir='column' alignItems='stretch'>
             <Text>
               Are you sure you want to delete {''}
               <Text as='span' color='red.600'>
