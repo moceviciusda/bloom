@@ -125,6 +125,25 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
+  createCategory: protectedProcedure
+    .input(
+      z.object({
+        matrixId: z.string().cuid(),
+        name: z
+          .string()
+          .min(1, 'Name is required')
+          .max(32, 'Max length is 32 characters'),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db.matrixCategory.create({
+        data: {
+          name: input.name,
+          matrixId: input.matrixId,
+        },
+      });
+    }),
+
   getUsers: protectedProcedure
     .input(z.object({ matrixId: z.string().cuid() }))
     .query(({ ctx, input }) => {

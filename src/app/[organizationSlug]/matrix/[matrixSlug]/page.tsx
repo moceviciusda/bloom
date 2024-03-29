@@ -1,4 +1,4 @@
-import { Flex, Heading } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
 import { api } from '~/trpc/server';
 import { MatrixView } from './_matrix-view/matrix-view';
 import { getServerAuthSession } from '~/server/auth';
@@ -25,10 +25,6 @@ const MatrixPage = async ({
 
   return (
     <Flex flex={1} p={3} flexDir='column'>
-      {/* <Heading size='lg' mb={3}>
-        {fullMatrix?.name}
-      </Heading> */}
-      {/* <Divider /> */}
       <MatrixView matrix={fullMatrix} isEditable={isEditable} />
     </Flex>
   );

@@ -81,7 +81,7 @@ model Organization {
     slug        String                 @unique
     image       String?
     ownerId     String
-    owner       User                   @relation(name: "OrganizationOwner", fields: [ownerId], references: [id])
+    owner       User                   @relation(name: "OrganizationOwner", fields: [ownerId], references: [id], onDelete: Cascade)
     members     UsersOnOrganizations[]
     secrets     OrganizationSecret[]
     invitations Invitation[]
@@ -114,7 +114,7 @@ model Invitation {
     id             String       @id @default(cuid())
     email          String
     organizationId String
-    organization   Organization @relation(fields: [organizationId], references: [id])
+    organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
     expires        DateTime
 }
 
@@ -144,7 +144,7 @@ model Matrix {
     updatedAt        DateTime          @updatedAt
     users            UsersOnMatrices[]
     organizationSlug String
-    organization     Organization      @relation(fields: [organizationSlug], references: [slug])
+    organization     Organization      @relation(fields: [organizationSlug], references: [slug], onDelete: Cascade)
     categories       MatrixCategory[]
 
     @@unique([organizationSlug, slug])
@@ -155,7 +155,7 @@ model MatrixCategory {
     id          String             @id @default(cuid())
     name        String
     matrixId    String
-    matrix      Matrix             @relation(fields: [matrixId], references: [id])
+    matrix      Matrix             @relation(fields: [matrixId], references: [id], onDelete: Cascade)
     createdAt   DateTime           @default(now())
     updatedAt   DateTime           @updatedAt
     competences MatrixCompetence[]
@@ -168,7 +168,7 @@ model MatrixCompetence {
     id         String                @id @default(cuid())
     name       String
     categoryId String
-    category   MatrixCategory        @relation(fields: [categoryId], references: [id])
+    category   MatrixCategory        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
     createdAt  DateTime              @default(now())
     updatedAt  DateTime              @updatedAt
     weight     Int                   @default(1)
@@ -192,9 +192,9 @@ model Skill {
 model SkillsOnCompetences {
     id           String           @id @default(cuid())
     skillId      String
-    skill        Skill            @relation(fields: [skillId], references: [id])
+    skill        Skill            @relation(fields: [skillId], references: [id], onDelete: Cascade)
     competenceId String
-    competence   MatrixCompetence @relation(fields: [competenceId], references: [id])
+    competence   MatrixCompetence @relation(fields: [competenceId], references: [id], onDelete: Cascade)
     createdAt    DateTime         @default(now())
     updatedAt    DateTime         @updatedAt
     weight       Int              @default(1)
@@ -205,9 +205,9 @@ model SkillsOnCompetences {
 model SkillsOnUsers {
     id        String         @id @default(cuid())
     userId    String
-    user      User           @relation(fields: [userId], references: [id])
+    user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
     skillId   String
-    skill     Skill          @relation(fields: [skillId], references: [id])
+    skill     Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
     createdAt DateTime       @default(now())
     updatedAt DateTime       @updatedAt
     approved  SkillAproval[]
@@ -217,10 +217,10 @@ model SkillsOnUsers {
 
 model SkillAproval {
     id           String        @id @default(cuid())
-    userSkill    SkillsOnUsers @relation(fields: [userSkillId], references: [id])
+    userSkill    SkillsOnUsers @relation(fields: [userSkillId], references: [id], onDelete: Cascade)
     userSkillId  String
     approvedById String
-    approvedBy   User          @relation(fields: [approvedById], references: [id])
+    approvedBy   User          @relation(fields: [approvedById], references: [id], onDelete: Cascade)
     approvedAt   DateTime      @default(now())
 
     @@unique([userSkillId, approvedById])

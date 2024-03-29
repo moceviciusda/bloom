@@ -6,7 +6,6 @@ import {
   type TextProps,
   VStack,
   type StackProps,
-  Skeleton,
   SkeletonCircle,
   SkeletonText,
 } from '@chakra-ui/react';
