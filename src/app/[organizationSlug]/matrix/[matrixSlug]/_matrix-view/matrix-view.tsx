@@ -69,9 +69,10 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
 
   const [newCategoryName, setNewCategoryName] = useState('');
   const createCategory = api.matrix.createCategory.useMutation({
-    onSuccess: () => {
+    onSuccess: ({ id }) => {
       router.refresh();
       setNewCategoryName('');
+      setCategoryIdList([...categoryIdList, id]);
     },
   });
   const nameInputError =
