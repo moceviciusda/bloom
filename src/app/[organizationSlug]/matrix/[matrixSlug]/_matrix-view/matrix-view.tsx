@@ -14,6 +14,7 @@ import {
   HStack,
   Flex,
   Stack,
+  CardFooter,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { FaWeightHanging } from 'react-icons/fa6';
@@ -74,7 +75,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                 p={0}
                 _selected={{ color: 'black' }}
                 fontWeight='600'
-                transition={'color 0.2s 0.2s ease-in-out'}
+                transition={'color 0.2s ease-in-out'}
               >
                 {selectedCategory === index && (
                   <motion.span
@@ -89,14 +90,14 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                         '0 1px 3px 0 rgba(0, 0, 0, 0.1),0 1px 2px 0 rgba(0, 0, 0, 0.06)',
                       borderRadius: '6px',
                     }}
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
                   />
                 )}
 
-                <Text zIndex={1} p={4}>
+                <Text zIndex={1} px={4} py={2}>
                   {category.name}
                 </Text>
-                {/* <HStack>
+                {/* <HStack zIndex={1} px={4}>
                   <Text>{category.name}</Text>
 
                   <Flex
@@ -138,11 +139,11 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                         '0 1px 3px 0 rgba(0, 0, 0, 0.1),0 1px 2px 0 rgba(0, 0, 0, 0.06)',
                       borderRadius: '6px',
                     }}
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                    transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
                   />
                 )}
 
-                <Text zIndex={1} p={4}>
+                <Text zIndex={1} px={4} py={2}>
                   New Category
                 </Text>
               </Tab>
@@ -150,7 +151,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
           </TabList>
         </CardHeader>
 
-        <CardBody as={TabPanels}>
+        <CardBody as={TabPanels} flex={1}>
           {/* <TabPanels> */}
           {matrix.categories.map((category) => (
             <TabPanel key={category.id}>
@@ -179,6 +180,11 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
           {/* </TabPanels> */}
         </CardBody>
       </Tabs>
+      <CardFooter>
+        <Stack direction='row' justify='flex-end'>
+          <Text>Im card footer</Text>
+        </Stack>
+      </CardFooter>
     </Card>
   );
 };
