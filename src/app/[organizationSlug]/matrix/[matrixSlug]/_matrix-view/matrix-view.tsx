@@ -88,7 +88,11 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
     >
       <Tabs flex={1} variant='unstyled' index={selectedCategory.index}>
         <CardHeader display='flex' flexDir='column' alignItems='flex-start'>
-          <HStack mb={6} alignSelf='stretch'>
+          <HStack
+            mb={6}
+            alignSelf='stretch'
+            flexDir={{ base: 'column', md: 'row' }}
+          >
             <Heading size='lg'>{matrix.name}</Heading>
             <Spacer />
             {updateCategoryOrder.isLoading && <LoadingSpinner size='md' />}
@@ -180,16 +184,16 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
               <MatrixCategoryTab
                 fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
                 flex={1}
-                isActive={selectedCategory.index === matrix.categories.length}
+                isActive={selectedCategory.index === categoryIdList.length}
                 color={
-                  selectedCategory.index === matrix.categories.length
+                  selectedCategory.index === categoryIdList.length
                     ? 'blackAlpha.800'
                     : 'unset'
                 }
                 _hover={{ color: 'blackAlpha.800' }}
                 onClick={() =>
                   setSelectedCategory({
-                    index: matrix.categories.length,
+                    index: categoryIdList.length,
                     id: 'new',
                   })
                 }
@@ -201,7 +205,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                   gap={0}
                   flex={1}
                 >
-                  {selectedCategory.index === matrix.categories.length ? (
+                  {selectedCategory.index === categoryIdList.length ? (
                     <AddCategoryForm
                       matrixId={matrix.id}
                       categoryIdList={categoryIdList}
@@ -225,8 +229,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
             }
             return (
               <TabPanel key={category.id} p={0}>
-                {category.name}
-                {isEditable && <MatrixCategoryControls />}
+                {/* {isEditable && <MatrixCategoryControls />} */}
                 {category.competences.map((competence) => (
                   <div key={competence.id}>
                     <Text>
