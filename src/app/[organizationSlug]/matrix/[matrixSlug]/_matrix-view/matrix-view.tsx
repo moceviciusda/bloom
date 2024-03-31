@@ -22,15 +22,24 @@ import {
   FormLabel,
   HStack,
   Spacer,
+  Box,
+  Icon,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { type HTMLMotionProps, motion, Reorder } from 'framer-motion';
-import { type Dispatch, type SetStateAction, useState } from 'react';
+import React, { type Dispatch, type SetStateAction, useState } from 'react';
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
 import LoadingSpinner from '~/app/_components/loading-spinner';
 import { WeightIcon } from './matrix-utils';
 import { MatrixCardControls } from '../../_matrix-card/controls';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from '@hello-pangea/dnd';
+import { MdDragIndicator } from 'react-icons/md';
 
 interface MatrixViewProps {
   isEditable?: boolean;
@@ -229,22 +238,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
             }
             return (
               <TabPanel key={category.id} p={0}>
-                {/* {isEditable && <MatrixCategoryControls />} */}
-                {category.competences.map((competence) => (
-                  <div key={competence.id}>
-                    <Text>
-                      {competence.name} ({competence.weight})
-                    </Text>
-
-                    {competence.skills.map((skill) => (
-                      <div key={skill.id}>
-                        <Text>
-                          {skill.skill.name} ({skill.weight})
-                        </Text>
-                      </div>
-                    ))}
-                  </div>
-                ))}
+                <MatrixCategoryPanel category={category} />
               </TabPanel>
             );
           })}
@@ -257,6 +251,153 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
         </Stack>
       </CardFooter>
     </Card>
+  );
+};
+
+const MatrixCategoryPanel: React.FC<{
+  category: Prisma.MatrixCategoryGetPayload<{
+    include: {
+      competences: {
+        include: {
+          skills: { include: { skill: true } };
+        };
+      };
+    };
+  }>;
+}> = ({ category }) => {
+  const [competences, setCompetences] = useState(category.competences);
+
+  const dragEndHandler = (results: DropResult) => {
+    const { source, destination, type } = results;
+    if (!destination) {
+      return;
+    }
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    if (type === 'competence') {
+      const newCompetences = [...competences];
+      const removed = newCompetences.splice(source.index, 1)[0];
+      if (removed) {
+        newCompetences.splice(destination.index, 0, removed);
+      }
+      setCompetences(newCompetences);
+    }
+
+    if (type === 'skill') {
+      const newCompetences = [...competences];
+
+      const removed = newCompetences
+        .find((competence) => competence.id === source.droppableId)
+        ?.skills.splice(source.index, 1)[0];
+      console.log('removed', removed);
+
+      if (removed) {
+        newCompetences
+          .find((competence) => competence.id === destination.droppableId)
+          ?.skills.splice(destination.index, 0, removed);
+      }
+      setCompetences(newCompetences);
+    }
+
+    console.log(results);
+  };
+
+  return (
+    <DragDropContext onDragEnd={dragEndHandler}>
+      <Droppable
+        droppableId={category.id}
+        type='competence'
+        direction='horizontal'
+      >
+        {(provided) => (
+          <Wrap
+            spacing={0}
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            {competences.map((competence, index) => (
+              <MatrixCompetence
+                key={competence.id}
+                competence={competence}
+                index={index}
+              />
+            ))}
+            {provided.placeholder}
+          </Wrap>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
+};
+
+const MatrixCompetence: React.FC<{
+  index: number;
+  competence: Prisma.MatrixCompetenceGetPayload<{
+    include: {
+      skills: { include: { skill: true } };
+    };
+  }>;
+}> = ({ competence, index }) => {
+  return (
+    <Draggable key={competence.id} draggableId={competence.id} index={index}>
+      {(provided) => (
+        <Card
+          m={2}
+          variant='outline'
+          {...provided.draggableProps}
+          ref={provided.innerRef}
+          align='stretch'
+          gap={1}
+        >
+          <CardHeader {...provided.dragHandleProps}>
+            <Text>
+              {competence.name} ({competence.weight})
+            </Text>
+          </CardHeader>
+          <Droppable droppableId={competence.id} type='skill'>
+            {(provided) => (
+              <CardBody
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+                p={1}
+              >
+                {competence.skills.map((skill, index) => (
+                  <Draggable
+                    key={skill.id}
+                    draggableId={skill.id}
+                    index={index}
+                  >
+                    {(provided) => (
+                      <Card
+                        size='sm'
+                        variant='outline'
+                        {...provided.draggableProps}
+                        ref={provided.innerRef}
+                      >
+                        <CardBody as={HStack} justifyContent='space-between'>
+                          <Text>
+                            {skill.skill.name} ({skill.weight})
+                          </Text>
+                          <Box {...provided.dragHandleProps}>
+                            <Icon as={MdDragIndicator} />
+                          </Box>
+                        </CardBody>
+                      </Card>
+                    )}
+                  </Draggable>
+                ))}
+                {provided.placeholder}
+              </CardBody>
+            )}
+          </Droppable>
+        </Card>
+      )}
+    </Draggable>
   );
 };
 
