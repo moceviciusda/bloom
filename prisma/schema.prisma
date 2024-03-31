@@ -146,6 +146,7 @@ model Matrix {
     organizationSlug String
     organization     Organization      @relation(fields: [organizationSlug], references: [slug], onDelete: Cascade)
     categories       MatrixCategory[]
+    categoryOrder    String[]          @default([])
 
     @@unique([organizationSlug, slug])
     @@index([slug])

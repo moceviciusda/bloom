@@ -135,13 +135,24 @@ export const matrixRouter = createTRPCRouter({
           .max(32, 'Max length is 32 characters'),
       })
     )
-    .mutation(({ ctx, input }) => {
-      return ctx.db.matrixCategory.create({
+    .mutation(async ({ ctx, input }) => {
+      const newCategory = await ctx.db.matrixCategory.create({
         data: {
           name: input.name,
           matrixId: input.matrixId,
         },
       });
+
+      await ctx.db.matrix.update({
+        where: { id: input.matrixId },
+        data: {
+          categoryOrder: {
+            push: newCategory.id,
+          },
+        },
+      });
+
+      return newCategory;
     }),
 
   getUsers: protectedProcedure
@@ -308,6 +319,22 @@ export const matrixRouter = createTRPCRouter({
               },
             })),
           },
+        },
+      });
+    }),
+
+  updateCategoryOrder: protectedProcedure
+    .input(
+      z.object({
+        matrixId: z.string().cuid(),
+        categoryOrder: z.array(z.string().cuid()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.matrix.update({
+        where: { id: input.matrixId },
+        data: {
+          categoryOrder: input.categoryOrder,
         },
       });
     }),

@@ -20,6 +20,10 @@ import {
   FormControl,
   Input,
   FormErrorMessage,
+  Wrap,
+  FormLabel,
+  HStack,
+  Button,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { FaWeightHanging } from 'react-icons/fa6';
@@ -27,6 +31,7 @@ import { type HTMLMotionProps, motion, Reorder } from 'framer-motion';
 import { useState } from 'react';
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
+import LoadingSpinner from '~/app/_components/loading-spinner';
 
 interface MatrixViewProps {
   isEditable?: boolean;
@@ -56,10 +61,9 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
   matrix,
 }) => {
   const router = useRouter();
+  const [dragging, setDragging] = useState(false);
 
-  const [categoryIdList, setCategoryIdList] = useState<string[]>(
-    matrix.categories.map((category) => category.id)
-  );
+  const [categoryIdList, setCategoryIdList] = useState(matrix.categoryOrder);
   const [selectedCategory, setSelectedCategory] = useState({
     index: 0,
     id: categoryIdList[0],
@@ -71,10 +75,23 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
       router.refresh();
       setNewCategoryName('');
       setCategoryIdList([...categoryIdList, id]);
+      setSelectedCategory({
+        index: categoryIdList.length,
+        id,
+      });
     },
   });
   const nameInputError =
     createCategory.error?.data?.zodError?.fieldErrors?.name?.[0];
+
+  const updateCategoryOrder = api.matrix.updateCategoryOrder.useMutation({
+    onSuccess: () => {
+      router.refresh();
+    },
+  });
+
+  console.log('db Order', matrix.categoryOrder);
+  console.log('front order', categoryIdList);
 
   return (
     <Card
@@ -84,17 +101,27 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
       size={{ base: 'xs', md: 'md', xl: 'lg' }}
       variant={{ base: 'unstyled', md: 'elevated' }}
     >
-      <Tabs
-        flex={1}
-        // display='flex'
-        variant='unstyled'
-        index={selectedCategory.index}
-      >
+      <Tabs flex={1} variant='unstyled' index={selectedCategory.index}>
         <CardHeader display='flex' flexDir='column' alignItems='flex-start'>
-          <Heading size='lg' mb={6}>
-            {matrix.name}
-          </Heading>
-
+          <HStack mb={6}>
+            <Heading size='lg'>{matrix.name}</Heading>
+            <Button
+              colorScheme='purple'
+              isDisabled={
+                JSON.stringify(categoryIdList) ===
+                JSON.stringify(matrix.categoryOrder)
+              }
+              isLoading={updateCategoryOrder.isLoading}
+              onClick={() => {
+                updateCategoryOrder.mutate({
+                  matrixId: matrix.id,
+                  categoryOrder: categoryIdList,
+                });
+              }}
+            >
+              Save
+            </Button>
+          </HStack>
           <TabList
             as={Reorder.Group}
             axis='x'
@@ -136,10 +163,14 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                       : 'unset'
                   }
                   _hover={{ color: 'blackAlpha.800' }}
-                  cursor={isEditable ? 'grab' : 'pointer'}
-                  onMouseDown={() =>
-                    setSelectedCategory({ index, id: categoryId })
+                  cursor={
+                    !isEditable ? 'pointer' : dragging ? 'grabbing' : 'grab'
                   }
+                  onClick={() =>
+                    !dragging && setSelectedCategory({ index, id: categoryId })
+                  }
+                  onDragStart={() => setDragging(true)}
+                  onDragEnd={() => setTimeout(() => setDragging(false), 100)}
                   alignItems='stretch'
                   flex={1}
                 >
@@ -190,8 +221,33 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                   gap={0}
                   flex={1}
                 >
-                  {selectedCategory.index === matrix.categories.length ? (
+                  {createCategory.isLoading ? (
+                    <LoadingSpinner size={{ base: 'md', md: 'lg' }} />
+                  ) : selectedCategory.index === matrix.categories.length ? (
                     <FormControl isInvalid={createCategory.isError}>
+                      {!createCategory.isError && (
+                        <FormLabel
+                          mb={0}
+                          fontSize={{
+                            base: 10,
+                            lg: 12,
+                          }}
+                          lineHeight={1}
+                        >
+                          New Category
+                        </FormLabel>
+                      )}
+                      <FormErrorMessage
+                        fontSize={{
+                          base: 10,
+                          lg: 12,
+                        }}
+                        lineHeight={1}
+                        fontWeight='400'
+                        mt={0}
+                      >
+                        {nameInputError}
+                      </FormErrorMessage>
                       <Input
                         onClick={(e) => e.stopPropagation()}
                         value={newCategoryName}
@@ -216,16 +272,6 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                         variant='unstyled'
                         fontWeight='600'
                       />
-                      <FormErrorMessage
-                        fontSize={{
-                          base: 8,
-                          md: 10,
-                          lg: 12,
-                        }}
-                        mt={0}
-                      >
-                        {nameInputError}
-                      </FormErrorMessage>
                     </FormControl>
                   ) : (
                     <Text>Add Category</Text>
@@ -245,6 +291,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
             return (
               <TabPanel key={category.id} p={0}>
                 {category.name}
+                <MatrixCategoryControls />
                 {category.competences.map((competence) => (
                   <div key={competence.id}>
                     <Text>
@@ -313,6 +360,45 @@ export const MatrixCategoryTab: React.FC<
   );
 };
 
+const MatrixCategoryControls = () => {
+  return (
+    <Wrap spacing={4}>
+      <Card>
+        <CardHeader>
+          <Heading size='md'>Edit Name</Heading>
+        </CardHeader>
+        <CardBody>
+          <FormControl>
+            <Input />
+          </FormControl>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <Heading size='md'>Edit Weight</Heading>
+        </CardHeader>
+        <CardBody>
+          <FormControl>
+            <Input />
+          </FormControl>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <Heading size='md'>Delete Category</Heading>
+        </CardHeader>
+        <CardBody>
+          <FormControl>
+            <Input />
+          </FormControl>
+        </CardBody>
+      </Card>
+    </Wrap>
+  );
+};
+
 const WeightIcon = ({
   weight,
   size = 24,
@@ -367,7 +453,6 @@ const WeightIcon = ({
       <Text
         alignSelf='flex-end'
         fontSize={fontSize}
-        // lineHeight={size / 10}
         ml={marginValue}
         w={sizeValue}
         color='white'
