@@ -21,6 +21,7 @@ import {
   FormControl,
   Input,
   FormErrorMessage,
+  CustomThemeTypings,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { FaWeightHanging } from 'react-icons/fa6';
@@ -29,6 +30,8 @@ import { useState } from 'react';
 import { RiEdit2Line } from 'react-icons/ri';
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
+import { MdOutlineScale, MdScale } from 'react-icons/md';
+import { TbWeight } from 'react-icons/tb';
 
 interface MatrixViewProps {
   isEditable?: boolean;
@@ -83,6 +86,8 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
       flexDir={{ base: 'column', '2xl': 'row' }}
       flex={1}
       color='blackAlpha.800'
+      size={{ base: 'xs', md: 'md', xl: 'lg' }}
+      variant={{ base: 'unstyled', md: 'elevated' }}
     >
       <Tabs
         flex={1}
@@ -106,10 +111,11 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
               });
               setCategoryIdList(newList as string[]);
             }}
+            fontSize={{ base: 10, md: 12, lg: 14, '2xl': 16 }}
             color='blackAlpha.500'
             bg='gray.100'
             borderRadius={10}
-            p={1.5}
+            p={{ base: 1, md: 1.5 }}
             boxShadow={
               'inset -2px -2px 4px rgba(255, 255, 255, 0.45), inset 2px 2px 4px rgba(94,104,121,0.2)'
             }
@@ -123,6 +129,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
               }
               return (
                 <MatrixCategoryTab
+                  fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
                   as={Reorder.Item}
                   value={category.id}
                   key={category.id}
@@ -132,38 +139,61 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                       ? 'blackAlpha.800'
                       : 'unset'
                   }
-                  _focus={{ outline: 'none' }}
+                  _hover={{ color: 'blackAlpha.800' }}
                   cursor={isEditable ? 'grab' : 'pointer'}
                   onMouseDown={() =>
                     setSelectedCategory({ index, id: categoryId })
                   }
+                  alignItems='stretch'
                 >
-                  <VStack zIndex={1} px={4} py={2} gap={0}>
-                    <HStack>
-                      <Text>{category.name}</Text>
+                  <VStack
+                    zIndex={1}
+                    px={{ base: 1, md: 2, lg: 4, '2xl': 4 }}
+                    py={{ base: 1, md: 2 }}
+                    gap={0}
+                    flex={1}
+                    justify={isEditable ? 'space-between' : 'center'}
+                  >
+                    <Text>{category.name}</Text>
 
-                      {isEditable && (
-                        <Icon
-                          as={RiEdit2Line}
-                          _hover={{ color: 'blackAlpha.700' }}
-                          cursor='pointer'
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            console.log('edit category: ', category.name);
-                          }}
-                        />
-                      )}
-                    </HStack>
-                    <Text fontSize={12} fontWeight='500'>
-                      Weight: {category.weight}{' '}
-                    </Text>
+                    {/* <HStack
+                      fontSize={{
+                        base: 8,
+                        sm: 10,
+                        md: 12,
+                        xl: 14,
+                        '2xl': 14,
+                      }}
+                      fontWeight='500'
+                      gap={1}
+                    >
+                      <Icon as={FaWeightHanging} boxSize={3} />
+                      <Text> {category.weight}</Text>
+                    </HStack> */}
+                    <WeightIcon
+                      weight={category.weight}
+                      size={{
+                        base: 12,
+                        // sm: 10,
+                        md: 14,
+                        xl: 16,
+                        // '2xl': 14,
+                      }}
+                    />
                   </VStack>
                 </MatrixCategoryTab>
               );
             })}
             {isEditable && (
               <MatrixCategoryTab
+                fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
                 isActive={selectedCategory.index === matrix.categories.length}
+                color={
+                  selectedCategory.index === matrix.categories.length
+                    ? 'blackAlpha.800'
+                    : 'unset'
+                }
+                _hover={{ color: 'blackAlpha.800' }}
                 onClick={() =>
                   setSelectedCategory({
                     index: matrix.categories.length,
@@ -171,7 +201,13 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                   })
                 }
               >
-                <VStack zIndex={1} px={4} py={2} gap={0} w='180px'>
+                <VStack
+                  zIndex={1}
+                  px={{ base: 1, md: 2, lg: 4, '2xl': 4 }}
+                  py={{ base: 1, md: 2 }}
+                  gap={0}
+                  flex={1}
+                >
                   {selectedCategory.index === matrix.categories.length ? (
                     <FormControl isInvalid={createCategory.isError}>
                       <Input
@@ -193,11 +229,25 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                           color: 'blackAlpha.500',
                           fontWeight: 400,
                         }}
-                        size='sm'
+                        size={{ base: 'xs', md: 'sm', lg: 'md' }}
+                        w={{
+                          base: '60px',
+                          sm: '80px',
+                          md: '100px',
+                          lg: '160px',
+                          xl: '200px',
+                        }}
                         variant='unstyled'
                         fontWeight='600'
                       />
-                      <FormErrorMessage fontSize={10} mt={0}>
+                      <FormErrorMessage
+                        fontSize={{
+                          base: 8,
+                          md: 10,
+                          lg: 12,
+                        }}
+                        mt={0}
+                      >
                         {nameInputError}
                       </FormErrorMessage>
                     </FormControl>
@@ -259,7 +309,8 @@ export const MatrixCategoryTab: React.FC<
   return (
     <Tab
       p={0}
-      //   _selected={{ color: 'blackAlpha.800' }}
+      textAlign='center'
+      _focus={{ boxShadow: 'none' }}
       fontWeight='600'
       transition={'color 0.2s ease-in-out'}
       {...rest}
@@ -291,17 +342,51 @@ const WeightIcon = ({
   size = 24,
 }: {
   weight: number;
-  size?: number;
+  size?:
+    | number
+    | { base?: number; sm?: number; md?: number; xl?: number; '2xl'?: number };
 }) => {
+  let fontSize, sizeValue, marginValue;
+  if (typeof size === 'number') {
+    fontSize = size / 2;
+    sizeValue = `${size}px`;
+    marginValue = `-${size}px`;
+  } else {
+    fontSize = {
+      base: size.base ? size.base / 2 : undefined,
+      sm: size.sm ? size.sm / 2 : undefined,
+      md: size.md ? size.md / 2 : undefined,
+      xl: size.xl ? size.xl / 2 : undefined,
+      '2xl': size['2xl'] ? size['2xl'] / 2 : undefined,
+    };
+    sizeValue = {
+      base: `${size.base}px`,
+      sm: `${size.sm}px`,
+      md: `${size.md}px`,
+      xl: `${size.xl}px`,
+      '2xl': `${size['2xl']}px`,
+    };
+    marginValue = {
+      base: size.base ? `-${size.base}px` : undefined,
+      sm: size.sm ? `-${size.sm}px` : undefined,
+      md: size.md ? `-${size.md}px` : undefined,
+      xl: size.xl ? `-${size.xl}px` : undefined,
+      '2xl': size['2xl'] ? `-${size['2xl']}px` : undefined,
+    };
+  }
+
+  console.log('sizeValue', sizeValue);
+  console.log('fontSize', fontSize);
+
   return (
     <Flex align='center'>
-      <Icon as={FaWeightHanging} boxSize={`${size}px`} />
+      <Icon as={FaWeightHanging} boxSize={sizeValue} />
       <Text
         alignSelf='flex-end'
-        fontSize={`${size / 2}px`}
+        fontSize={fontSize}
         // lineHeight={size / 10}
-        ml={`-${size}px`}
-        w={`${size}px`}
+        ml={marginValue}
+        w={sizeValue}
         color='white'
       >
         {weight}
