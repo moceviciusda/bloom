@@ -153,14 +153,15 @@ model Matrix {
 }
 
 model MatrixCategory {
-    id          String             @id @default(cuid())
-    name        String
-    matrixId    String
-    matrix      Matrix             @relation(fields: [matrixId], references: [id], onDelete: Cascade)
-    createdAt   DateTime           @default(now())
-    updatedAt   DateTime           @updatedAt
-    competences MatrixCompetence[]
-    weight      Int                @default(1)
+    id              String             @id @default(cuid())
+    name            String
+    matrixId        String
+    matrix          Matrix             @relation(fields: [matrixId], references: [id], onDelete: Cascade)
+    createdAt       DateTime           @default(now())
+    updatedAt       DateTime           @updatedAt
+    competences     MatrixCompetence[]
+    competenceOrder String[]           @default([])
+    weight          Int                @default(1)
 
     @@index([matrixId])
 }
@@ -174,6 +175,7 @@ model MatrixCompetence {
     updatedAt  DateTime              @updatedAt
     weight     Int                   @default(1)
     skills     SkillsOnCompetences[]
+    skillOrder String[]              @default([])
 
     @@index([categoryId])
 }
