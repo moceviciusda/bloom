@@ -11,7 +11,6 @@ import {
   CardHeader,
   Heading,
   CardBody,
-  HStack,
   Flex,
   Stack,
   CardFooter,
@@ -21,17 +20,13 @@ import {
   FormControl,
   Input,
   FormErrorMessage,
-  CustomThemeTypings,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { FaWeightHanging } from 'react-icons/fa6';
 import { type HTMLMotionProps, motion, Reorder } from 'framer-motion';
 import { useState } from 'react';
-import { RiEdit2Line } from 'react-icons/ri';
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
-import { MdOutlineScale, MdScale } from 'react-icons/md';
-import { TbWeight } from 'react-icons/tb';
 
 interface MatrixViewProps {
   isEditable?: boolean;
@@ -112,10 +107,11 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
               setCategoryIdList(newList as string[]);
             }}
             fontSize={{ base: 10, md: 12, lg: 14, '2xl': 16 }}
+            p={{ base: 1, md: 1.5 }}
+            w='100%'
             color='blackAlpha.500'
             bg='gray.100'
             borderRadius={10}
-            p={{ base: 1, md: 1.5 }}
             boxShadow={
               'inset -2px -2px 4px rgba(255, 255, 255, 0.45), inset 2px 2px 4px rgba(94,104,121,0.2)'
             }
@@ -145,6 +141,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                     setSelectedCategory({ index, id: categoryId })
                   }
                   alignItems='stretch'
+                  flex={1}
                 >
                   <VStack
                     zIndex={1}
@@ -156,28 +153,12 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                   >
                     <Text>{category.name}</Text>
 
-                    {/* <HStack
-                      fontSize={{
-                        base: 8,
-                        sm: 10,
-                        md: 12,
-                        xl: 14,
-                        '2xl': 14,
-                      }}
-                      fontWeight='500'
-                      gap={1}
-                    >
-                      <Icon as={FaWeightHanging} boxSize={3} />
-                      <Text> {category.weight}</Text>
-                    </HStack> */}
                     <WeightIcon
                       weight={category.weight}
                       size={{
                         base: 12,
-                        // sm: 10,
                         md: 14,
                         xl: 16,
-                        // '2xl': 14,
                       }}
                     />
                   </VStack>
@@ -187,6 +168,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
             {isEditable && (
               <MatrixCategoryTab
                 fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
+                flex={1}
                 isActive={selectedCategory.index === matrix.categories.length}
                 color={
                   selectedCategory.index === matrix.categories.length
@@ -230,13 +212,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                           fontWeight: 400,
                         }}
                         size={{ base: 'xs', md: 'sm', lg: 'md' }}
-                        w={{
-                          base: '60px',
-                          sm: '80px',
-                          md: '100px',
-                          lg: '160px',
-                          xl: '200px',
-                        }}
+                        w='100%'
                         variant='unstyled'
                         fontWeight='600'
                       />
@@ -344,7 +320,14 @@ const WeightIcon = ({
   weight: number;
   size?:
     | number
-    | { base?: number; sm?: number; md?: number; xl?: number; '2xl'?: number };
+    | {
+        base?: number;
+        sm?: number;
+        md?: number;
+        lg?: number;
+        xl?: number;
+        '2xl'?: number;
+      };
 }) => {
   let fontSize, sizeValue, marginValue;
   if (typeof size === 'number') {
@@ -356,27 +339,27 @@ const WeightIcon = ({
       base: size.base ? size.base / 2 : undefined,
       sm: size.sm ? size.sm / 2 : undefined,
       md: size.md ? size.md / 2 : undefined,
+      lg: size.lg ? size.lg / 2 : undefined,
       xl: size.xl ? size.xl / 2 : undefined,
       '2xl': size['2xl'] ? size['2xl'] / 2 : undefined,
     };
     sizeValue = {
-      base: `${size.base}px`,
-      sm: `${size.sm}px`,
-      md: `${size.md}px`,
-      xl: `${size.xl}px`,
-      '2xl': `${size['2xl']}px`,
+      base: size.base ? `${size.base}px` : undefined,
+      sm: size.sm ? `${size.sm}px` : undefined,
+      md: size.md ? `${size.md}px` : undefined,
+      lg: size.lg ? `${size.lg}px` : undefined,
+      xl: size.xl ? `${size.xl}px` : undefined,
+      '2xl': size['2xl'] ? `${size['2xl']}px` : undefined,
     };
     marginValue = {
       base: size.base ? `-${size.base}px` : undefined,
       sm: size.sm ? `-${size.sm}px` : undefined,
       md: size.md ? `-${size.md}px` : undefined,
+      lg: size.lg ? `-${size.lg}px` : undefined,
       xl: size.xl ? `-${size.xl}px` : undefined,
       '2xl': size['2xl'] ? `-${size['2xl']}px` : undefined,
     };
   }
-
-  console.log('sizeValue', sizeValue);
-  console.log('fontSize', fontSize);
 
   return (
     <Flex align='center'>
