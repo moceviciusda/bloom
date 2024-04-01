@@ -50,7 +50,7 @@ export const WeightIcon = ({
   }
 
   return (
-    <Flex align='center'>
+    <Flex align='center' textAlign='center'>
       <Icon as={FaWeightHanging} boxSize={sizeValue} />
       <Text
         alignSelf='flex-end'

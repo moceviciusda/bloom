@@ -22,8 +22,10 @@ import {
   FormLabel,
   HStack,
   Spacer,
-  Box,
   Icon,
+  Flex,
+  ButtonGroup,
+  Button,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { type HTMLMotionProps, motion, Reorder } from 'framer-motion';
@@ -37,9 +39,9 @@ import {
   DragDropContext,
   Droppable,
   Draggable,
-  DropResult,
+  type DropResult,
 } from '@hello-pangea/dnd';
-import { MdDragIndicator } from 'react-icons/md';
+import { MdClose, MdDragIndicator, MdInfoOutline } from 'react-icons/md';
 
 interface MatrixViewProps {
   isEditable?: boolean;
@@ -87,6 +89,16 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
     },
   });
 
+  const reorderHandler = (newList: unknown[]) => {
+    if (isEditable && !updateCategoryOrder.isLoading) {
+      setSelectedCategory({
+        index: newList.indexOf(selectedCategory.id),
+        id: selectedCategory.id,
+      });
+      setCategoryIdList(newList as string[]);
+    }
+  };
+
   return (
     <Card
       flexDir={{ base: 'column', '2xl': 'row' }}
@@ -111,13 +123,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
             as={Reorder.Group}
             axis='x'
             values={categoryIdList}
-            onReorder={(newList: unknown[]) => {
-              setSelectedCategory({
-                index: newList.indexOf(selectedCategory.id),
-                id: selectedCategory.id,
-              });
-              setCategoryIdList(newList as string[]);
-            }}
+            onReorder={reorderHandler}
             fontSize={{ base: 10, md: 12, lg: 14, '2xl': 16 }}
             p={{ base: 1, md: 1.5 }}
             w='100%'
@@ -238,7 +244,10 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
             }
             return (
               <TabPanel key={category.id} p={0}>
-                <MatrixCategoryPanel category={category} />
+                <MatrixCategoryPanel
+                  category={category}
+                  isEditable={isEditable}
+                />
               </TabPanel>
             );
           })}
@@ -255,6 +264,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
 };
 
 const MatrixCategoryPanel: React.FC<{
+  isEditable?: boolean;
   category: Prisma.MatrixCategoryGetPayload<{
     include: {
       competences: {
@@ -264,8 +274,16 @@ const MatrixCategoryPanel: React.FC<{
       };
     };
   }>;
-}> = ({ category }) => {
+}> = ({ category, isEditable = false }) => {
   const [competences, setCompetences] = useState(category.competences);
+
+  const [competenceOrder, setCompetenceOrder] = useState(
+    category.competenceOrder.length
+      ? category.competenceOrder
+      : category.competences.map((c) => c.id)
+  );
+
+  const updateCompetenceOrder = api.matrix.updateCompetenceOrder.useMutation();
 
   const dragEndHandler = (results: DropResult) => {
     const { source, destination, type } = results;
@@ -280,12 +298,16 @@ const MatrixCategoryPanel: React.FC<{
     }
 
     if (type === 'competence') {
-      const newCompetences = [...competences];
-      const removed = newCompetences.splice(source.index, 1)[0];
+      const newCompOrder = [...competenceOrder];
+      const removed = newCompOrder.splice(source.index, 1)[0];
       if (removed) {
-        newCompetences.splice(destination.index, 0, removed);
+        newCompOrder.splice(destination.index, 0, removed);
       }
-      setCompetences(newCompetences);
+      setCompetenceOrder(newCompOrder);
+      updateCompetenceOrder.mutate({
+        categoryId: category.id,
+        competenceOrder: newCompOrder,
+      });
     }
 
     if (type === 'skill') {
@@ -313,6 +335,7 @@ const MatrixCategoryPanel: React.FC<{
         droppableId={category.id}
         type='competence'
         direction='horizontal'
+        isDropDisabled={!isEditable}
       >
         {(provided) => (
           <Wrap
@@ -320,13 +343,21 @@ const MatrixCategoryPanel: React.FC<{
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {competences.map((competence, index) => (
-              <MatrixCompetence
-                key={competence.id}
-                competence={competence}
-                index={index}
-              />
-            ))}
+            {competenceOrder.map((competenceId, index) => {
+              const competence = competences.find((c) => c.id === competenceId);
+              if (!competence) {
+                return null;
+              }
+              return (
+                <MatrixCompetence
+                  key={competenceId}
+                  competence={competence}
+                  index={index}
+                  isEditable={isEditable}
+                />
+              );
+            })}
+
             {provided.placeholder}
           </Wrap>
         )}
@@ -336,17 +367,24 @@ const MatrixCategoryPanel: React.FC<{
 };
 
 const MatrixCompetence: React.FC<{
+  isEditable?: boolean;
   index: number;
   competence: Prisma.MatrixCompetenceGetPayload<{
     include: {
       skills: { include: { skill: true } };
     };
   }>;
-}> = ({ competence, index }) => {
+}> = ({ competence, index, isEditable = false }) => {
   return (
-    <Draggable key={competence.id} draggableId={competence.id} index={index}>
+    <Draggable
+      key={competence.id}
+      draggableId={competence.id}
+      index={index}
+      isDragDisabled={!isEditable}
+    >
       {(provided) => (
         <Card
+          flex={1}
           m={2}
           variant='outline'
           {...provided.draggableProps}
@@ -354,10 +392,33 @@ const MatrixCompetence: React.FC<{
           align='stretch'
           gap={1}
         >
-          <CardHeader {...provided.dragHandleProps}>
-            <Text>
-              {competence.name} ({competence.weight})
-            </Text>
+          <CardHeader
+            as={HStack}
+            {...provided.dragHandleProps}
+            justify='space-between'
+          >
+            <Text>{competence.name}</Text>
+            <ButtonGroup
+              size='sm'
+              color='gray'
+              variant='ghost'
+              isAttached
+              isDisabled={!isEditable}
+            >
+              <Button>
+                <WeightIcon
+                  weight={competence.weight}
+                  size={{
+                    base: 14,
+                    md: 16,
+                    xl: 18,
+                  }}
+                />
+              </Button>
+              <Button colorScheme='red'>
+                <Icon as={MdClose} boxSize={{ base: 4, md: 5 }} />
+              </Button>
+            </ButtonGroup>
           </CardHeader>
           <Droppable droppableId={competence.id} type='skill'>
             {(provided) => (
@@ -365,12 +426,15 @@ const MatrixCompetence: React.FC<{
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 p={1}
+                // bg={droppableSnapshot.isDraggingOver ? 'gray.50' : 'white'}
+                // transition='background 0.3s ease-in-out'
               >
                 {competence.skills.map((skill, index) => (
                   <Draggable
                     key={skill.id}
                     draggableId={skill.id}
                     index={index}
+                    isDragDisabled={!isEditable}
                   >
                     {(provided) => (
                       <Card
@@ -380,13 +444,52 @@ const MatrixCompetence: React.FC<{
                         ref={provided.innerRef}
                       >
                         <CardBody as={HStack} justifyContent='space-between'>
-                          <Text>
-                            {skill.skill.name} ({skill.weight})
-                          </Text>
-                          <Box {...provided.dragHandleProps}>
-                            <Icon as={MdDragIndicator} />
-                          </Box>
+                          <Text>{skill.skill.name}</Text>
                         </CardBody>
+
+                        <CardFooter pt={0} justify='flex-end'>
+                          <ButtonGroup
+                            size='xs'
+                            color='gray'
+                            variant='ghost'
+                            isAttached
+                            isDisabled={!isEditable}
+                          >
+                            <Button>
+                              <WeightIcon
+                                weight={skill.weight}
+                                size={{
+                                  base: 12,
+                                  md: 14,
+                                  xl: 16,
+                                }}
+                              />
+                            </Button>
+                            <Button color='blackAlpha.600'>
+                              <Icon
+                                as={MdInfoOutline}
+                                boxSize={{ base: 4, md: 5 }}
+                              />
+                            </Button>
+
+                            <Button colorScheme='red'>
+                              <Icon as={MdClose} boxSize={{ base: 4, md: 5 }} />
+                            </Button>
+                          </ButtonGroup>
+                        </CardFooter>
+                        <Flex
+                          position='absolute'
+                          bottom={0}
+                          transform={'rotate(90deg)'}
+                          alignSelf='center'
+                          {...provided.dragHandleProps}
+                          color={'blackAlpha.600'}
+                        >
+                          <Icon
+                            as={MdDragIndicator}
+                            boxSize={{ base: 4, md: 5 }}
+                          />
+                        </Flex>
                       </Card>
                     )}
                   </Draggable>
@@ -506,6 +609,13 @@ const AddCategoryForm = ({
               name: newCategoryName.trim(),
             });
           }
+        }}
+        onBlur={() => {
+          newCategoryName.trim() &&
+            createCategory.mutate({
+              matrixId: matrixId,
+              name: newCategoryName.trim(),
+            });
         }}
         autoFocus
         placeholder='Name'

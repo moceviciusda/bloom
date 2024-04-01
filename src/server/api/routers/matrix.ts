@@ -367,6 +367,38 @@ export const matrixRouter = createTRPCRouter({
       return newCategory;
     }),
 
+  updateCompetenceOrder: protectedProcedure
+    .input(
+      z.object({
+        categoryId: z.string().cuid(),
+        competenceOrder: z.array(z.string().cuid()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.matrixCategory.update({
+        where: { id: input.categoryId },
+        data: {
+          competenceOrder: input.competenceOrder,
+        },
+      });
+    }),
+
+  updateSkillOrder: protectedProcedure
+    .input(
+      z.object({
+        competenceId: z.string().cuid(),
+        skillOrder: z.array(z.string().cuid()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.matrixCompetence.update({
+        where: { id: input.competenceId },
+        data: {
+          skillOrder: input.skillOrder,
+        },
+      });
+    }),
+
   getUsers: protectedProcedure
     .input(z.object({ matrixId: z.string().cuid() }))
     .query(({ ctx, input }) => {
