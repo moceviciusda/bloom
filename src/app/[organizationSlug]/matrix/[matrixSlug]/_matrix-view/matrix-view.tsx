@@ -275,7 +275,13 @@ const MatrixCategoryPanel: React.FC<{
     };
   }>;
 }> = ({ category, isEditable = false }) => {
-  const [competences, setCompetences] = useState(category.competences);
+  const [competences, setCompetences] = useState<
+    Prisma.MatrixCompetenceGetPayload<{
+      include: {
+        skills: { include: { skill: true } };
+      };
+    }>[]
+  >(category.competences);
 
   const [competenceOrder, setCompetenceOrder] = useState(
     category.competenceOrder.length
@@ -284,9 +290,12 @@ const MatrixCategoryPanel: React.FC<{
   );
 
   const updateCompetenceOrder = api.matrix.updateCompetenceOrder.useMutation();
+  const updateSkillOrder = api.matrix.updateSkillOrder.useMutation();
+  const updateSkillsOnCompetence =
+    api.matrix.updateSkillsOnCompetence.useMutation();
 
   const dragEndHandler = (results: DropResult) => {
-    const { source, destination, type } = results;
+    const { source, destination, type, draggableId } = results;
     if (!destination) {
       return;
     }
@@ -311,18 +320,76 @@ const MatrixCategoryPanel: React.FC<{
     }
 
     if (type === 'skill') {
-      const newCompetences = [...competences];
-
+      const newCompetences = structuredClone(competences);
       const removed = newCompetences
         .find((competence) => competence.id === source.droppableId)
         ?.skills.splice(source.index, 1)[0];
-      console.log('removed', removed);
-
       if (removed) {
         newCompetences
           .find((competence) => competence.id === destination.droppableId)
           ?.skills.splice(destination.index, 0, removed);
       }
+
+      if (destination.droppableId === source.droppableId) {
+        updateSkillOrder.mutate({
+          competenceId: source.droppableId,
+          skillOrder:
+            newCompetences
+              .find((c) => c.id === source.droppableId)
+              ?.skills.map((s) => s.id) ?? [],
+        });
+      } else {
+        const draggableSkillId = competences
+          .find((c) => c.id === source.droppableId)
+          ?.skills.find((s) => s.id === draggableId)?.skillId;
+        if (
+          competences
+            .find((c) => c.id === destination.droppableId)
+            ?.skills.find((s) => s.skillId === draggableSkillId)
+        ) {
+          // Skill already exists in destination competence
+          // TOAST HERE
+          console.log('Skill already exists in destination competence');
+          return;
+        }
+
+        updateSkillOrder.mutate({
+          competenceId: source.droppableId,
+          skillOrder:
+            newCompetences
+              .find((c) => c.id === source.droppableId)
+              ?.skills.map((s) => s.id) ?? [],
+        });
+        updateSkillsOnCompetence.mutate({
+          competenceId: source.droppableId,
+          skills:
+            newCompetences
+              .find((c) => c.id === source.droppableId)
+              ?.skills.map((s) => ({
+                skillId: s.skillId,
+                weight: s.weight,
+              })) ?? [],
+        });
+
+        updateSkillOrder.mutate({
+          competenceId: destination.droppableId,
+          skillOrder:
+            newCompetences
+              .find((c) => c.id === destination.droppableId)
+              ?.skills.map((s) => s.id) ?? [],
+        });
+        updateSkillsOnCompetence.mutate({
+          competenceId: destination.droppableId,
+          skills:
+            newCompetences
+              .find((c) => c.id === destination.droppableId)
+              ?.skills.map((s) => ({
+                skillId: s.skillId,
+                weight: s.weight,
+              })) ?? [],
+        });
+      }
+
       setCompetences(newCompetences);
     }
 

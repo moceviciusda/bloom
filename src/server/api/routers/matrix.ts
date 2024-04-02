@@ -383,6 +383,32 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
+  updateSkillsOnCompetence: protectedProcedure
+    .input(
+      z.object({
+        competenceId: z.string().cuid(),
+        skills: z.array(
+          z.object({
+            skillId: z.string().cuid(),
+            weight: z.number().int().min(1).max(100),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.skillsOnCompetences.deleteMany({
+        where: { competenceId: input.competenceId },
+      });
+
+      return ctx.db.skillsOnCompetences.createMany({
+        data: input.skills.map((skill) => ({
+          skillId: skill.skillId,
+          weight: skill.weight,
+          competenceId: input.competenceId,
+        })),
+      });
+    }),
+
   updateSkillOrder: protectedProcedure
     .input(
       z.object({
