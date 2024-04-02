@@ -1,7 +1,7 @@
 import { Flex, Heading, Divider, Wrap } from '@chakra-ui/react';
 import { MatrixCardSkeleton } from './_matrix-card/matrix-card';
 
-const MatrixPage = () => {
+const MatrixPageLoading = () => {
   return (
     <Flex flex={1} p={3} flexDir='column'>
       <Heading size='lg' mb={3}>
@@ -28,4 +28,4 @@ const MatrixPage = () => {
   );
 };
 
-export default MatrixPage;
+export default MatrixPageLoading;
