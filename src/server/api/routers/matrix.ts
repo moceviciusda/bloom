@@ -1,3 +1,4 @@
+import { LexoRank } from 'lexorank';
 import { z } from 'zod';
 
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
@@ -102,6 +103,7 @@ export const matrixRouter = createTRPCRouter({
             create: matrix.categories.map((category) => ({
               name: category.name,
               weight: category.weight,
+              lexoRank: category.lexoRank,
 
               competences: {
                 create: category.competences.map((competence) => ({
@@ -122,221 +124,6 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
-  update: protectedProcedure
-    .input(
-      z.object({
-        matrix: z.object({
-          id: z.string().cuid(),
-          name: z
-            .string()
-            .min(1, 'Name is required')
-            .max(64, 'Maximum name length is 64 characters'),
-          slug: z.string().min(1),
-
-          categoryOrder: z.array(z.string().cuid()),
-          categories: z.array(
-            z.object({
-              id: z.string().cuid(),
-              name: z
-                .string()
-                .min(1, 'Name is required')
-                .max(32, 'Max length is 32 characters'),
-              weight: z.number().int().min(1).max(100),
-
-              competenceOrder: z.array(z.string().cuid()),
-              competences: z.array(
-                z.object({
-                  id: z.string().cuid(),
-                  categoryId: z.string().cuid(),
-                  name: z
-                    .string()
-                    .min(1, 'Name is required')
-                    .max(32, 'Max length is 32 characters'),
-                  weight: z.number().int().min(1).max(100),
-
-                  skillOrder: z.array(z.string().cuid()),
-                  skills: z.array(
-                    z.object({
-                      id: z.string().cuid(),
-                      competenceId: z.string().cuid(),
-                      skillId: z.string().cuid(),
-                      weight: z.number().int().min(1).max(100),
-                    })
-                  ),
-                })
-              ),
-            })
-          ),
-        }),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const matrix = await ctx.db.matrix.findFirst({
-        where: { id: input.matrix.id },
-        include: {
-          categories: {
-            include: { competences: { include: { skills: true } } },
-          },
-        },
-      });
-
-      if (!matrix) {
-        throw new Error('Matrix not found');
-      }
-
-      const categoryIds = matrix.categories.map((category) => category.id);
-      const competenceIds = matrix.categories.flatMap((category) =>
-        category.competences.map((competence) => competence.id)
-      );
-      const skillIds = matrix.categories.flatMap((category) =>
-        category.competences.flatMap((competence) =>
-          competence.skills.map((skill) => skill.id)
-        )
-      );
-
-      const newCategoryIds = input.matrix.categories.map(
-        (category) => category.id
-      );
-      const newCompetenceIds = input.matrix.categories.flatMap((category) =>
-        category.competences.map((competence) => competence.id)
-      );
-      const newSkillIds = input.matrix.categories.flatMap((category) =>
-        category.competences.flatMap((competence) =>
-          competence.skills.map((skill) => skill.id)
-        )
-      );
-
-      const categoryIdsToDelete = categoryIds.filter(
-        (id) => !newCategoryIds.includes(id)
-      );
-      const competenceIdsToDelete = competenceIds.filter(
-        (id) => !newCompetenceIds.includes(id)
-      );
-      const skillIdsToDelete = skillIds.filter(
-        (id) => !newSkillIds.includes(id)
-      );
-
-      const categoryIdsToUpdate = categoryIds.filter((id) =>
-        newCategoryIds.includes(id)
-      );
-      const competenceIdsToUpdate = competenceIds.filter((id) =>
-        newCompetenceIds.includes(id)
-      );
-      const skillIdsToUpdate = skillIds.filter((id) =>
-        newSkillIds.includes(id)
-      );
-
-      const categoryIdsToCreate = newCategoryIds.filter(
-        (id) => !categoryIds.includes(id)
-      );
-      const competenceIdsToCreate = newCompetenceIds.filter(
-        (id) => !competenceIds.includes(id)
-      );
-      const skillIdsToCreate = newSkillIds.filter(
-        (id) => !skillIds.includes(id)
-      );
-
-      await ctx.db.matrixCategory.deleteMany({
-        where: { id: { in: categoryIdsToDelete } },
-      });
-
-      await ctx.db.matrixCompetence.deleteMany({
-        where: { id: { in: competenceIdsToDelete } },
-      });
-
-      await ctx.db.skill.deleteMany({
-        where: { id: { in: skillIdsToDelete } },
-      });
-
-      for (const category of input.matrix.categories) {
-        if (categoryIdsToUpdate.includes(category.id)) {
-          await ctx.db.matrixCategory.update({
-            where: { id: category.id },
-            data: {
-              name: category.name,
-              weight: category.weight,
-            },
-          });
-        }
-      }
-
-      for (const competence of input.matrix.categories.flatMap(
-        (category) => category.competences
-      )) {
-        if (competenceIdsToUpdate.includes(competence.id)) {
-          await ctx.db.matrixCompetence.update({
-            where: { id: competence.id },
-            data: {
-              name: competence.name,
-              weight: competence.weight,
-            },
-          });
-        }
-      }
-
-      for (const skill of input.matrix.categories.flatMap((category) =>
-        category.competences.flatMap((competence) => competence.skills)
-      )) {
-        if (skillIdsToUpdate.includes(skill.id)) {
-          await ctx.db.skillsOnCompetences.update({
-            where: { id: skill.id },
-            data: {
-              weight: skill.weight,
-            },
-          });
-        }
-      }
-
-      for (const category of input.matrix.categories) {
-        if (categoryIdsToCreate.includes(category.id)) {
-          await ctx.db.matrixCategory.create({
-            data: {
-              name: category.name,
-              weight: category.weight,
-              matrixId: input.matrix.id,
-            },
-          });
-        }
-      }
-
-      for (const competence of input.matrix.categories.flatMap(
-        (category) => category.competences
-      )) {
-        if (competenceIdsToCreate.includes(competence.id)) {
-          await ctx.db.matrixCompetence.create({
-            data: {
-              name: competence.name,
-              weight: competence.weight,
-              categoryId: competence.categoryId,
-            },
-          });
-        }
-      }
-
-      for (const skill of input.matrix.categories.flatMap((category) =>
-        category.competences.flatMap((competence) => competence.skills)
-      )) {
-        if (skillIdsToCreate.includes(skill.id)) {
-          await ctx.db.skillsOnCompetences.create({
-            data: {
-              skillId: skill.skillId,
-              weight: skill.weight,
-              competenceId: skill.competenceId,
-            },
-          });
-        }
-      }
-
-      return ctx.db.matrix.update({
-        where: { id: input.matrix.id },
-        data: {
-          name: input.matrix.name,
-          slug: input.matrix.slug,
-          categoryOrder: input.matrix.categoryOrder,
-        },
-      });
-    }),
-
   createCategory: protectedProcedure
     .input(
       z.object({
@@ -348,23 +135,29 @@ export const matrixRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const newCategory = await ctx.db.matrixCategory.create({
+      const lastCategory = await ctx.db.matrixCategory.findFirst({
+        where: { matrixId: input.matrixId },
+        orderBy: { lexoRank: 'desc' },
+      });
+
+      const lexoRank = lastCategory
+        ? LexoRank.parse(lastCategory.lexoRank).genNext().toString()
+        : LexoRank.middle().toString();
+
+      return ctx.db.matrixCategory.create({
         data: {
           name: input.name,
           matrixId: input.matrixId,
+          lexoRank,
         },
-      });
-
-      await ctx.db.matrix.update({
-        where: { id: input.matrixId },
-        data: {
-          categoryOrder: {
-            push: newCategory.id,
+        include: {
+          competences: {
+            include: {
+              skills: { include: { skill: true } },
+            },
           },
         },
       });
-
-      return newCategory;
     }),
 
   updateCompetenceOrder: protectedProcedure
@@ -457,6 +250,7 @@ export const matrixRouter = createTRPCRouter({
         include: {
           users: { select: { permissions: true, user: true } },
           categories: {
+            orderBy: { lexoRank: 'asc' },
             include: {
               competences: {
                 include: { skills: { include: { skill: true } } },
@@ -605,6 +399,22 @@ export const matrixRouter = createTRPCRouter({
         where: { id: input.matrixId },
         data: {
           categoryOrder: input.categoryOrder,
+        },
+      });
+    }),
+
+  updateCategoryRank: protectedProcedure
+    .input(
+      z.object({
+        categoryId: z.string().cuid(),
+        lexoRank: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.matrixCategory.update({
+        where: { id: input.categoryId },
+        data: {
+          lexoRank: input.lexoRank,
         },
       });
     }),

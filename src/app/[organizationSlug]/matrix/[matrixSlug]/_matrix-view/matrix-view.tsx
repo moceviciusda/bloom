@@ -28,7 +28,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
-import { type HTMLMotionProps, motion, Reorder } from 'framer-motion';
+import { type HTMLMotionProps, motion } from 'framer-motion';
 import React, { type Dispatch, type SetStateAction, useState } from 'react';
 import { api } from '~/trpc/react';
 import { useRouter } from 'next/navigation';
@@ -42,6 +42,7 @@ import {
   type DropResult,
 } from '@hello-pangea/dnd';
 import { MdClose, MdDragIndicator, MdInfoOutline } from 'react-icons/md';
+import { LexoRank } from 'lexorank';
 
 interface MatrixViewProps {
   isEditable?: boolean;
@@ -70,196 +71,228 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
   isEditable = false,
   matrix,
 }) => {
-  const router = useRouter();
-  const [dragging, setDragging] = useState(false);
-
-  const [categoryIdList, setCategoryIdList] = useState(
-    matrix.categoryOrder.length
-      ? matrix.categoryOrder
-      : matrix.categories.map((c) => c.id)
-  );
+  const [categories, setCategories] = useState(matrix.categories);
   const [selectedCategory, setSelectedCategory] = useState({
     index: 0,
-    id: categoryIdList[0],
+    id: categories[0]?.id,
   });
 
-  const updateCategoryOrder = api.matrix.updateCategoryOrder.useMutation({
-    onSuccess: () => {
-      router.refresh();
+  const updateCategoryRank = api.matrix.updateCategoryRank.useMutation({
+    onSuccess: (result) => {
+      setCategories((prev) =>
+        prev.map((category) =>
+          category.id === result.id
+            ? { ...category, lexoRank: result.lexoRank }
+            : category
+        )
+      );
     },
   });
 
-  const reorderHandler = (newList: unknown[]) => {
-    if (isEditable && !updateCategoryOrder.isLoading) {
+  const dragEndHandler = (results: DropResult) => {
+    const { draggableId, source, destination, type } = results;
+
+    if (!destination) {
+      return;
+    }
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return;
+    }
+
+    if (type === 'category') {
+      const newCategories = structuredClone(categories);
+      const movedCategory = newCategories.splice(source.index, 1)[0];
+      if (!movedCategory) {
+        return;
+      }
+      newCategories.splice(destination.index, 0, movedCategory);
+      setCategories(newCategories);
       setSelectedCategory({
-        index: newList.indexOf(selectedCategory.id),
+        index: newCategories.findIndex((c) => c.id === selectedCategory.id),
         id: selectedCategory.id,
       });
-      setCategoryIdList(newList as string[]);
+
+      const nextCategory = newCategories[destination.index + 1];
+      const prevCategory = newCategories[destination.index - 1];
+      let newRank;
+      if (nextCategory && prevCategory) {
+        newRank = LexoRank.parse(prevCategory.lexoRank).between(
+          LexoRank.parse(nextCategory.lexoRank)
+        );
+      } else if (nextCategory) {
+        newRank = LexoRank.parse(nextCategory.lexoRank).genPrev();
+      } else if (prevCategory) {
+        newRank = LexoRank.parse(prevCategory.lexoRank).genNext();
+      } else {
+        return;
+      }
+
+      updateCategoryRank.mutate({
+        categoryId: draggableId,
+        lexoRank: newRank.toString(),
+      });
     }
   };
 
   return (
-    <Card
-      flexDir={{ base: 'column', '2xl': 'row' }}
-      flex={1}
-      color='blackAlpha.800'
-      size={{ base: 'xs', md: 'md', xl: 'lg' }}
-      variant={{ base: 'unstyled', md: 'elevated' }}
-    >
-      <Tabs flex={1} variant='unstyled' index={selectedCategory.index}>
-        <CardHeader display='flex' flexDir='column' alignItems='flex-start'>
-          <HStack
-            mb={6}
-            alignSelf='stretch'
-            flexDir={{ base: 'column', md: 'row' }}
-          >
-            <Heading size='lg'>{matrix.name}</Heading>
-            <Spacer />
-            {updateCategoryOrder.isLoading && <LoadingSpinner size='md' />}
-            <MatrixCardControls matrix={matrix} isOwner={true} />
-          </HStack>
-          <TabList
-            as={Reorder.Group}
-            axis='x'
-            values={categoryIdList}
-            onReorder={reorderHandler}
-            fontSize={{ base: 10, md: 12, lg: 14, '2xl': 16 }}
-            p={{ base: 1, md: 1.5 }}
-            w='100%'
-            color='blackAlpha.500'
-            bg='gray.100'
-            borderRadius={10}
-            boxShadow={
-              'inset -2px -2px 4px rgba(255, 255, 255, 0.45), inset 2px 2px 4px rgba(94,104,121,0.2)'
-            }
-          >
-            {categoryIdList.map((categoryId, index) => {
-              const category = matrix.categories.find(
-                (c) => c.id === categoryId
-              );
-              if (!category) {
-                return null;
-              }
-              return (
-                <MatrixCategoryTab
-                  fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
-                  as={Reorder.Item}
-                  value={category.id}
-                  key={category.id}
-                  isActive={selectedCategory.id === categoryId}
-                  color={
-                    selectedCategory.id === categoryId
-                      ? 'blackAlpha.800'
-                      : 'unset'
+    <DragDropContext onDragEnd={dragEndHandler}>
+      <Card
+        flexDir={{ base: 'column', '2xl': 'row' }}
+        flex={1}
+        color='blackAlpha.800'
+        size={{ base: 'xs', md: 'md', xl: 'lg' }}
+        variant={{ base: 'unstyled', md: 'elevated' }}
+      >
+        <Tabs flex={1} variant='unstyled' index={selectedCategory.index}>
+          <CardHeader display='flex' flexDir='column' alignItems='flex-start'>
+            <HStack
+              mb={6}
+              alignSelf='stretch'
+              flexDir={{ base: 'column', md: 'row' }}
+            >
+              <Heading size='lg'>{matrix.name}</Heading>
+              <Spacer />
+              <MatrixCardControls matrix={matrix} isOwner={true} />
+            </HStack>
+            <Droppable
+              droppableId='category'
+              direction='horizontal'
+              isDropDisabled={!isEditable}
+              type='category'
+            >
+              {(provided) => (
+                <TabList
+                  fontSize={{ base: 10, md: 12, lg: 14, '2xl': 16 }}
+                  p={{ base: 1, md: 1.5 }}
+                  w='100%'
+                  color='blackAlpha.500'
+                  bg='gray.100'
+                  borderRadius={10}
+                  boxShadow={
+                    'inset -2px -2px 4px rgba(255, 255, 255, 0.45), inset 2px 2px 4px rgba(94,104,121,0.2)'
                   }
-                  _hover={{ color: 'blackAlpha.800' }}
-                  cursor={
-                    !isEditable ? 'pointer' : dragging ? 'grabbing' : 'grab'
-                  }
-                  onClick={() =>
-                    !dragging && setSelectedCategory({ index, id: categoryId })
-                  }
-                  onDragStart={() => setDragging(true)}
-                  onDragEnd={() => {
-                    setTimeout(() => setDragging(false), 100);
-                    JSON.stringify(categoryIdList) !==
-                      JSON.stringify(matrix.categoryOrder) &&
-                      updateCategoryOrder.mutate({
-                        matrixId: matrix.id,
-                        categoryOrder: categoryIdList,
-                      });
-                  }}
-                  alignItems='stretch'
-                  flex={1}
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
                 >
-                  <VStack
-                    zIndex={1}
-                    px={{ base: 1, md: 2, lg: 4, '2xl': 4 }}
-                    py={{ base: 1, md: 2 }}
-                    gap={0}
-                    flex={1}
-                    justify={isEditable ? 'space-between' : 'center'}
-                  >
-                    <Text>{category.name}</Text>
+                  {categories.map((category, index) => (
+                    <Draggable
+                      key={category.id}
+                      draggableId={category.id}
+                      index={index}
+                      isDragDisabled={!isEditable}
+                      disableInteractiveElementBlocking
+                    >
+                      {(provided) => (
+                        <MatrixCategoryTab
+                          fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
+                          alignItems='stretch'
+                          flex={1}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          isActive={selectedCategory.id === category.id}
+                          color={
+                            selectedCategory.id === category.id
+                              ? 'blackAlpha.800'
+                              : 'unset'
+                          }
+                          _hover={{ color: 'blackAlpha.800' }}
+                          onClick={() =>
+                            setSelectedCategory({
+                              index,
+                              id: category.id,
+                            })
+                          }
+                        >
+                          <VStack
+                            ref={provided.innerRef}
+                            zIndex={1}
+                            px={{ base: 1, md: 2, lg: 4, '2xl': 4 }}
+                            py={{ base: 1, md: 2 }}
+                            gap={0}
+                            flex={1}
+                            justify={isEditable ? 'space-between' : 'center'}
+                          >
+                            <Text>{category.name}</Text>
+                            <WeightIcon
+                              weight={category.weight}
+                              size={{
+                                base: 12,
+                                md: 14,
+                                xl: 16,
+                              }}
+                            />
+                          </VStack>
+                        </MatrixCategoryTab>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
 
-                    <WeightIcon
-                      weight={category.weight}
-                      size={{
-                        base: 12,
-                        md: 14,
-                        xl: 16,
-                      }}
-                    />
-                  </VStack>
-                </MatrixCategoryTab>
-              );
-            })}
-            {isEditable && (
-              <MatrixCategoryTab
-                fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
-                flex={1}
-                isActive={selectedCategory.index === categoryIdList.length}
-                color={
-                  selectedCategory.index === categoryIdList.length
-                    ? 'blackAlpha.800'
-                    : 'unset'
-                }
-                _hover={{ color: 'blackAlpha.800' }}
-                onClick={() =>
-                  setSelectedCategory({
-                    index: categoryIdList.length,
-                    id: 'new',
-                  })
-                }
-              >
-                <VStack
-                  zIndex={1}
-                  px={{ base: 1, md: 2, lg: 4, '2xl': 4 }}
-                  py={{ base: 1, md: 2 }}
-                  gap={0}
-                  flex={1}
-                >
-                  {selectedCategory.index === categoryIdList.length ? (
-                    <AddCategoryForm
-                      matrixId={matrix.id}
-                      categoryIdList={categoryIdList}
-                      setCategoryIdList={setCategoryIdList}
-                      setSelectedCategory={setSelectedCategory}
-                    />
-                  ) : (
-                    <Text>Add Category</Text>
+                  {isEditable && (
+                    <MatrixCategoryTab
+                      fontSize={{ base: 10, sm: 12, md: 14, xl: 16 }}
+                      flex={1}
+                      isActive={selectedCategory.id === 'new'}
+                      color={
+                        selectedCategory.id === 'new'
+                          ? 'blackAlpha.800'
+                          : 'unset'
+                      }
+                      _hover={{ color: 'blackAlpha.800' }}
+                      onClick={() =>
+                        setSelectedCategory({
+                          index: categories.length,
+                          id: 'new',
+                        })
+                      }
+                    >
+                      <VStack
+                        zIndex={1}
+                        px={{ base: 1, md: 2, lg: 4, '2xl': 4 }}
+                        py={{ base: 1, md: 2 }}
+                        gap={0}
+                        flex={1}
+                      >
+                        {selectedCategory.id === 'new' ? (
+                          <AddCategoryForm
+                            matrixId={matrix.id}
+                            setCategories={setCategories}
+                            setSelectedCategory={setSelectedCategory}
+                          />
+                        ) : (
+                          <Text>Add Category</Text>
+                        )}
+                      </VStack>
+                    </MatrixCategoryTab>
                   )}
-                </VStack>
-              </MatrixCategoryTab>
-            )}
-          </TabList>
-        </CardHeader>
+                </TabList>
+              )}
+            </Droppable>
+          </CardHeader>
 
-        <CardBody as={TabPanels}>
-          {categoryIdList.map((categoryId) => {
-            const category = matrix.categories.find((c) => c.id === categoryId);
-            if (!category) {
-              return null;
-            }
-            return (
+          <CardBody as={TabPanels}>
+            {categories.map((category) => (
               <TabPanel key={category.id} p={0}>
                 <MatrixCategoryPanel
                   category={category}
                   isEditable={isEditable}
                 />
               </TabPanel>
-            );
-          })}
-        </CardBody>
-      </Tabs>
+            ))}
+          </CardBody>
+        </Tabs>
 
-      <CardFooter bg='pink'>
-        <Stack direction='row' justify='flex-end'>
-          <Text>Im card footer</Text>
-        </Stack>
-      </CardFooter>
-    </Card>
+        <CardFooter bg='pink'>
+          <Stack direction='row' justify='flex-end'>
+            <Text>Im card footer</Text>
+          </Stack>
+        </CardFooter>
+      </Card>
+    </DragDropContext>
   );
 };
 
@@ -576,8 +609,9 @@ export const MatrixCategoryTab: React.FC<
     children?: React.ReactNode;
     isActive?: boolean;
     activeIndicatorProps?: HTMLMotionProps<'span'>;
+    ref?: React.Ref<HTMLElement>;
   } & TabProps
-> = ({ children, isActive = false, activeIndicatorProps, ...rest }) => {
+> = ({ children, isActive = false, activeIndicatorProps, ref, ...rest }) => {
   return (
     <Tab
       p={0}
@@ -585,6 +619,7 @@ export const MatrixCategoryTab: React.FC<
       _focus={{ boxShadow: 'none' }}
       fontWeight='600'
       transition={'color 0.2s ease-in-out'}
+      ref={ref}
       {...rest}
     >
       {isActive && (
@@ -611,27 +646,42 @@ export const MatrixCategoryTab: React.FC<
 
 const AddCategoryForm = ({
   matrixId,
-  categoryIdList,
-  setCategoryIdList,
+  setCategories,
   setSelectedCategory,
 }: {
   matrixId: string;
-  categoryIdList: string[];
-  setCategoryIdList: Dispatch<SetStateAction<string[]>>;
+  setCategories: Dispatch<
+    SetStateAction<
+      Prisma.MatrixCategoryGetPayload<{
+        include: {
+          competences: {
+            include: {
+              skills: { include: { skill: true } };
+            };
+          };
+        };
+      }>[]
+    >
+  >;
   setSelectedCategory: Dispatch<
-    SetStateAction<{ index: number; id: string | undefined }>
+    SetStateAction<{
+      index: number;
+      id: string | undefined;
+    }>
   >;
 }) => {
   const router = useRouter();
   const [newCategoryName, setNewCategoryName] = useState('');
   const createCategory = api.matrix.createCategory.useMutation({
-    onSuccess: ({ id }) => {
+    onSuccess: (category) => {
       router.refresh();
       setNewCategoryName('');
-      setCategoryIdList([...categoryIdList, id]);
-      setSelectedCategory({
-        index: categoryIdList.length,
-        id,
+      setCategories((prev) => {
+        setSelectedCategory({
+          index: prev.length,
+          id: category.id,
+        });
+        return [...prev, category];
       });
     },
   });

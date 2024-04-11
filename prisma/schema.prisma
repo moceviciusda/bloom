@@ -157,6 +157,7 @@ model MatrixCategory {
     name            String
     matrixId        String
     matrix          Matrix             @relation(fields: [matrixId], references: [id], onDelete: Cascade)
+    lexoRank        String
     createdAt       DateTime           @default(now())
     updatedAt       DateTime           @updatedAt
     competences     MatrixCompetence[]
