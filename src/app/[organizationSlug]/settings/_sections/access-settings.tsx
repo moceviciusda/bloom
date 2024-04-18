@@ -271,6 +271,7 @@ const AdminsCard: React.FC<AccessSettingsProps> = ({ organization }) => {
             loadingIcon
             isDisabled={session.data?.user.id !== organization.ownerId}
             onFocus={(e: FocusEvent<HTMLInputElement>) => e.target.select()}
+            placeholder='Search for a user'
           />
           <AutoCompleteList loadingState={<LoadingSpinner />} py={2}>
             {users.data?.map(

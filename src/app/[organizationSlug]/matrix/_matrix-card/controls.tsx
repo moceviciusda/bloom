@@ -276,6 +276,7 @@ const ShareMatrixButton: React.FC<{ matrix: Matrix } & ButtonProps> = ({
                 loadingIcon={<LoadingSpinner size='md' thickness='3px' />}
                 // isDisabled={session.data?.user.id !== organization.ownerId}
                 onFocus={(e: FocusEvent<HTMLInputElement>) => e.target.select()}
+                placeholder='Search for a user'
               />
               <AutoCompleteList
                 loadingState={<LoadingSpinner size='20px' />}

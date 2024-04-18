@@ -81,15 +81,19 @@ const OrganizationCard: React.FC<Props> = async ({ organization, isOwner }) => {
           </Heading>
         </HStack>
         {isOwner ? (
-          <DeleteOrganizationModal
-            organization={organization}
-            size='lg'
-            variant='ghost'
-            colorScheme='gray'
-            p={0}
-          >
-            <MdDelete />
-          </DeleteOrganizationModal>
+          <Tooltip borderRadius={5} label='Delete ' bg='blackAlpha.700'>
+            <span>
+              <DeleteOrganizationModal
+                organization={organization}
+                size='lg'
+                variant='ghost'
+                colorScheme='gray'
+                p={0}
+              >
+                <MdDelete />
+              </DeleteOrganizationModal>
+            </span>
+          </Tooltip>
         ) : (
           // <RemoveOrgButton organizationId={organization.id} />
           <LeaveOrgButton organizationId={organization.id} />
