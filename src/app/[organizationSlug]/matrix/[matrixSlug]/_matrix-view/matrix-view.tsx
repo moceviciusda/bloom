@@ -77,17 +77,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
     id: categories[0]?.id,
   });
 
-  const updateCategoryRank = api.matrix.updateCategoryRank.useMutation({
-    onSuccess: (result) => {
-      setCategories((prev) =>
-        prev.map((category) =>
-          category.id === result.id
-            ? { ...category, lexoRank: result.lexoRank }
-            : category
-        )
-      );
-    },
-  });
+  const updateCategoryRank = api.matrix.updateCategoryRank.useMutation();
 
   const dragEndHandler = (results: DropResult) => {
     const { draggableId, source, destination, type } = results;
@@ -130,6 +120,8 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
       } else {
         return;
       }
+
+      movedCategory.lexoRank = newRank.toString();
 
       updateCategoryRank.mutate({
         categoryId: draggableId,
@@ -316,36 +308,8 @@ const MatrixCategoryPanel: React.FC<{
     },
   });
 
-  const updateCompetenceRank = api.matrix.updateCompetenceRank.useMutation({
-    onSuccess: (result) => {
-      setCompetences((prev) =>
-        prev.map((competence) =>
-          competence.id === result.id
-            ? { ...competence, lexoRank: result.lexoRank }
-            : competence
-        )
-      );
-    },
-  });
-
-  const updateSkillPosition = api.matrix.updateSkillPosition.useMutation({
-    onSuccess: (result) => {
-      setCompetences((prev) =>
-        prev.map((competence) =>
-          competence.id === result.competenceId
-            ? {
-                ...competence,
-                skills: competence.skills.map((skill) =>
-                  skill.id === result.skillId
-                    ? { ...skill, lexoRank: result.lexoRank }
-                    : skill
-                ),
-              }
-            : competence
-        )
-      );
-    },
-  });
+  const updateCompetenceRank = api.matrix.updateCompetenceRank.useMutation();
+  const updateSkillPosition = api.matrix.updateSkillPosition.useMutation();
 
   const dragEndHandler = (results: DropResult) => {
     const { source, destination, type, draggableId } = results;
@@ -386,6 +350,8 @@ const MatrixCategoryPanel: React.FC<{
         return;
       }
 
+      movedCompetence.lexoRank = newRank.toString();
+
       updateCompetenceRank.mutate({
         competenceId: draggableId,
         lexoRank: newRank.toString(),
@@ -403,10 +369,13 @@ const MatrixCategoryPanel: React.FC<{
         return;
       }
 
+      console.log('sourceCompetence', sourceCompetence);
       const movedSkill = sourceCompetence.skills.splice(source.index, 1)[0];
       if (!movedSkill) {
+        console.log('no moved skill');
         return;
       }
+      console.log(results);
 
       destinationCompetence.skills.splice(destination.index, 0, movedSkill);
 
@@ -426,6 +395,8 @@ const MatrixCategoryPanel: React.FC<{
         newRank = LexoRank.middle();
       }
 
+      movedSkill.lexoRank = newRank.toString();
+
       updateSkillPosition.mutate({
         skillId: draggableId,
         lexoRank: newRank.toString(),
@@ -442,9 +413,10 @@ const MatrixCategoryPanel: React.FC<{
         onClick={() => {
           createCompetence.mutate({
             categoryId: category.id,
-            name: 'Competence ' + Math.random().toString(36).substring(7),
+            name: 'Competence',
           });
         }}
+        isLoading={createCompetence.isLoading}
         colorScheme='blue'
         size='sm'
         variant='outline'
@@ -470,6 +442,7 @@ const MatrixCategoryPanel: React.FC<{
                   competence={competence}
                   index={index}
                   isEditable={isEditable}
+                  setCompetences={setCompetences}
                 />
               ))}
 
@@ -490,12 +463,30 @@ const MatrixCompetence: React.FC<{
       skills: { include: { skill: true } };
     };
   }>;
-}> = ({ competence, index, isEditable = false }) => {
+  setCompetences: Dispatch<
+    SetStateAction<
+      Prisma.MatrixCompetenceGetPayload<{
+        include: {
+          skills: { include: { skill: true } };
+        };
+      }>[]
+    >
+  >;
+}> = ({ competence, index, setCompetences, isEditable = false }) => {
   const [skills, setSkills] = useState(competence.skills);
+
+  const deleteCompetence = api.matrix.deleteCompetence.useMutation({
+    onSuccess: () => {
+      setCompetences((prev) => prev.filter((c) => c.id !== competence.id));
+    },
+  });
 
   const addSkillToCompetence = api.matrix.addSkill.useMutation({
     onSuccess: (competence) => {
       if (!competence) return;
+      setCompetences((prev) =>
+        prev.map((c) => (c.id === competence.id ? competence : c))
+      );
       setSkills(competence.skills);
     },
   });
@@ -509,6 +500,12 @@ const MatrixCompetence: React.FC<{
     },
   });
 
+  const removeSkillFromCompetence = api.matrix.removeSkill.useMutation({
+    onSuccess: ({ id }) => {
+      setSkills((prev) => prev.filter((skill) => skill.id !== id));
+    },
+  });
+
   return (
     <Draggable
       key={competence.id}
@@ -519,6 +516,7 @@ const MatrixCompetence: React.FC<{
       {(provided) => (
         <Card
           flex={1}
+          minW='auto'
           m={2}
           variant='outline'
           {...provided.draggableProps}
@@ -531,7 +529,9 @@ const MatrixCompetence: React.FC<{
             {...provided.dragHandleProps}
             justify='space-between'
           >
-            <Text>{competence.name}</Text>
+            <Text>
+              {competence.name} {' ' + competence.lexoRank}
+            </Text>
             <ButtonGroup
               size='sm'
               color='gray'
@@ -549,7 +549,12 @@ const MatrixCompetence: React.FC<{
                   }}
                 />
               </Button>
-              <Button colorScheme='red'>
+              <Button
+                onClick={() =>
+                  deleteCompetence.mutate({ competenceId: competence.id })
+                }
+                colorScheme='red'
+              >
                 <Icon as={MdClose} boxSize={{ base: 4, md: 5 }} />
               </Button>
             </ButtonGroup>
@@ -578,7 +583,10 @@ const MatrixCompetence: React.FC<{
                         ref={provided.innerRef}
                       >
                         <CardBody as={HStack} justifyContent='space-between'>
-                          <Text>{skill.skill.name}</Text>
+                          <Text>
+                            {skill.skill.name}
+                            {' ' + skill.lexoRank}
+                          </Text>
                         </CardBody>
 
                         <CardFooter pt={0} justify='flex-end'>
@@ -606,7 +614,14 @@ const MatrixCompetence: React.FC<{
                               />
                             </Button>
 
-                            <Button colorScheme='red'>
+                            <Button
+                              onClick={() =>
+                                removeSkillFromCompetence.mutate({
+                                  skillOnCompetenceId: skill.id,
+                                })
+                              }
+                              colorScheme='red'
+                            >
                               <Icon as={MdClose} boxSize={{ base: 4, md: 5 }} />
                             </Button>
                           </ButtonGroup>
@@ -636,9 +651,10 @@ const MatrixCompetence: React.FC<{
             <Button
               onClick={() => {
                 createSkill.mutate({
-                  name: 'Skill ' + Math.random().toString(36).substring(7),
+                  name: 'Skill',
                 });
               }}
+              isLoading={createSkill.isLoading}
               colorScheme='blue'
               size='sm'
               variant='outline'

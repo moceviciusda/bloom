@@ -126,106 +126,6 @@ export const matrixRouter = createTRPCRouter({
       });
     }),
 
-  createCategory: protectedProcedure
-    .input(
-      z.object({
-        matrixId: z.string().cuid(),
-        name: z
-          .string()
-          .min(1, 'Name is required')
-          .max(32, 'Max length is 32 characters'),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const lastCategory = await ctx.db.matrixCategory.findFirst({
-        where: { matrixId: input.matrixId },
-        orderBy: { lexoRank: 'desc' },
-      });
-
-      const lexoRank = lastCategory
-        ? LexoRank.parse(lastCategory.lexoRank).genNext().toString()
-        : LexoRank.middle().toString();
-
-      return ctx.db.matrixCategory.create({
-        data: {
-          name: input.name,
-          matrixId: input.matrixId,
-          lexoRank,
-        },
-        include: {
-          competences: {
-            include: {
-              skills: { include: { skill: true } },
-            },
-          },
-        },
-      });
-    }),
-
-  createCompetence: protectedProcedure
-    .input(
-      z.object({
-        categoryId: z.string().cuid(),
-        name: z
-          .string()
-          .min(1, 'Name is required')
-          .max(32, 'Max length is 32 characters'),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const lastCompetence = await ctx.db.matrixCompetence.findFirst({
-        where: { categoryId: input.categoryId },
-        orderBy: { lexoRank: 'desc' },
-      });
-
-      const lexoRank = lastCompetence
-        ? LexoRank.parse(lastCompetence.lexoRank).genNext().toString()
-        : LexoRank.middle().toString();
-
-      return ctx.db.matrixCompetence.create({
-        data: {
-          name: input.name,
-          categoryId: input.categoryId,
-          lexoRank,
-        },
-        include: {
-          skills: { include: { skill: true } },
-        },
-      });
-    }),
-
-  addSkill: protectedProcedure
-    .input(
-      z.object({
-        competenceId: z.string().cuid(),
-        skillId: z.string().cuid(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const lastSkill = await ctx.db.skillsOnCompetences.findFirst({
-        where: { competenceId: input.competenceId },
-        orderBy: { lexoRank: 'desc' },
-      });
-
-      const lexoRank = lastSkill
-        ? LexoRank.parse(lastSkill.lexoRank).genNext().toString()
-        : LexoRank.middle().toString();
-
-      await ctx.db.skillsOnCompetences.create({
-        data: {
-          skillId: input.skillId,
-          competenceId: input.competenceId,
-          lexoRank,
-        },
-        include: { skill: true },
-      });
-
-      return ctx.db.matrixCompetence.findFirst({
-        where: { id: input.competenceId },
-        include: { skills: { include: { skill: true } } },
-      });
-    }),
-
   getUsers: protectedProcedure
     .input(z.object({ matrixId: z.string().cuid() }))
     .query(({ ctx, input }) => {
@@ -398,6 +298,130 @@ export const matrixRouter = createTRPCRouter({
             })),
           },
         },
+      });
+    }),
+
+  createCategory: protectedProcedure
+    .input(
+      z.object({
+        matrixId: z.string().cuid(),
+        name: z
+          .string()
+          .min(1, 'Name is required')
+          .max(32, 'Max length is 32 characters'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const lastCategory = await ctx.db.matrixCategory.findFirst({
+        where: { matrixId: input.matrixId },
+        orderBy: { lexoRank: 'desc' },
+      });
+
+      const lexoRank = lastCategory
+        ? LexoRank.parse(lastCategory.lexoRank).genNext().toString()
+        : LexoRank.middle().toString();
+
+      return ctx.db.matrixCategory.create({
+        data: {
+          name: input.name,
+          matrixId: input.matrixId,
+          lexoRank,
+        },
+        include: {
+          competences: {
+            include: {
+              skills: { include: { skill: true } },
+            },
+          },
+        },
+      });
+    }),
+
+  createCompetence: protectedProcedure
+    .input(
+      z.object({
+        categoryId: z.string().cuid(),
+        name: z
+          .string()
+          .min(1, 'Name is required')
+          .max(32, 'Max length is 32 characters'),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const lastCompetence = await ctx.db.matrixCompetence.findFirst({
+        where: { categoryId: input.categoryId },
+        orderBy: { lexoRank: 'desc' },
+      });
+
+      const lexoRank = lastCompetence
+        ? LexoRank.parse(lastCompetence.lexoRank).genNext().toString()
+        : LexoRank.middle().toString();
+
+      return ctx.db.matrixCompetence.create({
+        data: {
+          name: input.name,
+          categoryId: input.categoryId,
+          lexoRank,
+        },
+        include: {
+          skills: { include: { skill: true } },
+        },
+      });
+    }),
+
+  addSkill: protectedProcedure
+    .input(
+      z.object({
+        competenceId: z.string().cuid(),
+        skillId: z.string().cuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const lastSkill = await ctx.db.skillsOnCompetences.findFirst({
+        where: { competenceId: input.competenceId },
+        orderBy: { lexoRank: 'desc' },
+      });
+
+      const lexoRank = lastSkill
+        ? LexoRank.parse(lastSkill.lexoRank).genNext().toString()
+        : LexoRank.middle().toString();
+
+      await ctx.db.skillsOnCompetences.create({
+        data: {
+          skillId: input.skillId,
+          competenceId: input.competenceId,
+          lexoRank,
+        },
+        include: { skill: true },
+      });
+
+      return ctx.db.matrixCompetence.findFirst({
+        where: { id: input.competenceId },
+        include: { skills: { include: { skill: true } } },
+      });
+    }),
+
+  deleteCategory: protectedProcedure
+    .input(z.object({ categoryId: z.string().cuid() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.matrixCategory.delete({
+        where: { id: input.categoryId },
+      });
+    }),
+
+  deleteCompetence: protectedProcedure
+    .input(z.object({ competenceId: z.string().cuid() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.matrixCompetence.delete({
+        where: { id: input.competenceId },
+      });
+    }),
+
+  removeSkill: protectedProcedure
+    .input(z.object({ skillOnCompetenceId: z.string().cuid() }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.skillsOnCompetences.delete({
+        where: { id: input.skillOnCompetenceId },
       });
     }),
 
