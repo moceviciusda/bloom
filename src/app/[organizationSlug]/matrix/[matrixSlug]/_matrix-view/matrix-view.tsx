@@ -82,10 +82,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
   const dragEndHandler = (results: DropResult) => {
     const { draggableId, source, destination, type } = results;
 
-    if (!destination) {
-      return;
-    }
-
+    if (!destination) return;
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
@@ -96,9 +93,8 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
     if (type === 'category') {
       const newCategories = structuredClone(categories);
       const movedCategory = newCategories.splice(source.index, 1)[0];
-      if (!movedCategory) {
-        return;
-      }
+      if (!movedCategory) return;
+
       newCategories.splice(destination.index, 0, movedCategory);
       setCategories(newCategories);
       setSelectedCategory({
@@ -313,25 +309,20 @@ const MatrixCategoryPanel: React.FC<{
 
   const dragEndHandler = (results: DropResult) => {
     const { source, destination, type, draggableId } = results;
-    if (!destination) {
-      return;
-    }
+    if (!destination) return;
+
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
     ) {
       return;
     }
-
     const newCompetences = [...competences];
-    console.log('old Competences', competences);
-    console.log('new Competences', newCompetences);
 
     if (type === 'competence') {
       const movedCompetence = newCompetences.splice(source.index, 1)[0];
-      if (!movedCompetence) {
-        return;
-      }
+      if (!movedCompetence) return;
+
       newCompetences.splice(destination.index, 0, movedCompetence);
 
       const nextCompetence = newCompetences[destination.index + 1];
@@ -365,17 +356,10 @@ const MatrixCategoryPanel: React.FC<{
       const destinationCompetence = newCompetences.find(
         (c) => c.id === destination.droppableId
       );
-      if (!sourceCompetence || !destinationCompetence) {
-        return;
-      }
+      if (!sourceCompetence || !destinationCompetence) return;
 
-      console.log('sourceCompetence', sourceCompetence);
       const movedSkill = sourceCompetence.skills.splice(source.index, 1)[0];
-      if (!movedSkill) {
-        console.log('no moved skill');
-        return;
-      }
-      console.log(results);
+      if (!movedSkill) return;
 
       destinationCompetence.skills.splice(destination.index, 0, movedSkill);
 
