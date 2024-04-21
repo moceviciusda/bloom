@@ -308,24 +308,27 @@ const MatrixCategoryPanel: React.FC<{
     };
   }>;
 }> = ({ category, isEditable = false }) => {
-  const [competences, setCompetences] = useState<
-    Prisma.MatrixCompetenceGetPayload<{
-      include: {
-        skills: { include: { skill: true } };
-      };
-    }>[]
-  >(category.competences);
+  const [competences, setCompetences] = useState(category.competences);
 
-  const [competenceOrder, setCompetenceOrder] = useState(
-    category.competenceOrder.length
-      ? category.competenceOrder
-      : category.competences.map((c) => c.id)
-  );
+  const createCompetence = api.matrix.createCompetence.useMutation({
+    onSuccess: (competence) => {
+      setCompetences((prev) => [...prev, competence]);
+    },
+  });
 
-  const updateCompetenceOrder = api.matrix.updateCompetenceOrder.useMutation();
-  const updateSkillOrder = api.matrix.updateSkillOrder.useMutation();
-  const updateSkillsOnCompetence =
-    api.matrix.updateSkillsOnCompetence.useMutation();
+  const updateCompetenceRank = api.matrix.updateCompetenceRank.useMutation({
+    onSuccess: (result) => {
+      setCompetences((prev) =>
+        prev.map((competence) =>
+          competence.id === result.id
+            ? { ...competence, lexoRank: result.lexoRank }
+            : competence
+        )
+      );
+    },
+  });
+
+  const updateSkillPosition = api.matrix.updateSkillPosition.useMutation();
 
   const dragEndHandler = (results: DropResult) => {
     const { source, destination, type, draggableId } = results;
@@ -339,130 +342,140 @@ const MatrixCategoryPanel: React.FC<{
       return;
     }
 
+    const newCompetences = structuredClone(competences);
+    console.log('old Competences', competences);
+    console.log('new Competences', newCompetences);
+
     if (type === 'competence') {
-      const newCompOrder = [...competenceOrder];
-      const removed = newCompOrder.splice(source.index, 1)[0];
-      if (removed) {
-        newCompOrder.splice(destination.index, 0, removed);
+      const movedCompetence = newCompetences.splice(source.index, 1)[0];
+      if (!movedCompetence) {
+        return;
       }
-      setCompetenceOrder(newCompOrder);
-      updateCompetenceOrder.mutate({
-        categoryId: category.id,
-        competenceOrder: newCompOrder,
+      newCompetences.splice(destination.index, 0, movedCompetence);
+
+      const nextCompetence = newCompetences[destination.index + 1];
+      const prevCompetence = newCompetences[destination.index - 1];
+
+      let newRank;
+      if (nextCompetence && prevCompetence) {
+        newRank = LexoRank.parse(prevCompetence.lexoRank).between(
+          LexoRank.parse(nextCompetence.lexoRank)
+        );
+      } else if (nextCompetence) {
+        newRank = LexoRank.parse(nextCompetence.lexoRank).genPrev();
+      } else if (prevCompetence) {
+        newRank = LexoRank.parse(prevCompetence.lexoRank).genNext();
+      } else {
+        return;
+      }
+
+      updateCompetenceRank.mutate({
+        competenceId: draggableId,
+        lexoRank: newRank.toString(),
       });
     }
 
     if (type === 'skill') {
-      const newCompetences = structuredClone(competences);
-      const removed = newCompetences
-        .find((competence) => competence.id === source.droppableId)
-        ?.skills.splice(source.index, 1)[0];
-      if (removed) {
-        newCompetences
-          .find((competence) => competence.id === destination.droppableId)
-          ?.skills.splice(destination.index, 0, removed);
+      const sourceCompetence = newCompetences.find(
+        (c) => c.id === source.droppableId
+      );
+      const destinationCompetence = newCompetences.find(
+        (c) => c.id === destination.droppableId
+      );
+      if (!sourceCompetence || !destinationCompetence) {
+        return;
       }
 
-      if (destination.droppableId === source.droppableId) {
-        updateSkillOrder.mutate({
-          competenceId: source.droppableId,
-          skillOrder:
-            newCompetences
-              .find((c) => c.id === source.droppableId)
-              ?.skills.map((s) => s.id) ?? [],
-        });
+      console.log('sourceCompetence', sourceCompetence);
+      console.log('destinationCompetence', destinationCompetence);
+
+      // const movedSkill = newCompetences
+      //   .find((c) => c.id === source.droppableId)
+      //   .skills.splice(source.index, 1)[0];
+      // if (!movedSkill) {
+      //   return;
+      // }
+
+      const movedSkill = sourceCompetence.skills.splice(source.index, 1)[0];
+      // console.log('splicing', newCompetences[1].skills.splice(source.index, 1));
+      // console.log('splicing', newCompetences[1].skills.splice(source.index, 1));
+      // console.log('moved skill', movedSkill);
+      console.log('new Competences after splice off', newCompetences);
+
+      console.log('movedSkill', movedSkill);
+
+      // destinationCompetence.skills.splice(destination.index, 0, movedSkill);
+
+      const nextSkill = destinationCompetence.skills[destination.index + 1];
+      const prevSkill = destinationCompetence.skills[destination.index - 1];
+
+      let newRank;
+      if (nextSkill && prevSkill) {
+        newRank = LexoRank.parse(prevSkill.lexoRank).between(
+          LexoRank.parse(nextSkill.lexoRank)
+        );
+      } else if (nextSkill) {
+        newRank = LexoRank.parse(nextSkill.lexoRank).genPrev();
+      } else if (prevSkill) {
+        newRank = LexoRank.parse(prevSkill.lexoRank).genNext();
       } else {
-        const draggableSkillId = competences
-          .find((c) => c.id === source.droppableId)
-          ?.skills.find((s) => s.id === draggableId)?.skillId;
-        if (
-          competences
-            .find((c) => c.id === destination.droppableId)
-            ?.skills.find((s) => s.skillId === draggableSkillId)
-        ) {
-          // Skill already exists in destination competence
-          // TOAST HERE
-          console.log('Skill already exists in destination competence');
-          return;
-        }
-
-        updateSkillOrder.mutate({
-          competenceId: source.droppableId,
-          skillOrder:
-            newCompetences
-              .find((c) => c.id === source.droppableId)
-              ?.skills.map((s) => s.id) ?? [],
-        });
-        updateSkillsOnCompetence.mutate({
-          competenceId: source.droppableId,
-          skills:
-            newCompetences
-              .find((c) => c.id === source.droppableId)
-              ?.skills.map((s) => ({
-                skillId: s.skillId,
-                weight: s.weight,
-              })) ?? [],
-        });
-
-        updateSkillOrder.mutate({
-          competenceId: destination.droppableId,
-          skillOrder:
-            newCompetences
-              .find((c) => c.id === destination.droppableId)
-              ?.skills.map((s) => s.id) ?? [],
-        });
-        updateSkillsOnCompetence.mutate({
-          competenceId: destination.droppableId,
-          skills:
-            newCompetences
-              .find((c) => c.id === destination.droppableId)
-              ?.skills.map((s) => ({
-                skillId: s.skillId,
-                weight: s.weight,
-              })) ?? [],
-        });
+        newRank = LexoRank.middle();
       }
 
-      setCompetences(newCompetences);
+      updateSkillPosition.mutate({
+        skillId: draggableId,
+        lexoRank: newRank.toString(),
+        competenceId: destination.droppableId,
+      });
     }
 
+    setCompetences(newCompetences);
     console.log(results);
   };
 
   return (
-    <DragDropContext onDragEnd={dragEndHandler}>
-      <Droppable
-        droppableId={category.id}
-        type='competence'
-        direction='horizontal'
-        isDropDisabled={!isEditable}
+    <>
+      <Button
+        onClick={() => {
+          createCompetence.mutate({
+            categoryId: category.id,
+            name: 'Competence ' + Math.random().toString(36).substring(7),
+          });
+        }}
+        colorScheme='blue'
+        size='sm'
+        variant='outline'
       >
-        {(provided) => (
-          <Wrap
-            spacing={0}
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
-            {competenceOrder.map((competenceId, index) => {
-              const competence = competences.find((c) => c.id === competenceId);
-              if (!competence) {
-                return null;
-              }
-              return (
+        Add Competence
+      </Button>
+      <DragDropContext onDragEnd={dragEndHandler}>
+        <Droppable
+          droppableId={category.id}
+          type='competence'
+          direction='horizontal'
+          isDropDisabled={!isEditable}
+        >
+          {(provided) => (
+            <Wrap
+              spacing={0}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {competences.map((competence, index) => (
                 <MatrixCompetence
-                  key={competenceId}
+                  key={competence.id}
                   competence={competence}
                   index={index}
                   isEditable={isEditable}
                 />
-              );
-            })}
+              ))}
 
-            {provided.placeholder}
-          </Wrap>
-        )}
-      </Droppable>
-    </DragDropContext>
+              {provided.placeholder}
+            </Wrap>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </>
   );
 };
 
@@ -475,6 +488,24 @@ const MatrixCompetence: React.FC<{
     };
   }>;
 }> = ({ competence, index, isEditable = false }) => {
+  const [skills, setSkills] = useState(competence.skills);
+
+  const addSkillToCompetence = api.matrix.addSkill.useMutation({
+    onSuccess: (competence) => {
+      if (!competence) return;
+      setSkills(competence.skills);
+    },
+  });
+
+  const createSkill = api.skill.create.useMutation({
+    onSuccess: (skill) => {
+      addSkillToCompetence.mutate({
+        competenceId: competence.id,
+        skillId: skill.id,
+      });
+    },
+  });
+
   return (
     <Draggable
       key={competence.id}
@@ -529,7 +560,7 @@ const MatrixCompetence: React.FC<{
                 // bg={droppableSnapshot.isDraggingOver ? 'gray.50' : 'white'}
                 // transition='background 0.3s ease-in-out'
               >
-                {competence.skills.map((skill, index) => (
+                {skills.map((skill, index) => (
                   <Draggable
                     key={skill.id}
                     draggableId={skill.id}
@@ -598,6 +629,20 @@ const MatrixCompetence: React.FC<{
               </CardBody>
             )}
           </Droppable>
+          <CardFooter>
+            <Button
+              onClick={() => {
+                createSkill.mutate({
+                  name: 'Skill ' + Math.random().toString(36).substring(7),
+                });
+              }}
+              colorScheme='blue'
+              size='sm'
+              variant='outline'
+            >
+              Add Skill
+            </Button>
+          </CardFooter>
         </Card>
       )}
     </Draggable>

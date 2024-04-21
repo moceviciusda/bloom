@@ -146,23 +146,21 @@ model Matrix {
     organizationSlug String
     organization     Organization      @relation(fields: [organizationSlug], references: [slug], onDelete: Cascade)
     categories       MatrixCategory[]
-    categoryOrder    String[]          @default([])
 
     @@unique([organizationSlug, slug])
     @@index([slug])
 }
 
 model MatrixCategory {
-    id              String             @id @default(cuid())
-    name            String
-    matrixId        String
-    matrix          Matrix             @relation(fields: [matrixId], references: [id], onDelete: Cascade)
-    lexoRank        String
-    createdAt       DateTime           @default(now())
-    updatedAt       DateTime           @updatedAt
-    competences     MatrixCompetence[]
-    competenceOrder String[]           @default([])
-    weight          Int                @default(1)
+    id          String             @id @default(cuid())
+    name        String
+    matrixId    String
+    matrix      Matrix             @relation(fields: [matrixId], references: [id], onDelete: Cascade)
+    lexoRank    String
+    createdAt   DateTime           @default(now())
+    updatedAt   DateTime           @updatedAt
+    competences MatrixCompetence[]
+    weight      Int                @default(1)
 
     @@index([matrixId])
 }
@@ -172,13 +170,27 @@ model MatrixCompetence {
     name       String
     categoryId String
     category   MatrixCategory        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    lexoRank   String
     createdAt  DateTime              @default(now())
     updatedAt  DateTime              @updatedAt
     weight     Int                   @default(1)
     skills     SkillsOnCompetences[]
-    skillOrder String[]              @default([])
 
     @@index([categoryId])
+}
+
+model SkillsOnCompetences {
+    id           String           @id @default(cuid())
+    skillId      String
+    skill        Skill            @relation(fields: [skillId], references: [id], onDelete: Cascade)
+    competenceId String
+    competence   MatrixCompetence @relation(fields: [competenceId], references: [id], onDelete: Cascade)
+    lexoRank     String
+    createdAt    DateTime         @default(now())
+    updatedAt    DateTime         @updatedAt
+    weight       Int              @default(1)
+
+    @@unique([skillId, competenceId])
 }
 
 model Skill {
@@ -188,22 +200,9 @@ model Skill {
     createdAt   DateTime              @default(now())
     createdById String
     updatedAt   DateTime              @updatedAt
-    updatedById String
+    updatedById String?
     competences SkillsOnCompetences[]
     users       SkillsOnUsers[]
-}
-
-model SkillsOnCompetences {
-    id           String           @id @default(cuid())
-    skillId      String
-    skill        Skill            @relation(fields: [skillId], references: [id], onDelete: Cascade)
-    competenceId String
-    competence   MatrixCompetence @relation(fields: [competenceId], references: [id], onDelete: Cascade)
-    createdAt    DateTime         @default(now())
-    updatedAt    DateTime         @updatedAt
-    weight       Int              @default(1)
-
-    @@unique([skillId, competenceId])
 }
 
 model SkillsOnUsers {
