@@ -328,7 +328,24 @@ const MatrixCategoryPanel: React.FC<{
     },
   });
 
-  const updateSkillPosition = api.matrix.updateSkillPosition.useMutation();
+  const updateSkillPosition = api.matrix.updateSkillPosition.useMutation({
+    onSuccess: (result) => {
+      setCompetences((prev) =>
+        prev.map((competence) =>
+          competence.id === result.competenceId
+            ? {
+                ...competence,
+                skills: competence.skills.map((skill) =>
+                  skill.id === result.skillId
+                    ? { ...skill, lexoRank: result.lexoRank }
+                    : skill
+                ),
+              }
+            : competence
+        )
+      );
+    },
+  });
 
   const dragEndHandler = (results: DropResult) => {
     const { source, destination, type, draggableId } = results;
@@ -342,7 +359,7 @@ const MatrixCategoryPanel: React.FC<{
       return;
     }
 
-    const newCompetences = structuredClone(competences);
+    const newCompetences = [...competences];
     console.log('old Competences', competences);
     console.log('new Competences', newCompetences);
 
@@ -386,25 +403,12 @@ const MatrixCategoryPanel: React.FC<{
         return;
       }
 
-      console.log('sourceCompetence', sourceCompetence);
-      console.log('destinationCompetence', destinationCompetence);
-
-      // const movedSkill = newCompetences
-      //   .find((c) => c.id === source.droppableId)
-      //   .skills.splice(source.index, 1)[0];
-      // if (!movedSkill) {
-      //   return;
-      // }
-
       const movedSkill = sourceCompetence.skills.splice(source.index, 1)[0];
-      // console.log('splicing', newCompetences[1].skills.splice(source.index, 1));
-      // console.log('splicing', newCompetences[1].skills.splice(source.index, 1));
-      // console.log('moved skill', movedSkill);
-      console.log('new Competences after splice off', newCompetences);
+      if (!movedSkill) {
+        return;
+      }
 
-      console.log('movedSkill', movedSkill);
-
-      // destinationCompetence.skills.splice(destination.index, 0, movedSkill);
+      destinationCompetence.skills.splice(destination.index, 0, movedSkill);
 
       const nextSkill = destinationCompetence.skills[destination.index + 1];
       const prevSkill = destinationCompetence.skills[destination.index - 1];
@@ -430,7 +434,6 @@ const MatrixCategoryPanel: React.FC<{
     }
 
     setCompetences(newCompetences);
-    console.log(results);
   };
 
   return (
