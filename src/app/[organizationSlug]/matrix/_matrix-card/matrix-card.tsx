@@ -23,6 +23,7 @@ export const MatrixCard: React.FC<{ matrix: Matrix; isOwner?: boolean }> = ({
       fontSize={14}
       size={{ base: 'md', md: 'lg' }}
       maxW='400px'
+      borderRadius={16}
     >
       <CardHeader>
         <Heading size='lg'>{matrix.name}</Heading>

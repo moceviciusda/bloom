@@ -53,7 +53,12 @@ export const MatrixCardControls: React.FC<{
 
   return (
     <ButtonGroup isAttached colorScheme='purple' size='sm' w='352px'>
-      <CloneMatrixButton matrix={matrix} leftIcon={<MdFileCopy />} flex={1}>
+      <CloneMatrixButton
+        matrix={matrix}
+        leftIcon={<MdFileCopy />}
+        flex={1}
+        borderRadius={12}
+      >
         Clone
       </CloneMatrixButton>
 
@@ -70,11 +75,17 @@ export const MatrixCardControls: React.FC<{
         </ShareMatrixButton>
       )}
       {isOwner ? (
-        <DeleteMatrixButton matrix={matrix} leftIcon={<MdDelete />} flex={1}>
+        <DeleteMatrixButton
+          matrix={matrix}
+          leftIcon={<MdDelete />}
+          flex={1}
+          borderRadius={12}
+        >
           Delete
         </DeleteMatrixButton>
       ) : (
         <Button
+          borderRadius={12}
           leftIcon={<MdClose />}
           flex={1}
           onClick={(e) => {

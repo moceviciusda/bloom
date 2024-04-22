@@ -51,6 +51,7 @@ export const NewMatrixCard = ({ orgSlug }: { orgSlug: string }) => {
       maxW='400px'
       flex='0 1 100%'
       transition='all 0.2s ease-in-out'
+      borderRadius={16}
     >
       <CardBody
         display='flex'

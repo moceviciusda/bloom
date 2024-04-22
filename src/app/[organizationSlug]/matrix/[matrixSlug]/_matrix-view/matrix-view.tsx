@@ -160,7 +160,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                   w='100%'
                   color='blackAlpha.500'
                   bg='purple.50'
-                  borderRadius={10}
+                  borderRadius={16}
                   boxShadow={
                     'inset -2px -2px 4px rgba(255, 255, 255, 0.45), inset 2px 2px 4px rgba(94,104,121,0.2)'
                   }
@@ -516,7 +516,6 @@ const MatrixCompetence: React.FC<{
         <Card
           flex={1}
           minW='auto'
-          overflow='hidden'
           borderRadius={16}
           {...provided.draggableProps}
           ref={provided.innerRef}
@@ -525,6 +524,7 @@ const MatrixCompetence: React.FC<{
           p={1}
         >
           <CardHeader
+            p={4}
             as={HStack}
             {...provided.dragHandleProps}
             justify='space-between'
@@ -706,7 +706,7 @@ export const MatrixCategoryTab: React.FC<
             background: 'white',
             boxShadow:
               '0 1px 3px 0 rgba(0, 0, 0, 0.1),0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-            borderRadius: '6px',
+            borderRadius: '12px',
           }}
           transition={{ type: 'spring', bounce: 0.15, duration: 0.6 }}
           {...activeIndicatorProps}
