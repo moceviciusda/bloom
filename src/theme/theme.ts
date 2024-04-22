@@ -46,7 +46,7 @@ const components = {
             transform: 'translateY(0)',
             boxShadow: 'var(--chakra-shadows-base)',
           },
-          transition: 'all 0.2s ease-in-out',
+          transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
         },
       },
     },

@@ -350,11 +350,11 @@ export const matrixRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const lastCompetence = await ctx.db.matrixCompetence.findFirst({
         where: { categoryId: input.categoryId },
-        orderBy: { lexoRank: 'desc' },
+        orderBy: { lexoRank: 'asc' },
       });
 
       const lexoRank = lastCompetence
-        ? LexoRank.parse(lastCompetence.lexoRank).genNext().toString()
+        ? LexoRank.parse(lastCompetence.lexoRank).genPrev().toString()
         : LexoRank.middle().toString();
 
       return ctx.db.matrixCompetence.create({

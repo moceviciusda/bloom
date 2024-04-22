@@ -26,6 +26,7 @@ import {
   Flex,
   ButtonGroup,
   Button,
+  Center,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { type HTMLMotionProps, motion } from 'framer-motion';
@@ -158,7 +159,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                   p={{ base: 1, md: 1.5 }}
                   w='100%'
                   color='blackAlpha.500'
-                  bg='gray.100'
+                  bg='purple.50'
                   borderRadius={10}
                   boxShadow={
                     'inset -2px -2px 4px rgba(255, 255, 255, 0.45), inset 2px 2px 4px rgba(94,104,121,0.2)'
@@ -300,7 +301,7 @@ const MatrixCategoryPanel: React.FC<{
 
   const createCompetence = api.matrix.createCompetence.useMutation({
     onSuccess: (competence) => {
-      setCompetences((prev) => [...prev, competence]);
+      setCompetences((prev) => [competence, ...prev]);
     },
   });
 
@@ -392,50 +393,64 @@ const MatrixCategoryPanel: React.FC<{
   };
 
   return (
-    <>
-      <Button
-        onClick={() => {
-          createCompetence.mutate({
-            categoryId: category.id,
-            name: 'Competence',
-          });
-        }}
-        isLoading={createCompetence.isLoading}
-        colorScheme='blue'
-        size='sm'
-        variant='outline'
+    <DragDropContext onDragEnd={dragEndHandler}>
+      <Droppable
+        droppableId={category.id}
+        type='competence'
+        direction='horizontal'
+        isDropDisabled={!isEditable}
       >
-        Add Competence
-      </Button>
-      <DragDropContext onDragEnd={dragEndHandler}>
-        <Droppable
-          droppableId={category.id}
-          type='competence'
-          direction='horizontal'
-          isDropDisabled={!isEditable}
-        >
-          {(provided) => (
-            <Wrap
-              spacing={0}
-              {...provided.droppableProps}
-              ref={provided.innerRef}
+        {(provided) => (
+          <Wrap
+            spacing={2}
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+          >
+            <Card
+              flex={1}
+              borderRadius={16}
+              overflow='hidden'
+              minW='fit-content'
+              variant='hover'
+              align='stretch'
+              justify='center'
+              gap={1}
             >
-              {competences.map((competence, index) => (
-                <MatrixCompetence
-                  key={competence.id}
-                  competence={competence}
-                  index={index}
-                  isEditable={isEditable}
-                  setCompetences={setCompetences}
-                />
-              ))}
+              {createCompetence.isLoading ? (
+                <Center>
+                  <LoadingSpinner size={{ base: 'md', md: 'lg' }} />
+                </Center>
+              ) : (
+                <Button
+                  onClick={() =>
+                    createCompetence.mutate({
+                      categoryId: category.id,
+                      name: 'Competence',
+                    })
+                  }
+                  colorScheme='purple'
+                  flex={1}
+                  variant='ghost'
+                >
+                  + Add Competence
+                </Button>
+              )}
+            </Card>
+            {competences.map((competence, index) => (
+              <MatrixCompetence
+                key={competence.id}
+                competence={competence}
+                index={index}
+                isEditable={isEditable}
+                setCompetences={setCompetences}
+              />
+            ))}
 
-              {provided.placeholder}
-            </Wrap>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </>
+            {provided.placeholder}
+          </Wrap>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
 
@@ -501,12 +516,13 @@ const MatrixCompetence: React.FC<{
         <Card
           flex={1}
           minW='auto'
-          m={2}
-          variant='outline'
+          overflow='hidden'
+          borderRadius={16}
           {...provided.draggableProps}
           ref={provided.innerRef}
           align='stretch'
           gap={1}
+          p={1}
         >
           <CardHeader
             as={HStack}
@@ -548,9 +564,16 @@ const MatrixCompetence: React.FC<{
               <CardBody
                 {...provided.droppableProps}
                 ref={provided.innerRef}
-                p={1}
-                // bg={droppableSnapshot.isDraggingOver ? 'gray.50' : 'white'}
-                // transition='background 0.3s ease-in-out'
+                bg='purple.50'
+                boxShadow={
+                  'inset -2px -2px 4px rgba(255, 255, 255, 0.45), inset 2px 2px 4px rgba(94,104,121,0.2)'
+                }
+                borderRadius={14}
+                p={2}
+                as={ButtonGroup}
+                isAttached
+                orientation='vertical'
+                gap={1}
               >
                 {skills.map((skill, index) => (
                   <Draggable
@@ -561,6 +584,7 @@ const MatrixCompetence: React.FC<{
                   >
                     {(provided) => (
                       <Card
+                        borderRadius={12}
                         size='sm'
                         variant='outline'
                         {...provided.draggableProps}
@@ -628,24 +652,25 @@ const MatrixCompetence: React.FC<{
                   </Draggable>
                 ))}
                 {provided.placeholder}
+                <Card borderRadius={12} size='sm' overflow='hidden'>
+                  <Button
+                    onClick={() => {
+                      createSkill.mutate({
+                        name: 'Skill',
+                      });
+                    }}
+                    isLoading={createSkill.isLoading}
+                    colorScheme='purple'
+                    borderRadius={0}
+                    flex={1}
+                    p={1}
+                  >
+                    + Add Skill
+                  </Button>
+                </Card>
               </CardBody>
             )}
           </Droppable>
-          <CardFooter>
-            <Button
-              onClick={() => {
-                createSkill.mutate({
-                  name: 'Skill',
-                });
-              }}
-              isLoading={createSkill.isLoading}
-              colorScheme='blue'
-              size='sm'
-              variant='outline'
-            >
-              Add Skill
-            </Button>
-          </CardFooter>
         </Card>
       )}
     </Draggable>

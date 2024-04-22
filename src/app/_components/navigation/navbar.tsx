@@ -55,7 +55,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
       h={14}
       position='sticky'
       top={0}
-      zIndex={1}
+      zIndex={9999}
       align='center'
       bg='white'
       p={2}
