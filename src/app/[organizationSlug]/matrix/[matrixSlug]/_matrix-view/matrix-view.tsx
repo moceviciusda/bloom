@@ -253,7 +253,7 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
                             setSelectedCategory={setSelectedCategory}
                           />
                         ) : (
-                          <Text>Add Category</Text>
+                          <Text>+ Add Category</Text>
                         )}
                       </VStack>
                     </MatrixCategoryTab>
