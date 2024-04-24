@@ -271,6 +271,10 @@ export const DeleteOrganizationModal: React.FC<
     deleteOrganization.mutate({ id: organization.id });
   };
 
+  const { data } = api.organization.getStats.useQuery({
+    slug: organization.slug,
+  });
+
   return (
     <>
       <Button
@@ -329,7 +333,7 @@ export const DeleteOrganizationModal: React.FC<
               </Stat>
               <Stat textAlign='center'>
                 <StatLabel>Matrices</StatLabel>
-                <StatNumber>0</StatNumber>
+                <StatNumber>{data?._count.matrices ?? 0}</StatNumber>
               </Stat>
               <Stat textAlign='center'>
                 <StatLabel>Teams</StatLabel>
@@ -337,7 +341,7 @@ export const DeleteOrganizationModal: React.FC<
               </Stat>
               <Stat textAlign='center'>
                 <StatLabel>Users</StatLabel>
-                <StatNumber>0</StatNumber>
+                <StatNumber>{data?._count.members ?? 0}</StatNumber>
               </Stat>
             </HStack>
           </ModalBody>

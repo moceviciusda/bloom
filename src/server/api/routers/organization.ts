@@ -412,4 +412,15 @@ export const organizationRouter = createTRPCRouter({
         })
         .secrets();
     }),
+
+  getStats: protectedProcedure
+    .input(z.object({ slug: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.organization.findUnique({
+        where: { slug: input.slug },
+        select: {
+          _count: { select: { members: true, matrices: true } },
+        },
+      });
+    }),
 });
