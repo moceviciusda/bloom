@@ -27,6 +27,7 @@ import {
   ButtonGroup,
   Button,
   Center,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { type Prisma } from '@prisma/client';
 import { type HTMLMotionProps, motion } from 'framer-motion';
@@ -305,6 +306,8 @@ const MatrixCategoryPanel: React.FC<{
     };
   }>;
 }> = ({ category, isEditable = false }) => {
+  const [isOverMd] = useMediaQuery('(min-width: 48em)', { fallback: true });
+
   const [competences, setCompetences] = useState(category.competences);
 
   const createCompetence = api.matrix.createCompetence.useMutation({
@@ -405,12 +408,14 @@ const MatrixCategoryPanel: React.FC<{
       <Droppable
         droppableId={category.id}
         type='competence'
-        direction='horizontal'
+        direction={isOverMd ? 'horizontal' : 'vertical'}
         isDropDisabled={!isEditable}
       >
         {(provided) => (
-          <Wrap
-            spacing={2}
+          <Flex
+            flexDir={isOverMd ? 'row' : 'column'}
+            gap={2}
+            wrap='wrap'
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
@@ -456,7 +461,7 @@ const MatrixCategoryPanel: React.FC<{
             ))}
 
             {provided.placeholder}
-          </Wrap>
+          </Flex>
         )}
       </Droppable>
     </DragDropContext>
@@ -600,7 +605,7 @@ const MatrixCompetence: React.FC<{
                         ref={provided.innerRef}
                       >
                         <CardBody as={HStack} justifyContent='space-between'>
-                          <Text>
+                          <Text fontSize={14}>
                             {skill.skill.name}
                             {' ' + skill.lexoRank}
                           </Text>
