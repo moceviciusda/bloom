@@ -47,6 +47,7 @@ import { LexoRank } from 'lexorank';
 
 interface MatrixViewProps {
   isEditable?: boolean;
+  isOwner?: boolean;
   matrix: Prisma.MatrixGetPayload<{
     include: {
       users: {
@@ -69,6 +70,7 @@ interface MatrixViewProps {
 }
 
 export const MatrixView: React.FC<MatrixViewProps> = ({
+  isOwner = false,
   isEditable = false,
   matrix,
 }) => {
@@ -143,9 +145,15 @@ export const MatrixView: React.FC<MatrixViewProps> = ({
               alignSelf='stretch'
               flexDir={{ base: 'column', md: 'row' }}
             >
-              <Heading size='lg'>{matrix.name}</Heading>
+              <Heading size='lg' alignSelf='flex-start'>
+                {matrix.name}
+              </Heading>
               <Spacer />
-              <MatrixCardControls matrix={matrix} isOwner={true} />
+              <MatrixCardControls
+                matrix={matrix}
+                isOwner={isOwner}
+                w={{ base: '100%', md: '352px' }}
+              />
             </HStack>
             <Droppable
               droppableId='category'
@@ -415,6 +423,7 @@ const MatrixCategoryPanel: React.FC<{
               align='stretch'
               justify='center'
               gap={1}
+              minH='120px'
             >
               {createCompetence.isLoading ? (
                 <Center>

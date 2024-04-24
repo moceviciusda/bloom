@@ -24,6 +24,7 @@ import {
   FormControl,
   FormErrorMessage,
   Tooltip,
+  type ButtonGroupProps,
 } from '@chakra-ui/react';
 import {
   AutoComplete,
@@ -41,10 +42,12 @@ import LoadingSpinner from '~/app/_components/loading-spinner';
 import UserPlate from '~/app/_components/user-plate';
 import { api } from '~/trpc/react';
 
-export const MatrixCardControls: React.FC<{
-  matrix: Matrix;
-  isOwner: boolean;
-}> = ({ matrix, isOwner }) => {
+export const MatrixCardControls: React.FC<
+  {
+    matrix: Matrix;
+    isOwner: boolean;
+  } & ButtonGroupProps
+> = ({ matrix, isOwner, ...rest }) => {
   const router = useRouter();
 
   const selfUnshare = api.matrix.selfUnshare.useMutation({
@@ -52,7 +55,7 @@ export const MatrixCardControls: React.FC<{
   });
 
   return (
-    <ButtonGroup isAttached colorScheme='purple' size='sm' w='352px'>
+    <ButtonGroup isAttached colorScheme='purple' size='sm' w='352px' {...rest}>
       <CloneMatrixButton
         matrix={matrix}
         leftIcon={<MdFileCopy />}

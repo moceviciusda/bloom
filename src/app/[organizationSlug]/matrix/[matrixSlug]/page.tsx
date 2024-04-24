@@ -23,9 +23,17 @@ const MatrixPage = async ({
     (user) => user.user.id === session.user.id && user.permissions !== 'VIEWER'
   );
 
+  const isOwner = fullMatrix.users.some(
+    (user) => user.user.id === session.user.id && user.permissions === 'OWNER'
+  );
+
   return (
     <Flex flex={1} p={3} flexDir='column'>
-      <MatrixView matrix={fullMatrix} isEditable={isEditable} />
+      <MatrixView
+        matrix={fullMatrix}
+        isEditable={isEditable}
+        isOwner={isOwner}
+      />
     </Flex>
   );
 };
