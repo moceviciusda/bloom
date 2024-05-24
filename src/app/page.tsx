@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { getServerAuthSession } from '~/server/auth';
 import styles from './index.module.css';
-import { Box, Flex, HStack, VStack } from '@chakra-ui/react';
+import { Box, Divider, Flex, HStack, VStack } from '@chakra-ui/react';
 import Login from './_components/login/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
@@ -20,7 +20,11 @@ const Home = async () => {
   const session = await getServerAuthSession();
 
   return (
-    <Flex align='stretch' minH='100vh' flexDir={{ base: 'column', lg: 'row' }}>
+    <Flex
+      alignItems='stretch'
+      minH='100vh'
+      flexDir={{ base: 'column', lg: 'row' }}
+    >
       <Box bg='purple.900' flex={2}>
         <Flex
           direction='column'
@@ -59,9 +63,8 @@ const Home = async () => {
           </div>
         </Flex>
       </Box>
-      <Flex flex={1} justify='center'>
-        {!session ? <Login /> : <OrgSelection />}
-      </Flex>
+
+      {!session ? <Login /> : <OrgSelection />}
     </Flex>
   );
 };
@@ -71,20 +74,14 @@ const OrgSelection = async () => {
   if (!session) return null;
 
   return (
-    <VStack
-      flex={1}
-      align='stretch'
-      fontSize='sm'
-      fontWeight='semibold'
-      minW='24rem'
-      p={{ base: 4, md: 6, lg: 4, '2xl': 6 }}
-    >
+    <VStack flex={1} p={0} gap={0} align='stretch'>
       <HStack
         justify='space-between'
-        align='flex-start'
+        // align='flex-start'
+        borderBottom='1px solid var(--chakra-colors-chakra-border-color)'
         // paddingX={{ base: 4, md: 16, lg: 4, xl: 8 }}
         // paddingTop={{ base: 4, xl: 8 }}
-        paddingBottom={4}
+        padding={4}
         position='sticky'
         top={0}
         zIndex={1}
@@ -102,28 +99,37 @@ const OrgSelection = async () => {
 
       <VStack
         flex={1}
-        justify='center'
         align='stretch'
-        gap={3}
-        paddingX={{ base: 0, sm: 4, md: 24, lg: 0, '2xl': 8 }}
+        fontSize='sm'
+        fontWeight='semibold'
+        minW='24rem'
+        p={{ base: 4, md: 6, lg: 4, '2xl': 6 }}
       >
-        {session.user.organizations
-          // sort organizations to show the user's owned orgs first
-          .sort((a, b) => {
-            if (a.ownerId === session.user.id) return -1;
-            if (b.ownerId === session.user.id) return 1;
-            return 0;
-          })
-          .map((org) => (
-            <Suspense key={org.id} fallback={<CardSkeleton />}>
-              <OrganizationCard
-                organization={org}
-                isOwner={org.ownerId === session.user.id}
-              />
-            </Suspense>
-          ))}
+        <VStack
+          flex={1}
+          justify='center'
+          align='stretch'
+          gap={3}
+          paddingX={{ base: 0, sm: 4, md: 24, lg: 0, '2xl': 8 }}
+        >
+          {session.user.organizations
+            // sort organizations to show the user's owned orgs first
+            .sort((a, b) => {
+              if (a.ownerId === session.user.id) return -1;
+              if (b.ownerId === session.user.id) return 1;
+              return 0;
+            })
+            .map((org) => (
+              <Suspense key={org.id} fallback={<CardSkeleton />}>
+                <OrganizationCard
+                  organization={org}
+                  isOwner={org.ownerId === session.user.id}
+                />
+              </Suspense>
+            ))}
 
-        <NewOrganization variant='hover' />
+          <NewOrganization variant='hover' />
+        </VStack>
       </VStack>
     </VStack>
   );
