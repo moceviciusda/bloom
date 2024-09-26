@@ -9,10 +9,8 @@ const grandHotel = Grand_Hotel({
 export const MiniBrand = () => {
   return (
     <Box
-      //   bg='purple.800'
       paddingTop={1}
       paddingX={3}
-      //   borderRadius={6}
       lineHeight={1}
       className={grandHotel.className}
       color={'purple.600'}
@@ -26,10 +24,6 @@ export const MiniBrand = () => {
 const Brand: React.FC<BoxProps> = (props) => {
   return (
     <Box
-      //   bg='purple.800'
-      paddingTop={1}
-      paddingX={3}
-      //   borderRadius={6}
       lineHeight={1}
       className={grandHotel.className}
       color={'purple.600'}

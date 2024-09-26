@@ -2,8 +2,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { getServerAuthSession } from '~/server/auth';
-import styles from './index.module.css';
-import { Box, Divider, Flex, HStack, VStack } from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import Login from './_components/login/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
@@ -13,6 +12,7 @@ import OrganizationCard, {
 import { Suspense } from 'react';
 import UserPlate from './_components/user-plate';
 import Brand from './_components/brand';
+import CtaArrow from './_components/cta-arrow';
 
 const Home = async () => {
   noStore();
@@ -25,42 +25,56 @@ const Home = async () => {
       minH='100vh'
       flexDir={{ base: 'column', lg: 'row' }}
     >
-      <Box bg='purple.900' flex={2}>
+      <Box flex={2} bg='purple.900'>
         <Flex
+          bg='linear-gradient(160deg, black 0%, var(--chakra-colors-gray-900) 30%, var(--chakra-colors-purple-900) 50%, var(--chakra-colors-purple-300) 100%)'
           direction='column'
-          align='center'
-          justify='center'
-          gap='3rem'
           p={16}
           h={{ base: 'auto', lg: '100vh' }}
           position='sticky'
+          justifyContent='space-between'
           top={0}
         >
-          <h1 className={styles.title}>
-            Something{' '}
-            <Brand
-              as='span'
-              fontSize={{ base: '70', sm: '110' }}
-              color='purple.500'
-            />{' '}
-            smth
-          </h1>
-          <div className={styles.cardRow}>
-            <Link className={styles.card} href='#'>
-              <h3 className={styles.cardTitle}>First Steps →</h3>
-              <div className={styles.cardText}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia,
-                tempora recusandae.
-              </div>
-            </Link>
-            <Link className={styles.card} href='#'>
-              <h3 className={styles.cardTitle}>Documentation →</h3>
-              <div className={styles.cardText}>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia,
-                tempora recusandae.
-              </div>
-            </Link>
-          </div>
+          <Brand as='span' fontSize={60} color='purple.400' />{' '}
+          <VStack align='stretch' gap={4}>
+            <Heading fontSize={84} fontWeight={600} color='white' maxW='5xl'>
+              Empower your team to reach their full potential.
+            </Heading>
+            <Text fontSize={18} color='whiteAlpha.800' maxW='3xl'>
+              Easily create tailored competence evaluation matrices, track
+              progress, and foster a culture of growth and development.
+            </Text>
+
+            <Box alignSelf='flex-end' position='relative'>
+              <Box transform='translateX(60%)'>
+                <CtaArrow size={160} />
+              </Box>
+              <Text
+                fontSize={20}
+                position='absolute'
+                top={-5}
+                right={-6}
+                borderRadius='md'
+                bg='purple.200'
+                padding={2}
+                px={4}
+                whiteSpace='nowrap'
+                transform='rotate(-10deg)'
+              >
+                Try it out for free today!
+              </Text>
+            </Box>
+          </VStack>
+          <Link href='/pricing'>
+            <Text
+              fontSize={18}
+              color='whiteAlpha.800'
+              maxW='lg'
+              textDecoration='underline'
+            >
+              Learn more about our pricing
+            </Text>
+          </Link>
         </Flex>
       </Box>
 
