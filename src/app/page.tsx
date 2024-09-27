@@ -13,6 +13,7 @@ import { Suspense } from 'react';
 import UserPlate from './_components/user-plate';
 import Brand from './_components/brand';
 import CtaArrow from './_components/cta-arrow';
+import GradientBg from './_components/gradient-bg';
 
 const Home = async () => {
   noStore();
@@ -26,7 +27,15 @@ const Home = async () => {
       flexDir={{ base: 'column', lg: 'row' }}
     >
       <Box flex={2} bg='purple.900'>
-        <Flex
+        <GradientBg
+          w={'100vw'}
+          h={'100vh'}
+          // animationProps={{
+          //   colorInterractive:
+          //     'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-200) h s l / .8) 0, hsl(from var(--chakra-colors-purple-200) h s l / 0) 50%) no-repeat',
+          // }}
+        />
+        {/* <Flex
           bg='linear-gradient(160deg, black 0%, var(--chakra-colors-gray-900) 30%, var(--chakra-colors-purple-900) 50%, var(--chakra-colors-purple-300) 100%)'
           direction='column'
           p={16}
@@ -75,7 +84,7 @@ const Home = async () => {
               Learn more about our pricing
             </Text>
           </Link>
-        </Flex>
+        </Flex> */}
       </Box>
 
       {!session ? <Login /> : <OrgSelection />}
