@@ -68,15 +68,14 @@ const GradientBg: React.FC<
   return (
     <Box
       position='relative'
-      overflow='hidden'
       bg={
         animationProps?.bgColor ??
         'linear-gradient(40deg, rgb(108, 0, 162), rgb(0, 17, 82))'
       }
       {...boxProps}
-      sx={{ ...boxProps.sx, svg: { display: 'none' } }}
+      sx={{ ...boxProps.sx }}
     >
-      <svg xmlns='http://www.w3.org/2000/svg'>
+      <svg xmlns='http://www.w3.org/2000/svg' style={{ display: 'none' }}>
         <defs>
           <filter id='goo'>
             <feGaussianBlur
@@ -100,6 +99,7 @@ const GradientBg: React.FC<
         width='100%'
         height='100%'
         position='absolute'
+        overflow='hidden'
       >
         <Box
           position='absolute'

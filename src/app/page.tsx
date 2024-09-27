@@ -2,7 +2,15 @@ import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { getServerAuthSession } from '~/server/auth';
-import { Box, Flex, Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  HStack,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import Login from './_components/login/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
@@ -26,67 +34,101 @@ const Home = async () => {
       minH='100vh'
       flexDir={{ base: 'column', lg: 'row' }}
     >
-      <Box flex={2} bg='purple.900'>
-        <GradientBg
-        // animationProps={{
-        //   colorInterractive:
-        //     'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-200) h s l / .8) 0, hsl(from var(--chakra-colors-purple-200) h s l / 0) 50%) no-repeat',
-        // }}
+      <GradientBg
+        flex={2}
+        display='flex'
+        animationProps={{
+          // bgColor:
+          //   'linear-gradient(160deg, var(--chakra-colors-gray-900) 0%, var(--chakra-colors-purple-900) 40%, var(--chakra-colors-purple-200) 100%)',
+          bgColor:
+            'linear-gradient(40deg, var(--chakra-colors-purple-800), rgb(0, 17, 82))',
+          // color1:
+          //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-600) h s l / .8) 0, hsl(from var(--chakra-colors-purple-600) h s l / 0) 50%) no-repeat',
+          // color2:
+          //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-blue-700) h s l / .8) 0, hsl(from var(--chakra-colors-blue-700) h s l / 0) 50%) no-repeat',
+          // color3:
+          //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-teal-600) h s l / .8) 0, hsl(from var(--chakra-colors-teal-600) h s l / 0) 50%) no-repeat',
+          // color4:
+          //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-pink-500) h s l / .8) 0, hsl(from var(--chakra-colors-pink-500) h s l / 0) 50%) no-repeat',
+          circleSize: '100%',
+          color5:
+            'radial-gradient(circle at center, hsl(from var(--chakra-colors-red-500) h s l / .8) 0, hsl(from var(--chakra-colors-pink-500) h s l / 0) 50%) no-repeat',
+        }}
+      >
+        <Flex
+          direction='column'
+          flex={1}
+          p={{ base: 4, sm: 8, md: 16 }}
+          h={{ base: 'auto', lg: '100vh' }}
+          position='sticky'
+          justifyContent='space-between'
+          top={0}
         >
-          <Flex
-            direction='column'
-            p={16}
-            h={{ base: 'auto', lg: '100vh' }}
-            position='sticky'
-            justifyContent='space-between'
-            top={0}
-          >
-            <Brand as='span' fontSize={60} color='purple.400' />{' '}
-            <VStack align='stretch' gap={4}>
-              <Heading fontSize={84} fontWeight={600} color='white' maxW='5xl'>
-                Empower your team to reach their full potential.
-              </Heading>
-              <Text fontSize={18} color='whiteAlpha.800' maxW='3xl'>
-                Easily create tailored competence evaluation matrices, track
-                progress, and foster a culture of growth and development.
-              </Text>
+          <Brand as='span' fontSize={60} color='purple.300' />
+          <VStack align='stretch' gap={4}>
+            <Heading
+              fontSize={{ base: 32, md: 48, '2xl': 80 }}
+              fontWeight={600}
+              color='white'
+              maxW='5xl'
+            >
+              Empower your team to reach their full potential.
+            </Heading>
+            <Text
+              fontSize={{ base: 16, md: 18 }}
+              color='whiteAlpha.800'
+              maxW='3xl'
+            >
+              Easily create tailored competence evaluation matrices, track
+              progress, and foster a culture of growth and development.
+            </Text>
 
-              <Box alignSelf='flex-end' position='relative'>
-                <Box
-                  transform='translateX(60%)'
-                  sx={{ svg: { display: 'block' } }}
-                >
-                  <CtaArrow size={160} />
-                </Box>
-                <Text
-                  fontSize={20}
-                  position='absolute'
-                  top={-5}
-                  right={-6}
-                  borderRadius='md'
-                  bg='purple.200'
-                  padding={2}
-                  px={4}
-                  whiteSpace='nowrap'
-                  transform='rotate(-10deg)'
-                >
-                  Try it out for free today!
-                </Text>
+            <Button
+              mt={4}
+              display={{ base: 'block', lg: 'none' }}
+              size={{ base: 'md', md: 'lg' }}
+              alignSelf='flex-end'
+            >
+              Try it out for free today!
+            </Button>
+            <Box
+              mt={{ base: 10, '2xl': 4 }}
+              alignSelf='flex-end'
+              position='relative'
+              display={{ base: 'none', lg: 'block' }}
+            >
+              <Box transform='translateX(60%)'>
+                <CtaArrow size={160} />
               </Box>
-            </VStack>
-            <Link href='/pricing'>
               <Text
-                fontSize={18}
-                color='whiteAlpha.800'
-                maxW='lg'
-                textDecoration='underline'
+                fontSize={20}
+                position='absolute'
+                top={-5}
+                right={-6}
+                borderRadius='md'
+                bg='purple.200'
+                padding={2}
+                px={4}
+                whiteSpace='nowrap'
+                transform='rotate(-10deg)'
+                boxShadow='2px 4px 6px rgba(0, 0, 0, .5)'
               >
-                Learn more about our pricing
+                Try it out for free today!
               </Text>
-            </Link>
-          </Flex>
-        </GradientBg>
-      </Box>
+            </Box>
+          </VStack>
+          <Link href='/pricing'>
+            <Text
+              fontSize={18}
+              color='whiteAlpha.800'
+              maxW='lg'
+              textDecoration='underline'
+            >
+              Learn more about our pricing
+            </Text>
+          </Link>
+        </Flex>
+      </GradientBg>
 
       {!session ? <Login /> : <OrgSelection />}
     </Flex>

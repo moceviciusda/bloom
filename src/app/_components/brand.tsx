@@ -1,4 +1,4 @@
-import { Box, BoxProps } from '@chakra-ui/react';
+import { Box, type BoxProps } from '@chakra-ui/react';
 import { Grand_Hotel } from 'next/font/google';
 
 const grandHotel = Grand_Hotel({

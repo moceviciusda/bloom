@@ -13,6 +13,7 @@ const CtaArrow: React.FC<{
     viewBox='0 0 323.057 323.057'
     // style='enable-background:new 0 0 323.057 323.057;'
     // xml:space='preserve'
+    style={{ filter: 'drop-shadow(2px 4px 6px black' }}
   >
     <g>
       <path
