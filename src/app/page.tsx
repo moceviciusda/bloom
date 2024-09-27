@@ -28,63 +28,64 @@ const Home = async () => {
     >
       <Box flex={2} bg='purple.900'>
         <GradientBg
-          w={'100vw'}
-          h={'100vh'}
-          // animationProps={{
-          //   colorInterractive:
-          //     'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-200) h s l / .8) 0, hsl(from var(--chakra-colors-purple-200) h s l / 0) 50%) no-repeat',
-          // }}
-        />
-        {/* <Flex
-          bg='linear-gradient(160deg, black 0%, var(--chakra-colors-gray-900) 30%, var(--chakra-colors-purple-900) 50%, var(--chakra-colors-purple-300) 100%)'
-          direction='column'
-          p={16}
-          h={{ base: 'auto', lg: '100vh' }}
-          position='sticky'
-          justifyContent='space-between'
-          top={0}
+        // animationProps={{
+        //   colorInterractive:
+        //     'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-200) h s l / .8) 0, hsl(from var(--chakra-colors-purple-200) h s l / 0) 50%) no-repeat',
+        // }}
         >
-          <Brand as='span' fontSize={60} color='purple.400' />{' '}
-          <VStack align='stretch' gap={4}>
-            <Heading fontSize={84} fontWeight={600} color='white' maxW='5xl'>
-              Empower your team to reach their full potential.
-            </Heading>
-            <Text fontSize={18} color='whiteAlpha.800' maxW='3xl'>
-              Easily create tailored competence evaluation matrices, track
-              progress, and foster a culture of growth and development.
-            </Text>
-
-            <Box alignSelf='flex-end' position='relative'>
-              <Box transform='translateX(60%)'>
-                <CtaArrow size={160} />
-              </Box>
-              <Text
-                fontSize={20}
-                position='absolute'
-                top={-5}
-                right={-6}
-                borderRadius='md'
-                bg='purple.200'
-                padding={2}
-                px={4}
-                whiteSpace='nowrap'
-                transform='rotate(-10deg)'
-              >
-                Try it out for free today!
+          <Flex
+            direction='column'
+            p={16}
+            h={{ base: 'auto', lg: '100vh' }}
+            position='sticky'
+            justifyContent='space-between'
+            top={0}
+          >
+            <Brand as='span' fontSize={60} color='purple.400' />{' '}
+            <VStack align='stretch' gap={4}>
+              <Heading fontSize={84} fontWeight={600} color='white' maxW='5xl'>
+                Empower your team to reach their full potential.
+              </Heading>
+              <Text fontSize={18} color='whiteAlpha.800' maxW='3xl'>
+                Easily create tailored competence evaluation matrices, track
+                progress, and foster a culture of growth and development.
               </Text>
-            </Box>
-          </VStack>
-          <Link href='/pricing'>
-            <Text
-              fontSize={18}
-              color='whiteAlpha.800'
-              maxW='lg'
-              textDecoration='underline'
-            >
-              Learn more about our pricing
-            </Text>
-          </Link>
-        </Flex> */}
+
+              <Box alignSelf='flex-end' position='relative'>
+                <Box
+                  transform='translateX(60%)'
+                  sx={{ svg: { display: 'block' } }}
+                >
+                  <CtaArrow size={160} />
+                </Box>
+                <Text
+                  fontSize={20}
+                  position='absolute'
+                  top={-5}
+                  right={-6}
+                  borderRadius='md'
+                  bg='purple.200'
+                  padding={2}
+                  px={4}
+                  whiteSpace='nowrap'
+                  transform='rotate(-10deg)'
+                >
+                  Try it out for free today!
+                </Text>
+              </Box>
+            </VStack>
+            <Link href='/pricing'>
+              <Text
+                fontSize={18}
+                color='whiteAlpha.800'
+                maxW='lg'
+                textDecoration='underline'
+              >
+                Learn more about our pricing
+              </Text>
+            </Link>
+          </Flex>
+        </GradientBg>
       </Box>
 
       {!session ? <Login /> : <OrgSelection />}

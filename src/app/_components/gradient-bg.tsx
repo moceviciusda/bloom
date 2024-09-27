@@ -76,7 +76,6 @@ const GradientBg: React.FC<
       {...boxProps}
       sx={{ ...boxProps.sx, svg: { display: 'none' } }}
     >
-      {boxProps.children}
       <svg xmlns='http://www.w3.org/2000/svg'>
         <defs>
           <filter id='goo'>
@@ -95,7 +94,13 @@ const GradientBg: React.FC<
           </filter>
         </defs>
       </svg>
-      <Box filter='url(#goo) blur(40px)' width='100%' height='100%'>
+
+      <Box
+        filter='url(#goo) blur(40px)'
+        width='100%'
+        height='100%'
+        position='absolute'
+      >
         <Box
           position='absolute'
           bg={
@@ -188,6 +193,7 @@ const GradientBg: React.FC<
           opacity={0.7}
         />
       </Box>
+      {boxProps.children}
     </Box>
   );
 };
