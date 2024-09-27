@@ -51,7 +51,7 @@ const NavBar: React.FC<NavbarProps> = ({ session, currentOrg }) => {
 
   return (
     <Flex
-      as={'header'}
+      as='header'
       h={14}
       position='sticky'
       top={0}

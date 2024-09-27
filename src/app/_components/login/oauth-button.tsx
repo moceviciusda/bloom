@@ -20,7 +20,7 @@ interface OauthButtonProps extends ButtonProps {
 const OauthButton: React.FC<OauthButtonProps> = ({
   providerId,
   providerName,
-  textProps = null,
+  textProps,
   ...rest
 }) => {
   const [loading, setLoading] = useState(false);
@@ -48,9 +48,7 @@ const OauthButton: React.FC<OauthButtonProps> = ({
       isLoading={loading}
       onClick={() => handleClick()}
     >
-      <Text fontSize={14} {...textProps}>
-        {providerName}
-      </Text>
+      <Text {...textProps}>{providerName}</Text>
     </Button>
   );
 };

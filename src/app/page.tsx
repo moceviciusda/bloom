@@ -22,6 +22,7 @@ import UserPlate from './_components/user-plate';
 import Brand from './_components/brand';
 import CtaArrow from './_components/cta-arrow';
 import GradientBg from './_components/gradient-bg';
+import LandingNavbar from './_components/landing-navbar';
 
 const Home = async () => {
   noStore();
@@ -64,7 +65,10 @@ const Home = async () => {
           justifyContent='space-between'
           top={0}
         >
-          <Brand as='span' fontSize={60} color='purple.300' />
+          <HStack align='center' justify='space-between'>
+            <Brand as='span' fontSize={60} color='purple.300' />
+            <LandingNavbar />
+          </HStack>
           <VStack align='stretch' gap={4}>
             <Heading
               fontSize={{ base: 32, md: 48, '2xl': 80 }}
