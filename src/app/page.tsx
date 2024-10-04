@@ -33,7 +33,7 @@ const Home = async () => {
     <Flex
       alignItems='stretch'
       minH='100vh'
-      flexDir={{ base: 'column', lg: 'row' }}
+      flexDir={{ base: 'column', xl: 'row' }}
     >
       <GradientBg
         flex={2}
@@ -59,8 +59,9 @@ const Home = async () => {
         <Flex
           direction='column'
           flex={1}
+          gap={12}
           p={{ base: 4, sm: 8, md: 16 }}
-          h={{ base: 'auto', lg: '100vh' }}
+          h={{ base: 'auto', xl: '100vh' }}
           position='sticky'
           justifyContent='space-between'
           top={0}
@@ -71,7 +72,7 @@ const Home = async () => {
           </HStack>
           <VStack align='stretch' gap={4}>
             <Heading
-              fontSize={{ base: 32, md: 48, '2xl': 80 }}
+              fontSize={{ base: 24, sm: 32, md: 48, '2xl': 80 }}
               fontWeight={600}
               color='white'
               maxW='5xl'
@@ -89,8 +90,9 @@ const Home = async () => {
 
             <Button
               mt={4}
-              display={{ base: 'block', lg: 'none' }}
-              size={{ base: 'md', md: 'lg' }}
+              display={{ base: 'block', xl: 'none' }}
+              size='lg'
+              minW={{ base: 'full', sm: 'unset' }}
               alignSelf='flex-end'
             >
               Try it out for free today!
@@ -99,7 +101,7 @@ const Home = async () => {
               mt={{ base: 10, '2xl': 4 }}
               alignSelf='flex-end'
               position='relative'
-              display={{ base: 'none', lg: 'block' }}
+              display={{ base: 'none', xl: 'block' }}
             >
               <Box transform='translateX(60%)'>
                 <CtaArrow size={160} />
