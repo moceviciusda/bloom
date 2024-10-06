@@ -15,6 +15,7 @@ import Brand from './_components/brand';
 import GradientBg from './_components/gradient-bg';
 import LandingNavbar from './_components/landing-navbar';
 import CtaArrow from './_components/cta-arrow';
+import CtaButton from './_components/cta-button';
 
 const Home = async () => {
   noStore();
@@ -80,15 +81,13 @@ const Home = async () => {
               progress, and foster a culture of growth and development.
             </Text>
 
-            <Button
+            <CtaButton
               mt={4}
               display={{ base: 'block', xl: 'none' }}
-              size='lg'
               minW={{ base: 'full', sm: 'unset' }}
               alignSelf='flex-end'
-            >
-              Try it out for free today!
-            </Button>
+            />
+
             <CtaArrow
               mt={{ base: 10, '2xl': 4 }}
               alignSelf='flex-end'

@@ -1,4 +1,5 @@
 import { Box, Text, type BoxProps } from '@chakra-ui/react';
+import CtaButton from './cta-button';
 
 const CtaArrow: React.FC<BoxProps> = (props) => {
   return (
@@ -6,26 +7,12 @@ const CtaArrow: React.FC<BoxProps> = (props) => {
       <Box transform='translateX(60%)'>
         <Arrow size={160} />
       </Box>
-      <Text
-        fontSize={20}
-        position='absolute'
+      <CtaButton
         top={-5}
         right={-6}
-        borderRadius='md'
-        bg='purple.200'
-        padding={2}
-        px={4}
-        whiteSpace='nowrap'
         transform='rotate(-10deg)'
-        boxShadow='2px 4px 6px rgba(0, 0, 0, .5)'
-        _hover={{
-          transform: 'scale(1.1) rotate(-8deg)',
-        }}
-        transition='all .2s'
-        cursor='default'
-      >
-        Try it out for free today!
-      </Text>
+        position='absolute'
+      />
     </Box>
   );
 };
