@@ -22,6 +22,7 @@ const CtaArrow: React.FC<BoxProps> = (props) => {
           transform: 'scale(1.1) rotate(-8deg)',
         }}
         transition='all .2s'
+        cursor='default'
       >
         Try it out for free today!
       </Text>

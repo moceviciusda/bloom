@@ -152,6 +152,7 @@ const SecretCard: React.FC<{
               }}
               onMouseLeave={() => setCopied(false)}
               boxSize='24px'
+              cursor='pointer'
             />
 
             <Icon
@@ -161,6 +162,7 @@ const SecretCard: React.FC<{
               as={hidden ? FaRegEye : FaRegEyeSlash}
               boxSize={hidden ? '22px' : '24px'}
               ml={hidden ? '1px' : undefined}
+              cursor='pointer'
             />
           </InputRightElement>
         </InputGroup>
