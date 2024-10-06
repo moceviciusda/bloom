@@ -2,15 +2,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { getServerAuthSession } from '~/server/auth';
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  HStack,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Button, Flex, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import Login from './_components/login/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
@@ -20,9 +12,9 @@ import OrganizationCard, {
 import { Suspense } from 'react';
 import UserPlate from './_components/user-plate';
 import Brand from './_components/brand';
-import CtaArrow from './_components/cta-arrow';
 import GradientBg from './_components/gradient-bg';
 import LandingNavbar from './_components/landing-navbar';
+import CtaArrow from './_components/cta-arrow';
 
 const Home = async () => {
   noStore();
@@ -97,31 +89,11 @@ const Home = async () => {
             >
               Try it out for free today!
             </Button>
-            <Box
+            <CtaArrow
               mt={{ base: 10, '2xl': 4 }}
               alignSelf='flex-end'
-              position='relative'
               display={{ base: 'none', xl: 'block' }}
-            >
-              <Box transform='translateX(60%)'>
-                <CtaArrow size={160} />
-              </Box>
-              <Text
-                fontSize={20}
-                position='absolute'
-                top={-5}
-                right={-6}
-                borderRadius='md'
-                bg='purple.200'
-                padding={2}
-                px={4}
-                whiteSpace='nowrap'
-                transform='rotate(-10deg)'
-                boxShadow='2px 4px 6px rgba(0, 0, 0, .5)'
-              >
-                Try it out for free today!
-              </Text>
-            </Box>
+            />
           </VStack>
           <Link href='/pricing'>
             <Text

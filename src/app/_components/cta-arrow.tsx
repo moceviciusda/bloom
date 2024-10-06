@@ -1,19 +1,47 @@
-const CtaArrow: React.FC<{
+import { Box, Text, type BoxProps } from '@chakra-ui/react';
+
+const CtaArrow: React.FC<BoxProps> = (props) => {
+  return (
+    <Box {...props} position='relative'>
+      <Box transform='translateX(60%)'>
+        <Arrow size={160} />
+      </Box>
+      <Text
+        fontSize={20}
+        position='absolute'
+        top={-5}
+        right={-6}
+        borderRadius='md'
+        bg='purple.200'
+        padding={2}
+        px={4}
+        whiteSpace='nowrap'
+        transform='rotate(-10deg)'
+        boxShadow='2px 4px 6px rgba(0, 0, 0, .5)'
+        _hover={{
+          transform: 'scale(1.1) rotate(-8deg)',
+        }}
+        transition='all .2s'
+      >
+        Try it out for free today!
+      </Text>
+    </Box>
+  );
+};
+
+const Arrow: React.FC<{
   size?: number;
 }> = ({ size }) => (
   <svg
     version='1.1'
     id='Capa_1'
     xmlns='http://www.w3.org/2000/svg'
-    // xmlns:xlink='http://www.w3.org/1999/xlink'
     x='0px'
     y='0px'
     width={size ?? '323.057px'}
     height={size ?? '323.057px'}
     viewBox='0 0 323.057 323.057'
-    // style='enable-background:new 0 0 323.057 323.057;'
-    // xml:space='preserve'
-    style={{ filter: 'drop-shadow(2px 4px 6px black' }}
+    style={{ filter: 'drop-shadow(2px 4px 6px black)' }}
   >
     <g>
       <path
