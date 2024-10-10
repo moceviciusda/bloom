@@ -16,7 +16,7 @@ const LandingNavbar: React.FC = () => {
         gap={2}
         color='white'
       >
-        <Link href='/signup'>
+        <Link href='#'>
           <Button
             colorScheme='whiteAlpha'
             variant='ghost'
@@ -25,7 +25,7 @@ const LandingNavbar: React.FC = () => {
             Documentation
           </Button>
         </Link>
-        <Link href='/login'>
+        <Link href='#'>
           <Button
             colorScheme='whiteAlpha'
             variant='ghost'

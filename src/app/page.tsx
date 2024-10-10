@@ -96,7 +96,7 @@ const Home = async () => {
               display={{ base: 'none', xl: 'block' }}
             />
           </VStack>
-          <Link href='/pricing'>
+          <Link href='#'>
             <Text
               fontSize={{ base: 16, md: 18 }}
               color='whiteAlpha.800'
