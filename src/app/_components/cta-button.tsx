@@ -1,7 +1,6 @@
 'use client';
 
-import { Box, BoxProps, keyframes, Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { Box, type BoxProps, Heading, keyframes, Text } from '@chakra-ui/react';
 
 const glow = keyframes`
     100% {
@@ -14,9 +13,9 @@ const CtaButton: React.FC<BoxProps> = (props) => {
     <Box
       position='relative'
       fontSize='22'
-      borderRadius='md'
+      borderRadius='lg'
       //   bg='purple.300'
-      //   bg='rgba(0, 17, 82, .8)'
+      // bg='rgba(0, 17, 82, .8)'
       overflow='hidden'
       padding={2}
       px={4}
@@ -34,7 +33,7 @@ const CtaButton: React.FC<BoxProps> = (props) => {
       _after={{
         content: '""',
         position: 'absolute',
-        bg: 'purple.300',
+        bg: 'purple.200',
         inset: 0.5,
         borderRadius: 'inherit',
         // zIndex: -1,
@@ -42,15 +41,19 @@ const CtaButton: React.FC<BoxProps> = (props) => {
         // filter: 'blur(10px)',
       }}
       //   boxShadow='2px 4px 6px rgba(0, 0, 0, .5)'
-      _hover={{
-        transform: 'scale(1.1) rotate(-8deg)',
-        boxShadow: '0 0 10px 5px rgba(100, 167, 255, 0.5)',
-      }}
-      transition='all .2s'
-      cursor='default'
+
       {...props}
     >
-      <Text position='relative' zIndex={1}>
+      <Text
+        position='relative'
+        zIndex={1}
+        // bg='purple.700'
+        fontWeight='600'
+        // letterSpacing='-1px'
+        bgGradient='linear(to-r, purple.600, blue.600)'
+        color='transparent'
+        bgClip='text'
+      >
         Try it out for free today!
       </Text>
     </Box>

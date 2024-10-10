@@ -127,7 +127,7 @@ const GradientBg: React.FC<
           height={animationProps?.circleSize ?? '80%'}
           top={`calc(50% - ${animationProps?.circleSize ?? '80%'} / 2)`}
           left={`calc(50% - ${animationProps?.circleSize ?? '80%'} / 2)`}
-          transformOrigin='calc(50% - 400px)'
+          transformOrigin='calc(50% - 300px)'
           animation={`${moveInCircle} 20s reverse infinite`}
           opacity={1}
         />
@@ -142,7 +142,7 @@ const GradientBg: React.FC<
           height={animationProps?.circleSize ?? '80%'}
           top={`calc(50% - ${animationProps?.circleSize ?? '80%'} / 2)`}
           left={`calc(50% - ${animationProps?.circleSize ?? '80%'} / 2)`}
-          transformOrigin='calc(50% - 400px)'
+          transformOrigin='calc(50% + 400px)'
           animation={`${moveInCircle} 40s linear infinite`}
           opacity={1}
         />
@@ -172,7 +172,7 @@ const GradientBg: React.FC<
           height={animationProps?.circleSize ?? '80%'}
           top={`calc(50% - ${animationProps?.circleSize ?? '80%'} / 2)`}
           left={`calc(50% - ${animationProps?.circleSize ?? '80%'} / 2)`}
-          transformOrigin='calc(50% - 400px)'
+          transformOrigin='calc(50% + 200px)'
           animation={`${moveInCircle} 20s ease infinite`}
           opacity={1}
         />

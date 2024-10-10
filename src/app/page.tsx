@@ -2,7 +2,7 @@ import { unstable_noStore as noStore } from 'next/cache';
 import Link from 'next/link';
 import { NewOrganization } from '~/app/_components/organization-card/new-organization';
 import { getServerAuthSession } from '~/server/auth';
-import { Button, Flex, Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import { Flex, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import Login from './_components/login/login-form';
 import SignOutButton from './_components/sign-out-button';
 import OrganizationCard, {
@@ -35,18 +35,18 @@ const Home = async () => {
           // bgColor:
           //   'linear-gradient(160deg, var(--chakra-colors-gray-900) 0%, var(--chakra-colors-purple-900) 40%, var(--chakra-colors-purple-200) 100%)',
           bgColor:
-            'linear-gradient(40deg, var(--chakra-colors-purple-800), rgb(0, 17, 82))',
+            'linear-gradient(40deg, var(--chakra-colors-purple-900), rgb(0, 17, 82))',
           // color1:
           //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-600) h s l / .8) 0, hsl(from var(--chakra-colors-purple-600) h s l / 0) 50%) no-repeat',
           // color2:
           //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-blue-700) h s l / .8) 0, hsl(from var(--chakra-colors-blue-700) h s l / 0) 50%) no-repeat',
           // color3:
           //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-teal-600) h s l / .8) 0, hsl(from var(--chakra-colors-teal-600) h s l / 0) 50%) no-repeat',
-          // color4:
-          //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-pink-500) h s l / .8) 0, hsl(from var(--chakra-colors-pink-500) h s l / 0) 50%) no-repeat',
+          color4:
+            'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-600) h s l / .8) 0, hsl(from var(--chakra-colors-purple-600) h s l / 0) 50%) no-repeat',
           circleSize: '100%',
           color5:
-            'radial-gradient(circle at center, hsl(from var(--chakra-colors-red-500) h s l / .8) 0, hsl(from var(--chakra-colors-pink-500) h s l / 0) 50%) no-repeat',
+            'radial-gradient(circle at center, hsl(from var(--chakra-colors-red-300) h s l / .8) 0, hsl(from var(--chakra-colors-red-300) h s l / 0) 50%) no-repeat',
         }}
       >
         <Flex
@@ -55,6 +55,7 @@ const Home = async () => {
           gap={12}
           p={{ base: 4, sm: 8, md: 16 }}
           h={{ base: 'auto', xl: '100vh' }}
+          minH={{ base: 'auto', md: '80vh' }}
           position='sticky'
           justifyContent='space-between'
           top={0}
@@ -84,7 +85,7 @@ const Home = async () => {
             <CtaButton
               mt={4}
               display={{ base: 'block', xl: 'none' }}
-              minW={{ base: 'full', sm: 'unset' }}
+              fontSize={{ base: 18, md: 20, lg: 22 }}
               alignSelf='flex-end'
             />
 
@@ -96,7 +97,7 @@ const Home = async () => {
           </VStack>
           <Link href='/pricing'>
             <Text
-              fontSize={18}
+              fontSize={{ base: 16, md: 18 }}
               color='whiteAlpha.800'
               maxW='lg'
               textDecoration='underline'
