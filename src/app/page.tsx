@@ -35,7 +35,7 @@ const Home = async () => {
           // bgColor:
           //   'linear-gradient(160deg, var(--chakra-colors-gray-900) 0%, var(--chakra-colors-purple-900) 40%, var(--chakra-colors-purple-200) 100%)',
           bgColor:
-            'linear-gradient(40deg, var(--chakra-colors-purple-900), rgb(0, 17, 82))',
+            'linear-gradient(40deg, var(--chakra-colors-purple-700), rgb(0, 17, 82))',
           // color1:
           //   'radial-gradient(circle at center, hsl(from var(--chakra-colors-purple-600) h s l / .8) 0, hsl(from var(--chakra-colors-purple-600) h s l / 0) 50%) no-repeat',
           // color2:
@@ -51,6 +51,7 @@ const Home = async () => {
       >
         <Flex
           direction='column'
+          bg='blackAlpha.500'
           flex={1}
           gap={12}
           p={{ base: 4, sm: 8, md: 16 }}
@@ -85,7 +86,7 @@ const Home = async () => {
             <CtaButton
               mt={4}
               display={{ base: 'block', xl: 'none' }}
-              fontSize={{ base: 18, md: 20, lg: 22 }}
+              size={{ base: 'md', md: 'lg' }}
               alignSelf='flex-end'
             />
 

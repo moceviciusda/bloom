@@ -8,7 +8,8 @@ const CtaArrow: React.FC<BoxProps> = (props) => {
         transform='translateX(60%)'
         boxSize={160}
         _groupHover={{
-          transform: 'scale(1.05) rotate(-8deg) translateX(60%)',
+          transform:
+            'scale(1.05) rotate(-25deg) translateX(80%) translateY(30%)',
         }}
         transition='all .2s'
       />
@@ -20,7 +21,7 @@ const CtaArrow: React.FC<BoxProps> = (props) => {
         position='absolute'
         _groupHover={{
           transform: 'scale(1.05) rotate(-8deg)',
-          // boxShadow: '0 0 10px 5px rgba(100, 167, 255, 0.5)',
+          boxShadow: '2px 4px 6px var(--chakra-colors-blackAlpha-500)',
         }}
         transition='all .2s'
         cursor='default'
@@ -37,10 +38,14 @@ const Arrow: React.FC<BoxProps> = (props) => (
       xmlns='http://www.w3.org/2000/svg'
       x='0px'
       y='0px'
-      // width={size ?? '323.057px'}
-      // height={size ?? '323.057px'}
       viewBox='0 0 323.057 323.057'
-      style={{ filter: 'drop-shadow(2px 4px 6px black)' }}
+      stroke='white'
+      strokeWidth={4}
+      // fill='red'
+      style={{
+        filter: 'drop-shadow(2px 4px 6px black)',
+        transition: 'all .2s',
+      }}
     >
       <g>
         <path
