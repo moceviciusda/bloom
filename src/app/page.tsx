@@ -103,7 +103,7 @@ const Home = async () => {
               maxW='lg'
               textDecoration='underline'
             >
-              Learn more about our pricing
+              Learn more about our pricing fdsafasdfsdafasdf
             </Text>
           </Link>
         </Flex>
